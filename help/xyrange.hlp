@@ -1,0 +1,48 @@
+xa, xb, ya, yb
+Set the bounds of the sub-image to be displayed in mapplot.
+
+EXAMPLE
+-------
+0>xyrange -10,20,0,0
+The mapplot display area will be limited to:
+ Relative  RA: -10 -> 20 (milli-arcsec)
+ Relative DEC: (The whole available range)
+0>
+
+The second and subsequent lines are confirmatory messages
+produced by the xyrange command.
+
+PARAMETERS
+----------
+xa  -  The X (center-relative RA) coordinate of one edge of the
+       required sub-image. Unless changed with the mapunits command,
+       the units are milli-arcsec.
+
+xb  -  The X (center-relative RA) coordinate of the opposite edge of
+       the required sub-image to xa.
+
+ya  -  The Y (center-relative DEC) coordinate of one edge of the
+       required sub-image. Unless changed with the mapunits command,
+       the units are milli-arcsec.
+
+yb  -  The Y (center-relative DEC) coordinate (milli-arcsec) of the
+       opposite edge of the required sub-image to ya.
+
+CONTEXT
+-------
+By default, the whole available map or beam area is displayed when
+you invoke mapplot. To change this behavior use the xyrange command
+to select the required sub-image for subsequent calls to mapplot.
+Alternatively, the displayed area can be changed interactively with
+the cursor and optionally saved (as though xyrange had been called)
+for later calls to mapplot - see help mapplot.
+
+
+RELATED COMMANDS
+----------------
+mapplot  -  Display map and beam images.
+loglevs  -  Set logarithmic contour levels for mapplot.
+xyrange  -  Set the boundaries of the sub-image to be displayed in mapplot.
+mapcolor -  Select mapplot colormap type and transfer function.
+mapfunc  -  Change the transfer function used in mapplot.
+beamloc  -  Change when and where mapplot plots the clean beam ellipse.

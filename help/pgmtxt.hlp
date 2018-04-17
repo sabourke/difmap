@@ -1,0 +1,25 @@
+side, out_by, along_by, justification, text
+Write text relative to the axes of a plot.
+
+PARAMETERS
+----------
+side           -  The axis to be labelled, specified as:
+                   B - Bottom X-axis.
+                   L - Left Y-axis.
+                   T - Top X-axis.
+                   R - Right X-axis.
+	      	 
+out_by         -  The distance of the text from the axis,
+                  in multiples of the text height.
+	      	 
+along_by       -  The distance of the hot-spot of the text
+                  along the length of the axis, measured from
+                  0 to 1, where 0 denotes the start of the axis
+                  and 1 denotes the end of the axis.
+
+justification  -  The position of the hot-spot within the text
+                  string, measured from 0 to 1, where 0 denotes
+                  the start of the string and 1 denotes the end
+                  of the string.    
+
+text           -  The text string to be rendered.

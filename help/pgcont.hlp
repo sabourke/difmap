@@ -1,0 +1,66 @@
+array, i1, i2, j1, j2, levels, tr
+Plot a contour plot using pgplot.
+
+EXAMPLE
+-------
+
+ First we create a test 2D array of 10x10 elements and make element
+ i,j have the value (i+1) * (j+1):
+
+  0>float a(10,10)
+  0>a = {10,10} (#0 + 1) * (#1 + 1)
+
+ Start a new page and create the standard viewport.
+
+  0>pgpage
+  0>pgvstd
+
+ Draw graph axes in which both x and y go from 1 to 10.
+
+  0>pgswin 1, 10, 1, 10
+  0>pgbox "BCNST", 0,0, "BCNST", 0,0
+
+ Define a set of contour levels.
+
+  0>float levels(1)
+  0>levels=1,2,4,8,16,32,64
+
+ Set up a transfer matrix to map the center of cell i,j to
+ coordinate value i,j.
+
+  0>float tr(6)
+  0>tr = 0,1,0,0,0,1
+
+ Display a contour plot of the array.
+
+  0>pgcont a, 1, 10, 1, 10, levels, tr
+
+
+PARAMETERS
+----------
+array      -    The 2D array to be contoured.
+i1, i2     -    The range of the first index of the array. This
+                delimits a sub-image to be contoured (inclusive).
+j1, j2     -    The range of the first index of the array to be
+                contoured (inclusive).
+levels     -    A 1D array of absolute contour levels.
+tr         -    A 6 element transformation matrix, used to map
+                the i,j indexes of cells in the array to the
+                corresponding x,y positions of their centers
+                in the coordinate system of the graph:
+
+                   x = tr(1) + tr(2)*i + tr(3)*j
+                   y = tr(4) + tr(5)*i + tr(6)*j
+                
+                Normally tr(3) and tr(5) are zero. For example, if
+                you wanted to map i1 to a value x1 and i2 to the
+                value x2, and map j1 to a value y1 and j2 to the
+                value y2, you would use:
+
+                   tr(1) = x1 - i1 * (x2-x1) / (i2-i1)
+                   tr(2) = (x2-x1) / (i2-i1)
+                   tr(3) = 0.0
+                   tr(4) = y1 - j1 * (y2-y1) / (j2-j1)
+                   tr(5) = 0.0
+                   tr(6) = (y2-y1) / (j2-j1)
+

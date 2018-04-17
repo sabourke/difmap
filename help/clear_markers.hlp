@@ -1,0 +1,21 @@
+
+Delete the current list of map markers.
+EXAMPLE
+-------
+
+  0>clear_markers
+  Marker list cleared.
+  0>
+
+CONTEXT
+-------
+The 'mark_xy' and 'mark_radec' commands add markers to a list that is
+passed to mapplot. The clear_markers command, empties this list.
+
+RELATED COMMANDS
+----------------
+mapplot    - Draw a map.
+mark_xy    - Specify a map marker relative to the map center.
+mark_radec - Specify a map marker to be drawn at a given RA,Dec.
+wmarkers   - List map marker commands to stdout or a file.
+delmarker  - Delete a given map marker.

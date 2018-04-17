@@ -1,0 +1,66 @@
+statistic
+Return image plane map statistics.
+EXAMPLE
+-------
+
+ 0>print imstat(rms), imstat(mean), imstat(noise)
+ 0.237115 0.00853315 0.0056867 
+ 0>
+ 0>print imstat(bmin),imstat(bmaj),imstat(bpa)
+ 2.62014 20.9194 -10.0713 
+ 0>
+
+PARAMETERS
+----------
+
+statistic  -  The name of the statistic wanted. Recognised names are:
+
+               rms   -   The RMS flux density in the map (Jy/beam).
+               mean  -   The mean flux density in the map (Jy/beam).
+               noise -   The noise level in the map estimated from the
+                         visibility and gridding weights. (Jy/beam).
+                         Note that this number is meaningless unless
+                         the visibility weights are the reciprocal of
+                         the amplitude variance. See help wtscale for
+                         details.
+               bmin  -   The minor axis FWHM of the beam size
+                         estimated from the data during the last
+                         invert (map units, see help mapunits).
+               bmaj  -   The major axis FWHM of the beam size
+                         estimated from the data during the last
+                         invert (map units, see help mapunits).
+               bpa   -   The position angle of the beam major axis,
+                         estimated from the data during the last
+                         invert (degrees North -> East).
+               dx    -   The width of a map pixel, expressed in the
+                         currently selected mapunits.
+               dy    -   The height of a map pixel, expressed in the
+                         currently selected mapunits.
+               du    -   The U-axis width of a pixel in the UV plane,
+                         expressed in wavelengths.
+               dv    -   The V-axis height of a pixel in the UV plane,
+                         expressed in wavelengths.
+               nx    -   The number of pixels along the X axis. Note
+                         that, because of the way that CLEAN works,
+                         mapplot only displays the central nx/2
+                         of these pixels.
+               ny    -   The number of pixels along the Y axis. Note
+                         that, because of the way that CLEAN works,
+                         mapplot only displays the central ny/2
+                         of these pixels.
+
+CONTEXT
+-------
+This function provides access to statistics relating to the latest
+map. The return value may be used in expressions, and may thus be used
+in automatic mapping procedures.
+
+SIDE EFFECTS
+------------
+The map will be re-inverted if not currently up to date.
+
+RELATED COMMANDS
+----------------
+uvstat   - Return UV plane visibility statistics.
+peak     - Return details of the min,max or absolute max flux in a map.
+mapvalue - Return the value of the map pixel nearest to a given coordinate.

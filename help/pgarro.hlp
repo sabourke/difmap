@@ -1,0 +1,9 @@
+xa, ya, xb, yb
+Draw a line with an arrow-head at one end.
+
+PARAMETERS
+----------
+xa, ya     -  The coordinates of the start of the line.
+
+xb, yb     -  The coordinates of the end of the line. This is
+              where the point of the arrow head will be.

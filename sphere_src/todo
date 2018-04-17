@@ -1,0 +1,82 @@
+userio.c:
+
+  user_lprintf() needs to allow both float and double with the 'f' format
+                 specifier.
+
+  Split input_array() into input_flt_array() and input_dbl_array()?
+
+  fmt_read() needs to support both float and double arguments with
+             the 'f' specifier.
+
+table.c:
+
+  check_func() and check_var() need to accept 'd' when checking type
+  declarations.
+
+sphere.h:
+
+  Add Equiv::dval.
+  Add DBLPTR() macro.
+
+  Add 'd' to documentation of Functype::type.
+
+sphere.c:
+
+  store_const():
+
+   Add assignment for 'd'.
+
+  mem_size_of():
+
+   Add 'd' clause.
+
+run.h:
+
+  Add 'd' documentation for Exprtype::type.
+
+run.c:
+
+  Need double do loop.
+  Need double operators.
+  Need conversions between double and both int and float types.
+  Need to write double_assign()
+  Need 'd' clause in valof_alloc()
+  And other simpler changes.
+
+ops.h:
+
+  Add Optype::d_op
+
+ops.c:
+
+  Add Optype::d_op initializers for each operator.
+
+lex.c:
+
+  lex_expr() should store floating point numbers as double constants.
+
+iolib.c:
+
+  Need to write read_double()
+  read_array() needs to read double as well as float, depending on
+   the needs of the return array.
+  write_fn() and read_fn() need to write floats and doubles.
+  type_string() needs to return "double" for type 'd'.
+
+func.c:
+
+  Add a "double" declarator.
+  Add 'f' clause to type_fn(), print_fn() and strnum_fn().
+
+compile.c:
+
+  do_block(): Add support for double do-loops.
+  found_op_err(): Add output for double types.
+  stack_operand(): Add support for double operators.
+  get_expr(): Add conversions between double and int and float.
+  check_expr(): Add conversions between double and int and float.
+                Accept 'd' for 'n' declarations.
+
+mathlib.c:
+
+  A lot - Need to make double versions of every function!

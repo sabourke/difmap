@@ -1,0 +1,39 @@
+Update this file with the 'makeindex' command. Do not edit directly.
+
+General help topics:
+-------------------
+
+Functions and commands:
+----------------------
+ catalogue
+   List the catalogue of open user-files
+ close
+   Closes a given user file
+ eof
+   Returns TRUE if there is no more data in the specified input file
+ fprintf
+   Performs formatted output to the terminal or to a text file
+ fread
+   Perform formatted reads from file or terminal
+ infile
+   Open an input file to be read - returns file_unit_no
+ outfile
+   Open an output file for writing - returns file_unit_no
+ read
+   Read numbers from a binary file
+ read_array
+   Reads and returns an array of floats from a file or terminal
+ read_float
+   Reads and returns a float number from a file or terminal
+ read_int
+   Reads and returns an integer number from a file or terminal
+ read_string
+   Reads and returns a string from a file or terminal
+ read_table
+   Read a table of numbers from a text file.
+ rewind
+   Rewinds a user input file to its start
+ search
+   Make the next read follow the point where a given string is found
+ write
+   Write numbers into a binary file

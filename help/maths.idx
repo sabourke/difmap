@@ -1,0 +1,85 @@
+Update this file with the 'makeindex' command. Do not edit directly.
+
+General help topics:
+-------------------
+
+Functions and commands:
+----------------------
+ abs
+   Returns the absolute value of its argument
+ acos
+   Trig arc cosine - returns radians
+ asin
+   Trig arc sine - returns radians
+ atan
+   Trig arc tangent - returns radians
+ atan2
+   Returns polar angle in radians
+ correl
+   Return the Pearson correlation coefficient between two arrays
+ cos
+   Trig cosine(x)
+ exp
+   Returns e raised to the power of its argument
+ fit_line
+   Perform a (weighted) least squares line fit
+ fold
+   Fold one array into a given period and arrange other arrays to same order
+ fourier
+   Decompose an array of data into its Fourier series coefficients
+ fsval
+   Return the Fourier series value at a given x-value
+ gauss_array
+   Return an array sampling a gaussian out to a given number of sigma.
+ gauss_rand
+   Returns a random number from a gaussian distribution
+ grid
+   Linearly interpolate an array onto a regular grid
+ hartley
+   Returns the Hartley transform of a 2-D data array
+ int
+   Returns the integer part of a floating point number.
+ ln
+   Natural logarithm
+ log
+   Logarithm in base 10
+ max
+   Returns the maximum value in the arguments
+ mean
+   Returns the mean of the elements in an array
+ median
+   Return the median value of an array
+ min
+   Returns the minimum value in the arguments
+ minmax
+   Returns the min/max values and positions in an array
+ mod
+   Returns the remainder after division
+ nint
+   Returns the integer nearest to a given floating point number.
+ ramp
+   Returns a 1-D ramp of values
+ real
+   (No help file)
+ rms
+   Returns the standard deviation of the elements in an array
+ seed_rand
+   Re-seed the random number generator
+ sin
+   Trig sine(x)
+ smooth
+   Returns a smoothed version of a 2-D array
+ sort
+   Sort an index array and rearrange other arrays into the same order.
+ sqrt
+   Square root
+ sum
+   Returns the sum of the elements in an array
+ tan
+   Trig tangent(x)
+ transpose
+   Return a transposed version of a data array
+ trap_int
+   Return the integral array of a data array via trapezium integration
+ uniform_rand
+   Returns a random number from a uniform distribution

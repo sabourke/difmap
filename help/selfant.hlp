@@ -1,0 +1,101 @@
+antenna, dofix, weight
+Set antenna based constraints for subsequent self-calibration.
+EXAMPLE
+-------
+
+0>selfant
+1:BONN     self-cal  status=correctable  weight=1
+1:WSRT     self-cal  status=correctable  weight=1
+1:JBNK1    self-cal  status=correctable  weight=1
+1:BOLOGNA  self-cal  status=correctable  weight=1
+1:TORUN    self-cal  status=correctable  weight=1
+0>
+0>selfant bol, true
+1:BOLOGNA  self-cal  status=fixed  weight=1
+0>
+0>selfant jbnk1, false, 2.0
+1:JBNK1    self-cal  status=correctable  weight=2
+0>
+0>selfant
+1:BONN     self-cal  status=correctable  weight=1
+1:WSRT     self-cal  status=correctable  weight=1
+1:JBNK1    self-cal  status=correctable  weight=2
+1:BOLOGNA  self-cal  status=fixed  weight=1
+1:TORUN    self-cal  status=correctable  weight=1
+0>
+0>selfant "", false
+1:BONN     self-cal  status=correctable  weight=1
+1:WSRT     self-cal  status=correctable  weight=1
+1:JBNK1    self-cal  status=correctable  weight=2
+1:BOLOGNA  self-cal  status=correctable  weight=1
+1:TORUN    self-cal  status=correctable  weight=1
+
+
+All but the lines starting with the 0> prompt are responses from
+the selfant command. Each antenna name is prefixed with the number of
+its host sub-array. In the above case there is only one sub-array.
+
+PARAMETERS
+----------
+antenna - (Default="")
+          The name of the antenna or antennas to be addressed.
+          If this argument is omitted or supplied as "", then
+          all antennas will be addressed. See the antenna_names help
+          topic for a discussion of the syntax and interpretation of
+          antenna specifications.
+
+dofix   - Normally this should be false. If true then subsequent
+          self-calibration will not be allowed to change the complex
+          gain of the named antenna. If this argument is omitted no
+          change is made to the existing value.
+
+weight  - The relative self-cal weight correction factor to give to
+          the named antenna.
+          Normally this should be 1.0. This factor expresses the
+          degree to which the existing weights on the named antenna
+          should be believed with respect to those of other antennas.
+          If this argument is omitted no change is made to the
+          existing value.
+
+When a new observation is read with the observe command, dofix is
+effectively reset to false and weight to 1.0 for all antennas.
+
+CONTEXT
+-------
+This command effects the way that corrections for specific antennas of
+specified sub-arrays are treated during subsequent self-calibration.
+Effected commands are selfcal, gscale and startmod.
+
+There are many reasons why preventing the gain of one or more antennas
+from being changed is advantageous. On the one hand it constrains the
+freedom of solutions of other antennas. This is useful if one has
+very few antennas and the antenna that is fixed is an antenna that one
+believes to be well calibrated. On the other hand it can be used to
+fix the largely unconstrained gains of a very noisy antenna, to
+prevent them from going wild.
+
+Each visibility of an observation has an associated weight assigned to
+it. Such weights may be indirectly inspected in vplot, where they are
+plotted as the equivalent 1/sqrt(weight) error bars. The difmap
+self-calibration algorithm uses them to determine the weights to be
+used during fitting. If the real uncertainties on all baselines appear
+to be equally in error by a constant factor then nothing is lost. But
+if the uncertainties on all baselines of a given antenna appear to be
+over or under-estimated with respect to those of other antennas then
+selfant may be used to specify that appropriately scaled versions of
+the weights be used in subsequent self-calibration. This is the
+technically correct way to use the 'weight' argument. Sometimes
+however, one may decide that the correct weights of a given antenna
+are so big compared to other antennas that the resulting self-cal
+solutions are dominated by visibilities of this antenna.  In such
+cases it may be advantageous to reduce the weight of the good antenna
+by specifying 'weight' with a value less than 1.0.
+
+RELATED COMMANDS
+----------------
+selfcal   - Performs self-calibration. 
+selfflag  - Used to control the fate of un-correctable data.
+selftaper - Used to down-weight short baselines during selfcal.
+selflims  - Used to set limits to amp and phase corrections in selfcal.
+gscal     - Calculate overall telescope amplitude corrections.
+startmod  - Phase selfcal to a starting model then discard the model.

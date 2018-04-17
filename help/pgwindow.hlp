@@ -1,0 +1,2 @@
+xmin, xmax, ymin, ymax
+Defines the axis limits of a graph without drawing the axes

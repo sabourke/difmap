@@ -1,0 +1,8 @@
+      PROGRAM DIFMAP
+      EXTERNAL CDIFMAP
+      INTEGER CDIFMAP
+      INTEGER DUMMY
+      DUMMY = CDIFMAP()
+      END
+
+      

@@ -1,0 +1,75 @@
+#-----------------------------------------------------------------------
+# This is the (hopefully) site independant part of the libsphere.a makefile.
+# The site-specific part should be appended to this makefile and named
+# Makefile by the configure script also present in this directory. You
+# should not have to modify this file - changes should only be made to
+# the configure script.
+# The configure script must define CC, CFLAGS, INCDIR, LIBDIR, HELPDIR,
+# RANLIB.
+#-----------------------------------------------------------------------
+# Description: Makefile for the sphere interface library.
+#
+# Martin Shepherd  (mcs@phobos.caltech.edu)
+#-----------------------------------------------------------------------
+
+# Compile time C compiler flags.
+
+CFLAGC = -c $(CFLAGS) -I$(INCDIR) $(READLINE_INC) -DUSE_TECLA=$(USE_TECLA)
+
+# This tells make how to compile a C file - don't touch.
+
+.c.o:
+	$(CC) $(CFLAGC) $<
+
+# List sphere object files.
+
+SPHERE_OBS = compile.o func.o help.o lex.o match.o ops.o run.o sig.o sphere.o \
+	table.o utils.o mathlib.o iolib.o plotlib.o hart.o rand.o \
+	userio.o four.o closedown.o matrix_blocks.o
+
+# The library name.
+
+LIBSPHERE = $(LIBDIR)/libsphere.a
+
+#-----------------------------------------------------------------------
+# Default to making libsphere
+
+default: $(LIBSPHERE) install-header
+
+install-help:
+	cp ../help/*.hlp $(HELPDIR)/
+	chmod ugo+r $(HELPDIR)/*
+
+$(LIBSPHERE): $(SPHERE_OBS)
+	ar ru $(LIBSPHERE) $(SPHERE_OBS)
+	$(RANLIB) $(LIBSPHERE)
+
+install-header:	$(INCDIR)/sphere.h
+
+$(INCDIR)/sphere.h: sphere.h
+	cp sphere.h $(INCDIR)/sphere.h
+	chmod ugo+r $(INCDIR)/sphere.h
+
+#-----------------------------------------------------------------------
+# list object file dependancies
+
+sphere.o: sphere.h sig.h lex.h table.h ops.h utils.h run.h
+compile.o: sphere.h run.h table.h lex.h help.h ops.h
+table.o: sphere.h table.h lex.h
+help.o: sphere.h table.h help.h lex.h utils.h $(INCDIR)/pager.h
+lex.o: sphere.h lex.h table.h ops.h utils.h
+ops.o: sphere.h table.h ops.h
+run.o: sphere.h table.h run.h utils.h
+sig.o: sphere.h table.h utils.h sig.h
+func.o: sphere.h $(INCDIR)/helpdir.h utils.h help.h
+closedown.o: sphere.h
+userio.o: sphere.h utils.h
+iolib.o: sphere.h $(INCDIR)/helpdir.h utils.h matrix_blocks.h
+mathlib.o: sphere.h $(INCDIR)/helpdir.h utils.h
+plotlib.o: sphere.h $(INCDIR)/helpdir.h utils.h $(INCDIR)/cpgplot.h
+utils.o: utils.h
+four.o: utils.h
+hart.o: utils.h
+match.o: utils.h
+rand.o: utils.h
+matrix_blocks.o: utils.h matrix_blocks.h

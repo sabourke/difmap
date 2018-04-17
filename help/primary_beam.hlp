@@ -1,0 +1,87 @@
+samples, resolution, frequency
+Specify a primary beam to use on all baselines.
+EXAMPLE
+-------
+
+To install a simple guassian approximation of a primary beam, you can
+use the gauss_array() function to provide the array of primary beam
+samples.
+
+ 0>mapunits arcmin
+ 0>primary_beam gauss_array(45.1, 4.0, 0.5), 0.5, 30.0e9
+
+Where 45.1 is the FWHM of the primary beam (in arcminutes in this
+case), 4.0 specifies how far out to sample the primary beam, expressed
+as the number of sigma, and 0.5 is the resolution along the x-axis of
+the guassian. 30.0e9 is the frequency at which the primary beam is
+being specified, (30GHz in this case).
+
+For non-guassian primary beams, you must specify the array of samples
+explicitly. For example, to install the above guassian beam without
+using the gauss_array() function, you could do the following:
+
+ 0>mapunits arcmin
+ ! Convert the FWHM of the guassian to the equivalent standard deviation.
+ 0>float sigma
+ 0>sigma = 0.4246609001 * 45.1
+ 0>primary_beam exp(-0.5 * (ramp(0, sigma*4, 0.5)/sigma)^2), 0.5, 30.0e9
+ 0>...
+
+Breaking this down, note that the ramp() function,
+
+  ramp(0, sigma*4, 0.5)
+
+returns an array of values which linearly increment by 0.5 from 0 to
+sigma*4. The resulting array is then divided by sigma, by writing:
+
+  ramp(0, sigma*4, 0.5) / sigma
+
+This returns another array, which is then squared to produce another
+array:
+
+  (ramp(0, sigma*4, 0.5) / sigma)^2
+
+Finally this is multiplied by -0.5 and passed to the exp() function:
+
+  exp(-0.5 * (ramp(0, sigma*4, 0.5)/sigma)^2)
+
+This returns another array, which is the required guassian array
+sampled out to 4 standard deviations.
+
+PARAMETERS
+----------
+samples      -  An array of values which sample the primary beam.
+
+resolution   -  The angular distance on the sky between samples.
+                The units can be changed with the 'mapunits'
+                command. If the mapunits command hasn't been used,
+                the units are milli-arcseconds.
+
+frequency    -  The frequency at which the beam in the samples
+                array is being specified, measured in Hz. Note
+                that the primary beam for other frequencies is
+                computed under the assumption that the width of
+                the primary beam scales inversely proportional
+                to frequency.
+
+CONTEXT
+-------
+
+Where the antennas that make up an interferometer have diameters that
+are comparable to the distance between them, the field of view of the
+interferometer is limited by the diameters of the point spread
+functions of the individual antennas, which we will refer to as
+voltage beams. The field of view is limited to the diameter of the
+product of the voltage beams of the individual antennas of each
+baseline. This product is known as the primary beam. In the case where
+all of the antennas are identical and aren't shadowed by neighboring
+antennas, all baselines have the same primary beam, and the resulting
+map is effectively multiplied by this beam, centered at the original
+pointing center.  If one cleans or modelfits a dataset from such an
+interferometer, without taking account of the primary beam, model
+components away from the center of the primary beam have lower fluxes
+than their true values.  If alternatively, one tells difmap about the
+primary beam, difmap will thereafter appropriately scale up the fluxes
+of new model components according to their distance from the pointing
+center.
+

@@ -1,0 +1,21 @@
+
+Return the number of sub-arrays in the current observation.
+EXAMPLE
+-------
+
+0>print "There are", nsub, "sub-arrays in the current observation."
+There are 4 sub-arrays in the current observation. 
+0>
+
+CONTEXT
+-------
+nsub() is a function that returns the integer count of the number of
+telescope sub-arrays per IF of the current observation.
+
+RELATED FUNCTIONS AND COMMANDS
+------------------------------
+nif    -  Return the number of IFs in the current observation.
+nchan  -  Return the number of spectral-line channels per IF.
+nbase  -  Return the number of baselines in a given sub-array.
+ntel   -  Return the number of telescopes in a given sub-array.
+header -  Displays the characteristics of the current observation.

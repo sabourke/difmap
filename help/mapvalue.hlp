@@ -1,0 +1,40 @@
+x, y
+Return the value of the map pixel nearest to a given coordinate.
+EXAMPLE
+-------
+
+1. The following use of mapval() displays the flux in the map at
+   a position 3.5 arcsec to the east and 0.7 arcsec to the north
+   of the center of the map.
+
+    0>mapunits arcsec
+    Distances in the map plane now have units: arcsec.
+    Distances in the UV plane now have units: kilo-wavelengths.
+    0>print mapval(3.5,0.7)
+    0.293557
+    0>
+
+2. The flux at the center of the map can be displayed with:
+
+    0>print mapval(0,0)
+    3.44326 
+    0>
+
+PARAMETERS
+----------
+
+x     - The X offset with respect to the center of the map, as
+        displayed by maplot.
+
+y     - The Y offset with respect to the center of the map, as
+        displayed by maplot.
+
+SIDE-EFFECTS
+------------
+If the map is out of date with the UV data then it will be re-inverted
+before returning a value.
+
+RELATED FUNCTIONS
+-----------------
+peak    - Return details of the min,max or absolute max flux in a map.
+imstat - Return image plane map statistics.

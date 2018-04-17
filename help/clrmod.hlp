@@ -1,0 +1,50 @@
+doold, donew, docont
+Clear one or more of the established, tentative and continuum models.
+EXAMPLES
+--------
+
+0>clrmod
+clrmod: Cleared the tentative model.
+0>
+
+0>clrmod true
+clrmod: Cleared the established and tentative models.
+0>
+
+0>clrmod true,true,true
+clrmod: Cleared the established, tentative and continuum models.
+0>
+
+PARAMETER
+---------
+doold   -  Default=false
+           If specified as true, then the established model will be cleared.
+
+donew   -  Default=true
+           If this argument is omitted, or explicitly specified as
+           true, then the tentative model will be cleared.
+
+docont  -  Default=false
+           If specified as true, then the continuum model will be cleared.
+
+CONTEXT
+-------
+In difmap the term 'model' refers to a mixed list of delta, gaussian
+and other simple components, which when superposed in the image plane,
+form a facsimile of the source being mapped. This model is split into
+three parts, an established model, a tentative model and a continuum
+model. The function of the 'clrmod' command is to clear one or more of
+these models.
+
+When the 'clrmod' command is invoked with no arguments, it clears just
+the tentative model. This is most useful to discard the latest results
+of the 'clean' command, after cleaning too deeply.
+
+When the 'clrmod' command is invoked as 'clrmod true', it deletes both
+the established and tentative model, but leaves any existing continuum
+model untouched. This is commonly invoked after the 'select' command
+has been used to select a new data stream, when which the model for the
+previous selection is a bad match to the new selection.
+
+For more information about models type 'help models'.
+

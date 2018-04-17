@@ -1,0 +1,392 @@
+target, domodel
+Display the dirty beam, residual or restored map and modify CLEAN windows.
+EXAMPLE 1
+---------
+
+0>mapplot beam
+Graphics device/type (? to see list, default /NULL): /xw
+Move the cursor into the plot window and press 'H' for help
+0>
+
+In the above example, no PGPLOT display device had previously been
+opened so the second line requests the PGPLOT display device.
+Once this has been entered, future uses of mapplot will not require
+the device name to be entered. The plot device can be changed with
+the "device" command.
+
+0> mapplot map,true
+
+This plots the residual map overlayed with symbols for each model
+component.
+
+PARAMETERS
+----------
+target       -  (Default = map)
+                The type of map or beam to display, from:
+                 map   -  displays the map,
+                 beam  -  displays the dirty beam,
+                 cln   -  displays the restored map (after
+                                 restoring when necessary).
+                 pmap  -  Display a contour/grey-scale residual map
+                          of the currently selected polarization,
+                          overlaid by polarization vectors formed
+                          from the residual Q and U maps.
+                 pcln  -  Display a restored contour/grey-scale map
+                          of the currently selected polarization,
+                          overlaid by polarization vectors formed
+                          from restored Q and U maps.
+
+domodel      -  (Default = false)
+                If true then any model components that have been
+                accumulated will be plotted symbolically.
+                Delta components are denoted by '+' symbols, and others
+                by their elliptical outline. Positive components
+                are drawn in green and negative components in red.
+                Variable components are plotted in yellow (orange if
+                negative).
+
+RUNNING PARAMETERS
+------------------
+There are a number of auxiliary parameters that don't appear in the
+argument list. Some of these parameters exist as variables, while
+others are commands. All are listed below.
+
+False color plotting
+====================
+
+Commands:
+
+ mapcolor  -  The 'mapcolor' command allows one to pre-select the
+              color table, brightness and contrast under which mapplot
+              maps will be plotted.
+              See 'help mapcolor' for further details.
+
+ mapfunc   -  The 'mapfunc' command allows one to select the transfer
+              function with which the maps in mapplot will be plotted
+              and to specify the range of intensities to be displayed.
+              See 'help mapfunc' for further details.
+
+contour plotting
+================
+
+Variables:
+
+    docont -  If docont==true then future use of 'mapplot' to plot the
+              restored map will include a contour representation of
+              the clean map. This parameter is ignored when plotting
+              the beam and residual maps if false-color has also been
+              selected. Docont is initially defined as docont=true.
+
+    levs   -  A 1-D array of contour levels. If this has not been set
+              then the default percentage levels of
+              -1,1,2,4,8,16,32,64 are used for the map and
+              -64,-16,-4,4,16,32,64 for the beam. If valid contour 
+              levels are given, they are treated as percentage levels
+              if 'cmul' is <= 0, or as absolute levels pre-scaled by
+              'cmul' otherwise.
+Commands:
+
+ loglevs     -  This command provides a short cut to setting the 'levs'
+                variable described above. It sets the contour levels to
+                a logarithmic ramp. See 'help loglevs' for further details.
+
+ polvec      -  This command configures the attributes used when displaying
+                polarization vectors.
+
+ mark_radec  -  Add an optionally labelled marker to be displayed on
+                subsequent maps at a given Right Ascension and Declination.
+
+ mark_xy     -  Add an optionally labelled marker to be displayed on
+                subsequent maps at a given X,Y position relative to
+                the map center.
+
+Note that only levels that appear in the displayed area are presented
+in the list of levels that is written beneath the plot.
+
+Restricting the plotted display range
+=====================================
+By default, the whole available map or beam area is displayed when
+you invoke mapplot. To change this behavior use the xyrange command
+(see help xyrange) to select the required sub-image for subsequent
+calls to mapplot. Alternatively, the displayed area can be changed
+interactively with the cursor and optionally saved for later
+calls to mapplot - see below.
+
+USE OF THE CURSOR
+-----------------
+If your display device has the capability to display a graphics cursor,
+then this will be displayed and you will be able to (among other
+things) add or remove CLEAN windows. The options are selected by
+pressing any of the keyboard or mouse keys given below (the cursor
+must be within the display window). In particular, to get a list of
+key bindings while running mapplot, hit the 'H' key on your keyboard
+and the list will be displayed in your terminal window.
+
+NB. If you have a mouse, the following keys are bound to the mouse
+    buttons.
+      A - Left mouse button.
+      D - Middle mouse button.
+      X - Right mouse button.
+
+Mapplot cursor key Bindings
+===========================
+
+Key 'A' (left-button)   Set a window vertex. (ie move the cursor to
+                        where the start vertex is required and press
+                        'A', then move the cursor to the desired
+                        position of the opposite corner and again press
+                        'A' and the new window will be drawn.
+Key 'D' (middle-button) Delete the CLEAN window which has one of its
+                        corners closer to the cursor than any other
+                        window. This key may also be used to cancel a
+                        partially complete window selection.
+Key 'C'                 This switches from gray-scale to a pseudo-color
+                        plot.
+Key 'G'                 Re-plots gray-scale after 'C' has been pressed.
+Key 'S'                 Display statistics of the region of the map
+                        inside a CLEAN window. This includes the total
+                        flux only if the displayed map is a restored
+                        map. The window used is the one that has one of
+                        its corners closer to the cursor than any
+                        other window.
+Key 'V'                 Report value and coordinates of the pixel that
+                        lies immediately under the cursor. When
+                        polarization vectors are being displayed, this
+                        also shows the polarization angle and
+                        intensity of the pixel.
+Key 'Z'                 Select a sub-image to be displayed by pressing
+                        the 'A' key at two opposite corners of the
+                        required area.
+                        To cancel sub-image selection, press 'D' at any
+                        point during the selection. To zoom out back to
+                        the full display area, press 'Z' a second time.
+Key 'K'                 Pressing this key will tell mapplot to remember
+                        the current sub-image boundaries on the next
+                        call to mapplot.
+Key 'f' (lower case)    Pressing this key over a particular position in
+                        the plot changes the brightness and contrast of
+                        the displayed colormap. The X-axis position
+                        of the cursor controls the brightness, increasing
+                        from left to right. The Y-axis position controls
+                        the contrast, with 0 contrast in the middle of the
+                        plot, positive contrasts below this and negative
+                        contrasts above.
+Key 'F'                 This resets the colormap brightness and contrast
+                        to the defaults: brightness=1.0, contrast=0.5.
+Key 'c' (lower case)    This changes the colormap from grey-scale to the
+                        default color colormap.
+Key 'C'                 This allows you to select a colormap by name.
+                        At the prompt, type in the name of the required
+                        colormap, or enter nothing to leave things as
+                        they are.
+Key 'T'                 Re-display the plot with a specified transfer
+                        function (log,linear,sqrt). At the prompt,
+                        enter the name of the transfer function required.
+Key 'L'                 Re-display the current plot.
+Key 'm' (lower case)    This toggles whether to overlay a symbolic
+                        representation of the model on the map.
+Key 'M' (upper case)    This toggles whether to overlay a symbolic
+                        representation of just the variable components
+                        of the model on the map.
+Key 'N'                 Initiate creation of a new model component -
+                        see later.
+Key 'R'                 Remove the component that has the closest center
+                        to the cursor. This deletes the component from
+                        the established or tentative model of the
+                        observation. Note that if you plan to delete
+                        many components a faster way is to use the
+                        difmap 'winmod' command.
+Key 'U'                 Remove the marker nearest the cursor.
+Key 'H'                 Display list of key bindings.
+
+Key 'X' (right-button)  Exit from 'mapplot'.
+
+DISPLAYING RESTORED MAPS
+------------------------
+There are two ways of having the map restored and plotted.
+You can either call the 'restore' command explicitly then type
+'mapplot cln', or simply type 'mapplot cln'. For example:
+
+0>restore 1.2,2.5,-32
+0>mapplot cln
+
+or
+
+0> mapplot cln
+
+In the first case a non-default restoring beam size was required
+so restore was invoked explicitly. In the second case restore is
+called by mapplot, with no arguments.
+
+Note that if you typed:
+
+0>restore 1.2,2.5,-32
+0>mapplot
+
+then since mapplot defaults to plotting the residual map when given
+no arguments, it will re-invert the data and display the residual
+map - take care!
+
+DISPLAYING POLARIZATION VECTORS
+-------------------------------
+
+If you have a observation that either contains the Q and U stokes
+parameters, or the LR and RL polarizations, mapplot is capable of
+displaying linear polarization as short vectors overlaid on the
+grey-scale/contour image of the current map. The length of the vectors
+reflects the polarized intensity in the underlying pixel, and the
+angle of the vector indicates the associated polarization angle. A
+detailed example of how to plot polarization maps can be read in the
+polarization help page. Basically you need to switch to multi-model
+mode, so that models associated with the maps that you make of Q and U
+are kept separately by difmap, and used by the mapplot command to
+remake these maps behind the scenes.  One makes individual maps of Q,
+U and the polarization that you want to display under the polarization
+vectors, configure the properties of the polarization vectors using
+the 'polvec' command, and type:
+
+ mapplot pcln
+
+This displays the polarization vectors overlaid over the map of the
+currently selected polarization.
+
+Note that a polarization angle of zero points towards the top of the
+map, and increases as the vector rotates from North through East (ie.
+anticlockwise in mapplot). You can examine the polarization angle and
+intensity of any given pixel in the displayed map by pressing the 'v'
+key while the cursor is over the pixel of interest.
+
+MARKING AND LABELLING FEATURES IN MAPS
+--------------------------------------
+
+Difmap maintains a list of map markers that can be displayed on
+maps. Markers are added to this list with the 'mark_radec' and
+'mark_xy' commands. The former command is useful for labeling known
+sources by their Right Ascension and Declination, whereas the latter,
+which allows one to mark a given X,Y position in a map, is useful for
+labeling newly discovered features, first seen in difmap maps.
+
+Individual markers can be removed from the list, either interactively
+in mapplot, with the 'u' key, or non-interactively using the
+'delmarker' command. The whole list of markers can also be deleted
+using the 'clear_markers' command.
+
+Note that although mapplot doesn't provide an interactive way to add
+markers (there are too many parameter for this to be automated with a
+single mouse-button click), when defining a new X,Y marker from the
+keyboard, the position of the feature to be labelled can first be
+found interactively in mapplot using the 'v' key.
+
+SIDE EFFECTS
+------------
+Note that changes to the colormap selection, brightness and
+contrast within mapplot remain in place after you exit mapplot.
+It is thus possible to set these parameters interactively in mapplot
+for subsequent mapplot plots. In particular, this is invaluable for
+making hard copies in color after setting the desired colors on
+an interactive device.
+
+When displaying a residual map or dirty beam the UV data will be
+re-inverted if recent changes to the grid weighting or modifications
+to the data itself, eg. editing, make the current residual map out of
+date.
+
+When plotting the restored map (using the cln option) the map will
+be restored if an up-to-date restored map has not already been
+created with the 'restore' command. In this case 'restore' will be
+called with no arguments.
+
+If new components are interactively added, or deleted then the map
+will be marked as out of date and will be re-inverted the next time
+that it is required.
+
+MODEL COMPONENT CREATION AND DELETION
+-------------------------------------
+Maplot can be used to interactively add and/or remove variable model
+components pertinent to subsequent model fitting. Other forms of
+variable model component editing should be performed with the difmap
+'edmod' command. The changes to the map itself are NOT displayed as
+model components are added and removed. This would take too long. Only
+changes to the symbolic outlines of components are displayed.
+
+The syntax used to create a component is as follows:
+
+Press 'N' to initiate description of a new component.
+
+Press 'A' (left-mouse-button) between 0 and 3 times, to describe
+          the position and dimensions of the new component.
+
+Press 'N' to install the component, or press 'D' (middle-mouse-button)
+          to cancel the component.
+
+Each press of the 'A' key over a point in the map describes one more
+variable feature of the component, starting from a delta component at
+the center of the map. The optional steps (0 selections to 3
+selections) are as follows:
+
+0. If 'N' is pressed without having described any parameters then a
+   delta component will be placed at the center of the map.
+
+1. The first click of the 'A' key over a selected point in the map
+   defines the position of the center of the new component. A dot
+   is plotted to indicate its position.
+
+   Pressing 'N' at this point installs a delta-component at this
+   position.
+
+2. A second click of the 'A' key over another selected position in the
+   map defines the axis of a circular gaussian, as the line joining
+   the selected component center to the newly selected position. This
+   line is drawn so that one can judge its veracity.
+
+   Pressing 'N' at this point installs a circular gaussian with the
+   axial ratio and axial position angle as fixed parameters.
+
+3. A third click of the 'A' key describes the second axis of an
+   elliptical gaussian component via its distance from the selected
+   component center. The position angle of the first axis selected (in
+   step 2 above) defines the major axis position angle. A line is
+   drawn at right angles to the first axis so that one can check its
+   veracity.
+
+   Pressing 'N' at this point installs an elliptical gaussian with all
+   parameters variable. Pressing 'D' cancels the component.
+
+Once the component is installed, its symbol representation is displayed.
+
+If the component turns out to be poorly described, you can then delete
+it with the 'R' (remove component) key.
+
+Note that the flux given to the component is simply the flux of the pixel
+under its center. This is not a very good choice, but it is hard to
+see what would be a good choice, especially given that the map is not
+re-inverted and re-displayed in maplot each time a new component is
+added or removed. If you have a better idea of what the component flux
+should be, use the difmap 'edmod' command to change it. Alternatively
+let the difmap 'modelfit' command find it for you.
+
+EXTENDED EXAMPLE
+----------------
+To plot a restored map with non-default percentage contours and a reduced
+grey-scale saturation flux:
+
+mapfunc linear, -1, 0.5
+levs=-0.1,0.1,0.25,0.5,1,2,4,8,16,32,64
+cmul=0
+mapplot cln
+
+In the above case, the levs= assignment could be avoided by using
+the loglevs command.
+
+loglevs 0.1
+
+See help loglevs for more details.
+
+RELATED COMMANDS
+----------------
+xyrange  - Set the boundaries of the sub-image to be displayed in mapplot.
+loglevs  - Set logarithmic levels.
+mapcolor - Select mapplot colormap type and transfer function.
+mapfunc  - Change the transfer function used in mapplot.
+beamloc  - Change when and where to plot the clean beam ellipse.
+polvec   - Configure the attributes used when plotting polarization vectors.

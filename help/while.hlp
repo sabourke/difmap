@@ -1,0 +1,36 @@
+(logical_expression)
+while(true);commands;end while - Looping control statement.
+
+ while(logical_expression)
+   <commands>
+ end while
+
+This is a special looping structure for use in writing procedures.
+Before each iteration of the loop, the logical argument of the
+while command is evaluated.  If it is TRUE then the next iteration
+proceeds and the commands within the loop are executed.  Otherwise
+execution will continue from the command following the 'end while'
+command.  This means that commands inside the loop will be
+executed zero or more times. If one requires a loop that will
+execute at least once then the alternative
+repeat;...;until(condition) structure should be used instead.
+There are also break and continue commands for breaking out of the
+loop or starting the next iteration prematurely. See help looping
+for more details.
+
+Example:
+0> i=0
+0> while(i<5)
+1>   i=i+1
+1>   print i
+1> end while
+1> print "i is now=",i
+
+results in:
+1.000000
+2.000000
+3.000000
+4.000000
+5.000000
+i is now= 5.000000
+

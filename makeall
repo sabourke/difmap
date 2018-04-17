@@ -1,0 +1,57 @@
+#!/bin/sh
+#-----------------------------------------------------------------------
+# Create and install difmap and its libraries.
+#-----------------------------------------------------------------------
+
+# Set the default optimization flag.
+
+OPT="-O"
+
+# Override defaults from command-line arguments.
+
+for arg in $*; do
+  case $arg in
+    -O[0-9]*|-g)
+    OPT=$arg
+    ;;
+  *)
+    echo "Unknown option \"$arg\""
+    exit 1
+    ;;
+  esac
+done
+
+# Create difmap and its libraries.
+
+echo ' '; echo 'Compiling the PGPLOT C-wrapper library libcpgplot.a'; echo ' '
+(cd cpg_src; make OPT=$OPT)
+
+echo ' '; echo 'Compiling a subset of the slalib library libslalib.a'; echo ' '
+(cd slalib_src; make OPT=$OPT)
+
+echo ' '; echo 'Compiling the scratch file utils library libscrfil.a'; echo ' '
+(cd scrfil_src; make OPT=$OPT)
+
+echo ' '; echo 'Compiling the log I/O library liblogio.a'; echo ' '
+(cd logio_src; make OPT=$OPT)
+
+echo ' '; echo 'Compiling the pager interface library libpager.a'; echo ' '
+(cd pager_src; make OPT=$OPT)
+
+echo ' '; echo 'Compiling the record I/O interface library librecio.a'; echo ' '
+(cd recio_src; make OPT=$OPT)
+
+echo ' '; echo 'Compiling the fits library libfits.a'; echo ' '
+(cd fits_src; make OPT=$OPT)
+
+if [ -f libtecla_src/needed ] ; then
+  echo ' ';echo 'Compiling the tecla keyboard input library libtecla.a';echo ' '
+  (cd libtecla_src;make OPT=$OPT LIBDIR=../lib INCDIR=../include TARGETS=normal TARGET_LIBS="static" DEMOS="" PROGRAMS="" install_lib install_inc)
+fi
+
+echo ' '; echo 'Compiling the command parser library libsphere.a'; echo ' '
+(cd sphere_src; make OPT=$OPT)
+
+echo ' '; echo 'Compiling difmap itself'; echo ' '
+(cd difmap_src; make OPT=$OPT)
+

@@ -1,0 +1,4 @@
+x-array, y-array, <marker_symbol>;
+Non-standard alias for the pgpt command.
+
+See help pgpt.

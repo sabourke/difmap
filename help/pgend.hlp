@@ -1,0 +1,9 @@
+
+Close all PGPLOT devices.
+
+CONTEXT
+-------
+This command causes all un-written graphics to be flushed to any
+open PGPLOT devices before closing them. One use for this is to
+make sure that a postscript file is complete before you attempt
+to send it to a printer.

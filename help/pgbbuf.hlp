@@ -1,0 +1,3 @@
+
+Buffer PGPLOT output until the 'pgebuf' command is called.
+

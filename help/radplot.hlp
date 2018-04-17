@@ -1,0 +1,278 @@
+station, uvmin, uvmax, ampmin, ampmax, phsmin, phsmax, docursor
+Plot visibility amplitudes and/or phases versus UV radius.
+EXAMPLE
+-------
+
+0> radpl "BONN"
+0>
+
+This example plots baseline amplitude against UV radius, plotting all
+but the data in the first sub-array associated with BONN in green.
+BONN data is plotted in a different color to highlight it. Model data
+if present is plotted in red. If the display device has a cursor then
+interactive mode will be invoked after the initial display has been
+completed.
+
+PARAMETERS
+----------
+
+station   -   (Optional) The name of a station to highlight in the
+              plot. If not given or given as an empty string "", no
+              station will initially be highlighted. (Stations
+              can be specified subsequently with the cursor).
+
+uvmin     -   (Optional) Default=0.
+              The minimum UV radius to display.
+	      Unless changed with the mapunits command, the units are
+              millions of wavelengths.
+
+uvmax     -   (Optional) Default=0. (0 specifies the whole range).
+              The maximum UV radius to display.
+	      Unless changed with the mapunits command, the units are
+              millions of wavelengths.
+
+ampmin    -   (Optional) Default=0.
+              The minimum amplitude to display.
+
+ampmax    -   (Optional) Default=0.
+              The maximum amplitude to display.
+              If you want to set later arguments while keeping the
+              default amplitude range set both ampmin and ampmax
+              to 0.
+
+phsmin    -   (Optional) Default=-180.
+              The minimum phase to be displayed (degrees).
+
+phsmax    -   (Optional) Default=+180.
+              The maximum phase to be displayed (degrees).
+              If you want to set later arguments while keeping the
+              default amplitude range set both phsmin and phsmax
+              to 0.
+
+docursor  -   (Optional) Default=TRUE.
+              If the display device has a cursor but you don't want
+              to enter the interactive cursor mode, make this FALSE.
+
+CONTEXT
+-------
+
+This task is useful for getting an over-all look at the whole data set
+in one plot. By default it plots the amplitude of visibilities of all
+IFs versus radial distance from the origin of the UV plane.
+Optionally it can also be used to display visibility phases and
+statistical errors instead or in addition to the plot of
+amplitudes. See below for details.
+
+For each baseline, one point is plotted per IF. Where multiple
+spectral-line channels are selected from a given IF, the visibility
+is the average of those channels and is displayed at the corresponding
+mean UV radius.
+
+It is often possible to get a vague idea of how the map will appear
+from looking at this plot. Unresolved point sources appear as flat
+amplitude distributions. Resolved sources display one or more gaussian
+fall-off distributions. Multi-component sources beat against each other,
+modulating the gaussian fall-off. In some cases you may be able to get
+a better impression by running the alternate 'projplot' command. See
+help projplot for details.
+
+If the distribution is reasonably smooth, it is also possible to
+see the effects of poor calibration. The highlighting function is
+invaluable here. Highlighting each station in turn will eventually
+reveal the identity of a bad station or baseline. The 's' option key
+described below provides a more direct way of identifying the origin
+of discrepant points.
+
+INTERACTIVE MODE
+----------------
+If your display device has a cursor, then there are a number of
+interactive options that you can use. These are selected by moving the
+cursor into the plot window, and pressing the following keys:
+
+
+   X - Quit the radplot session, and return to the difmap prompt.
+
+   L - Re-display the plot.
+
+   . - Toggle the marker symbol used to display the data between the
+       smallest available and the next largest. By default
+       the smallest possible marker symbol is used for speed, but if
+       if the data are sparse then the larger marker symbol may be more
+       convenient.
+
+   H - (Help) Briefly list all keyboard options.
+
+   n - Highlight visibilities from the next telescope in the currently
+       highlighted sub-array. Initially no telescope is highlighted.
+       If this key then pressed, the visibilities of the first
+       telescope of the first sub-array will be highlighted. Pressing
+       this key again highlights the second telescope, etc.. When the
+       last telescope of the current sub-array has been plotted, the
+       first telescope of the next sub-array will be plotted. So by
+       repeatedly pressing this key you will eventually have seen each
+       telescope of all sub-arrays individually highlighted.
+
+   p - This has the reverse the effect to the 'n' key, highlighting
+       the visibilities of the previous telescope in the current
+       sub-array, and wrapping back to the last telescope in the
+       previous sub-array, after the first telescope of the current
+       sub-array is highlighted.
+
+   N - [Upper-case n] Similar to the lower-case 'n' key this key
+       results in the first telescope of the next sub-array in the
+       observation to be highlighted. In this way you can jump between
+       sub-arrays without having to see all the telescopes of the
+       intermediate sub-arrays highlighted one at a time.
+
+   P - [Upper-case p] This has the reverse effect of the 'N' key,
+       allowing one to directly step backwards through sub-arrays.
+
+   T - To have a specific telescope of a specific sub-array
+       highlighted without having to step through all the intermediate
+       telescopes and sub-arrays, press this key. On the text window
+       you will then be prompted for the name of the telescope to be
+       highlighted. Telescopes are specified by an optional sub-array
+       number delimited by a colon, followed by an unambiguous
+       telescope name prefix. If the sub-array number and colon are
+       omitted then the sub-array from which telescopes are currently
+       being highlighted will be assumed. For instance, both
+       3:BONN and BON refer to a telescope named BONN in sub-array 3
+       if another telescope of sub-array 3 is currently being
+       highlighted. Also, provided that sub-array 2 does not contain
+       more than one telescope starting with the prefix JBN, 2:JBN is
+       sufficient to refer to a telescope called JBNK1 in sub-array 2.
+
+  s  - This key invokes a report on the baseline and time of the
+       nearest point to the cursor. The result is displayed on your
+       terminal. The actual data point is unaffected.
+
+  S  - This key initiates the selection of a set of visibilities
+       for which to work out the scalar mean and scatter of the
+       corresponding amplitudes and phases. After pressing 'S', you
+       will be expected to enter the locations of two opposite corners
+       of the area, by pressing 'A' (left-mouse-button) over the
+       corresponding points of either the amplitude or phase plots.
+       To cancel a half selected area press 'D' (central-mouse-button).
+       Once two corners have been selected, the amplitude and statistics
+       of the visibilities within that area will be displayed on your
+       terminal. Note that amplitudes and phases are not Guassian
+       distributed, so the means will be biased. To get unbiased
+       averages, use the 'V' key option instead, to compute vector
+       averages.
+
+  V  - This key initiates the selection of a set of visibilities
+       for which to work out the vector mean and scatter of the
+       corresponding real and imaginary parts. After pressing 'V', you
+       will be expected to enter the locations of two opposite corners
+       of the area, by pressing 'A' (left-mouse-button) over the
+       corresponding points of either the amplitude or phase plots.
+       To cancel a half selected area press 'D' (central-mouse-button).
+       Once two corners have been selected, the statistics of the
+       real and imaginary parts of the the visibilities within that
+       area will be displayed on your terminal. The mean amplitude
+       and phase, can of course be computed from these values.
+
+  A  - This key (left-mouse-button) flags the nearest data-point to
+       to the cursor. Note that the preferred method for editing
+       points is through the vplot command in station editing mode.
+       Individual points should only be flagged in radplot if they
+       are clearly singled out as being extremely bad, as opposed to
+       being part of a group of bad points manifesting a bad telescope.
+       If you delete too many points singly, rather than by station you
+       may find that subsequent self-calibration will produce wild
+       solutions due to incomplete or ambiguous un-connected closure
+       triangles.
+
+  C  - This initiates cut area selection, through which a rectangular
+       area may be selected within which to flag data. After pressing
+       'C' you will be expected to enter the locations of two opposite
+       corners of the area, by pressing 'A' (left-mouse-button) over
+       the corresponding points of the plot. To cancel a half selected
+       area press 'D' (central-mouse-button). Once two corners have
+       been selected, all visibilities displayed in that area will be
+       flagged and will then disappear from the plot.
+
+  W -  Toggle the scope of edits with respect to spectral-line
+       channels. Each point in the plot comes from a single IF, and
+       its UV radius in the plot is determined by the mean frequency
+       of the channels currently selected from that IF. By default, if
+       you select such a point to be flagged, then all spectral-line
+       channels of the source IF will be flagged, irrespective of the
+       channels which actually went into making the plot. The
+       alternative is to edit just the channels that went into making
+       the plot. The 'W' key toggles which of the two options is used,
+       and a mode line above the plot describes which option is
+       currently in effect.
+
+  U  - Select a new UV-radius display range. Having pressed this key,
+       you will be expected to either press it a second time to
+       select the full available UV-radius range (and enable future
+       autoscaling), or to select a new range by pressing the 'A' key
+       twice, once at each of the two UV-radii that enclose the
+       desired range. To abort the selection press the 'D' key (middle
+       mouse button) and the display will remain unchanged.
+
+  Z  - Select a new amplitude display range. Having pressed this key,
+       you will be expected to either press it a second time to
+       select the full available amplitude range (and enable future
+       autoscaling), or to select a new range by pressing the 'A' key
+       twice, once at each of the two amplitudes that enclose the
+       desired range. To abort the selection press the 'D' key (middle
+       mouse button) and the display will remain unchanged.
+
+Display mode options. The following keys each change how the data are
+displayed. In order that you can change more than one attribute at a
+time, they may be grouped by pressing one key after the other. When
+you have speficied all the attributes that you want to, press the RETURN
+key and the display will be refreshed.
+ 
+  M  - This key toggles whether the model is plotted. Model
+       amplitudes/phases are plotted as red dots.
+
+  1  - Only display amplitudes versus UV radius.
+
+  2  - Only display phases versus UV radius.
+
+  3  - Display both amplitudes and phases in vertically adjacent plots.
+
+  E  - In addition to the amplitude and/or phase plots that are
+       currently displayed, display a plot of the statistical
+       amplitude errors versus UV radius. Note that if the weight
+       scale factor isn't unity (see the "help wtscale"), then these
+       errors will be proportional but not equal to the statistical
+       errors. 
+
+  +  - This key toggles whether the cursor is shown as a small cross or
+       as a cross-hair that extends the full width and height of the
+       display. Currently only the /xserve and /xwindow PGPLOT devices
+       support this feature.
+
+  -  - Toggle between the default of displaying absolute amplitudes
+       and/or phases, and the option of displaying the amplitudes
+       and/or phases of the vector difference between the data and
+       the current model.
+
+CONFIGURATION VARIABLES
+-----------------------
+The display-mode option keys listed above may be preset in the
+variable, 'rflags'. If rflags is an empty string, "", then the default
+option string "m1" is substituted. This requests that the othrwise
+optional plotting of the model be selected by default and that only
+amplitudes be displayed. To override this default and have radplot
+start up by displaying both amplitudes and phases, on the command line
+one would type:
+
+0> rflags="m3"
+
+If you always want to override the default, then place such an
+assignment  line in your difmap login file (the file named in the
+optional DIFMAP_LOGIN environment variable).
+
+OTHER DISPLAY COMMANDS
+----------------------
+projplot -   Display visibilities amp/phase vs. projected UV distance.
+uvplot   -   Display the sampling of the UV plane.
+vplot    -   Display observed and model visibilities from the current IF.
+tplot    -   Display the time-sampling of each telescope of the current IF.
+corplot  -   Display the self-cal corrections of the current IF.
+cpplot   -   Display observed and model closure phases interactively.

@@ -1,0 +1,29 @@
+filename
+Write a table of models, indexed by channel-range/polarization, to a file.
+
+EXAMPLE
+-------
+
+  0>write_models 3c84.mtab
+
+PARAMETERS
+----------
+filename  -  The name of the file to write the models to.
+
+CONTEXT
+-------
+
+In multi-model mode (see help multi_model), different models are
+associated with different channel-range/polarizations selections. This
+command, in conjunction with the read_models command allow one to save
+and restore these models. In particular, it is used by the 'save'
+command for this purpose. Each model in the file, is written in the
+same format as by the 'wmodel' command, with the exception that each
+model is preceded by a select line, specifying the polarization and
+channel range to which the model refers.
+
+RELATED COMMANDS
+----------------
+multi_model  - Switch to and from multi-model mode.
+read_models  - Restore a set of multi-model models from a file.
+clear_models - Discard all multi-model models. 

@@ -1,0 +1,165 @@
+
+A discussion of sub-array handling in Difmap.
+Sub-arrays in Difmap.
+--------------------
+
+CONTEXT
+-------
+To increase the UV coverage and sensitivity of an experiment it is
+common to combine one or more observations from different times,
+telescope arrays, or different configurations of a single
+interferometer. In each case, the antennas in the different
+observations usually have to be calibrated separately, so the
+telescope arrays are treated as being different sub-arrays of a
+single hypothetical interferometer.
+
+
+Difmap details.
+--------------
+Difmap does handle multiple sub-arrays if they all appear within a
+single input file, but it does not currently provide facilities for
+mergeing two or more UV FITS files to produce a multi-sub-array
+data-set. This should instead be done before entering Difmap, say with
+DBCON in AIPS (DOPOS(1,1) > 0; DOARRAY < 0).
+
+Sub-arrays are actually effectively unrelated, so the visibilities
+for each sub-array must actually be separately processed. Most Difmap
+commands do this automatically, processing each sub-array one after
+the other. Exceptions to this rule are certain plot commands, along
+with a few sub-array manipulation and informational commands. In these
+cases, sub-arrays must be refered to by number. The association
+between sub-array numbers and arrays can be ascertained with the
+'header' command.
+
+Telescope specification strings.
+-------------------------------
+Since a single telescope may appear in more than one sub-array, Difmap
+usually requires that when you name a telescope, baseline, or
+closure-triangle, that you also specify the number of the sub-array in
+which the telescope(s) belong. The only exception to this rule, is
+when the telescopes belong to the default sub-array, which is 1 if the
+specification is given on the command line to a command, or equal to
+the number of the sub-array that is currently being displayed when
+given interactively in a plot command. In these cases the sub-array
+index can be omitted. In particular, if the observation only has a
+single sub-array, then the default sub-array always refers to that
+sub-array.
+
+The general form of all supported telescope specifications is:
+
+ [sub-array-number:]telescope_name_a[-telescope_name_b[-telescope_name_c]]
+
+Elements of the specification that are enclosed in [] are optional.
+
+The actual number of telescope names expected depends upon whether a
+telescope, baseline or closure-triangle specification is required by
+the Difmap command. In each case, trailing telescope names can be
+omitted. Usually when this is done the first recorded telescopes in
+the sub-array that can be associated with the given telescope name(s),
+are substituted. Alternatively, commands that accept more than one
+type of telescope specification note whether a telescope, baseline or
+complete closure-triangle specification is given and act accordingly.
+
+Example telescope specifications are:
+
+1. To specify an antenna called OVRO, in sub-array 1 the specification
+   would be:
+
+    1:ovro
+
+2. To specify the baseline formed by telescopes named OVRO and WSRT in
+   sub-array 1, the specification would be: 
+
+    1:ovro-wsrt
+
+3. To specify the triangle formed by telescopes named OVRO, WSRT and
+   BONN in sub-array 1, the specification would be:
+
+    1:ovro-wsrt-bonn
+
+Telescope names are matched using a case-insensitive min-match search
+of all telescopes in the given sub-array. Thus if sub-array 2
+contained telescopes named BONN and BOLOGNA, then:
+
+  2:bon-bol
+
+would be sufficient to select baseline BONN-BOLOGNA, whereas:
+
+  2:bo-bol
+
+would evoke an error message.
+
+Note that the : separator after a sub-array specification is only
+taken to denote such a separator if it is preceded by an integer at
+the start of the specification. This makes it possible to select VLA
+antenna names, which themselves contain a colon. Thus, if the default
+sub-array is sub-array 1, then:
+
+  1:vla:e8
+
+and
+
+  vla:e8
+
+are both equally acceptable specifications for telescope VLA:E8 in
+sub-array 1.
+
+LIMITATIONS
+-----------
+At the moment all sub-arrays must all have been observed at the same
+frequency and bandwidth. This translates to the requirement that each
+sub-array be refered to by the same frequency ID in the input UV FITS
+file. If this restriction proves to be a problem then I will endeavour
+to impliment the more general case of allowing a separate FQID per
+sub-array.
+
+Since random-groups UV FITS files also impose the restriction that all
+visibilities have the same number of frequency channels, polarizations
+and IFs, removing the above restriction would not be as useful as it
+might be, so I have not implemented it.
+
+Sub-array specific commands and functions.
+-----------------------------------------
+
+The command that provides the most general information on sub-arrays
+is the 'header' command. This also shows other information about the
+observation. Its limitation is that it is given in textual form, so it
+can not be used as an aid to writing scripts. The following functions
+can be used to obtain a few bits of information about sub-arrays:
+
+ nsub     -  Returns the number of sub-arrays in the data-set.
+
+ nbase    -  Returns the number of baselines in a given sub-array.
+
+ ntel     -  Returns the number of telescopes in a given sub-array.
+
+ basename - Returns the name of the n'th baseline in a given sub-array.
+
+ telname  - Returns the name of the n'th telescope in a giveb sub-array.
+
+Plot commands that display data for one sub-array at a time include:
+
+ tplot    - Plots the telescope versus time sampling of sub-arrays.
+
+ vplot    - Displays visibilities of sub-array baselines.
+
+ cpplot   - Display closure-phases of sub-array closure-triangles.
+
+ corplot  - Display self-calibration telescope corrections.
+
+ In these commands, capital N and P can be used to move to the Next or
+ previous Sub-array in order of sub-array index. The 'T' key can also
+ be used to select a given plot via a telescope specification string.
+
+Plot commands that plot all sub-arrays at once, but allow one to
+highlight a given telescope, include:
+
+ radplot  - Display visibilities versus radial UV distance.
+
+ projplot - Display visibilities versus projected UV distance.
+
+ uvplot   - Display visibility sampling of the UV plane.
+
+ Each of these commands responds to the 'T' key to allow the user to
+ request that a given telescope be highlighted, via a telescope
+ selection string.

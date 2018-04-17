@@ -1,0 +1,135 @@
+#!/bin/sh
+#-----------------------------------------------------------------------
+# Create a virtual copy of the uvf_difmap distribution. This will
+# be the place where the compilation takes place. All source-code
+# and generic configuration files will be linked to the originals
+# via symbolic links.
+#-----------------------------------------------------------------------
+#
+# Usage:
+#  make_links uvf_difmap_dir target_dir
+#
+#-----------------------------------------------------------------------
+
+if [ $# -ne 2 ] ; then
+  echo "Usage: make_links uvf_difmap_dir target_dir"
+  exit 1
+else
+  source_dir="$1"
+  target_dir="$2"
+fi
+
+#
+# Make sure that the source directory exists.
+#
+if [ ! -d "$source_dir" ] ; then
+  echo "Source directory \"$source_dir\" does not exist."
+  exit 1
+fi
+
+#
+# Require the target_dir to have already been created.
+#
+if [ ! -d "$target_dir" ] ; then
+  echo "Target directory \"$target_dir\" does not exist. Please create it."
+  exit 1
+fi
+
+#
+# Make realtive source-file searching easier by cd'ing to the
+# source top-level directory.
+#
+
+cd $source_dir
+
+#
+# Create sub-directories where necessary.
+#
+
+for dir in `find . -type d -print`; do
+  abs_dir=$target_dir/$dir
+  if [ ! -d $abs_dir ]; then
+    \rm -rf $abs_dir
+    mkdir -p $abs_dir
+  fi
+done
+
+#
+# Make links to the sub-set of files in the top-level directory that
+# are required for compilation.
+#
+
+for file in makeall clean; do
+  source=$source_dir/$file
+  target=$target_dir/$file
+  if [ ! -h $target ] ; then
+    ln -s $source $target
+  fi
+done
+
+#
+# The configuration is particular to a given system, so make a true
+# copy of it, ready for modification.
+#
+if [ ! -f $target_dir/configure ]; then
+  cp $source_dir/configure $target_dir/configure
+fi
+
+#
+# Make links to the sub-set of files in each source directory needed
+# for compilation.
+#
+
+for dir in *_src include; do
+(
+  cd $dir
+  for file in *; do
+    source=$source_dir/$dir/$file
+    target=$target_dir/$dir/$file
+    case $file in
+     *.[chf] | makefile.distrib)
+     if [ ! -h $target ] ; then
+       ln -s $source $target
+     fi
+     ;;
+    esac
+  done
+)
+done
+
+#
+# Link un-handled files in cpg_src.
+#
+
+(
+  cd cpg_src
+  for file in listfn make_file_list makefile.lis prototypes;do
+    source=$source_dir/cpg_src/$file
+    target=$target_dir/cpg_src/$file
+    if [ ! -h $target ] ; then
+      ln -s $source $target
+    fi
+  done
+)
+
+#
+# Link un-handled files in libtecla_src.
+#
+
+(
+  cd libtecla_src
+  for file in configure Makefile.stub Makefile.in Makefile.rules install-sh config.guess config.sub libtecla.map; do
+    source=$source_dir/libtecla_src/$file
+    target=$target_dir/libtecla_src/$file
+    if [ ! -h $target ] ; then
+      ln -s $source $target
+    fi
+  done
+  for file in `find man -name '*.in' -print`; do
+    source=$source_dir/libtecla_src/$file
+    target=$target_dir/libtecla_src/$file
+    if [ ! -h $target ] ; then
+      ln -s $source $target
+    fi
+  done
+)

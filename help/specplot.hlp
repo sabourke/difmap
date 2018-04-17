@@ -1,0 +1,277 @@
+nplot, aver_mode, ca, cb, amin, amax, pmin, pmax, npage
+Plot time-averaged visibility spectra.
+EXAMPLES
+--------
+
+1. Plot vector averaged spectra, autoscaled in amplitude, phase
+   and channels, using the current defaults for what gets plotted.
+
+   0>specplot
+   For help move the cursor into the plot window and press 'H'.
+   0>
+
+2. As in example 1, but use scalar averaging to construct
+   spectra instead of vector averages, and restrict the X-axis range
+   to channels 10 to 20.
+
+   0>specplot 0, scalar, 10, 20
+   For help move the cursor into the plot window and press 'H'.
+   0>
+   
+2. Change all the default parameters that determine what goes into
+   each spectrum and how to plot them, then plot the result.
+
+   0>specbase split, kp
+   Specplot will plot baselines of 1:KP
+
+   0>specpol I,Q,U,V
+   Specplot polarization selections: I, Q, U, V
+
+   0>spectime 355/14:43:29, 356/05, -20
+   Specplot time range 355/14:43:29 - 356/04:20:30,  scan separation=20 mins
+
+   0>specsmooth channels, hanning, 3
+   Specplot smoothing:  units=channels  window=hanning  fwhm=3
+
+   0>specopt frequency, "3j+"
+   Specplot x-axis=frequency  flags="3+j".
+
+   0>specorder polarization, baseline
+   Specplot selection order: polarization baseline
+
+   0>specplot 4, vector, 10, 20, 0, 1.3, -180, 180
+   For help move the cursor into the plot window and press 'H'.
+   0>
+
+ARGUMENTS
+---------
+nplot     -   Default = 0 (this actually selects 3 plots per page).
+              The number of spectra to plot on each page.
+              Note that 'nplot' spectra are simultaneously constructed
+              in a single pass through the data, so it is faster to
+              plot a few multi-plot pages than to plot a lot of pages
+              of single plots.
+
+aver_mode -   Default = vector
+              How to time-average visibilities. Valid modes are:
+               vector       -  Vector average visibilities.
+               scalar       -  Scalar average visibilities.
+
+ca,cb     -   Default = (All channels observed).
+              The numbers of the first and last channels to be
+              plotted, or 0,0 to select all channels. Channels are
+              numbered contiguously from the first channel of the
+              first observed IF to the last channel of the last
+              observed IF.
+
+amin,amax -   Default = (Autoscale).
+              The plotted range of amplitudes, or 0,0 to select
+              individually autoscaled amplitude sub-plots.
+
+pmin,pmax -   Default = -180,180.
+              The plotted range of phases (degrees).   
+
+npage     -   Default = 0
+              When plotting to a non-interactive device and npage is
+              greater than 0, then a maxmimum of npage pages will be
+              plotted.
+
+CONTEXT
+-------
+The specplot command plots time-averaged visibility spectra as
+amplitude and phase versus either spectral-line channel or frequency.
+The individual spectra of multiple IFs are plotted side by side on the
+page. Each page is also divided vertically to display multiple
+spectra, each differing from the last in either the polarization, time
+range, UV radius range, or the set of baselines averaged.
+
+Note that the current stream selection is irrelevant to 'specplot',
+and the 'select' command need not have been called before invoking
+'specplot'. This allows one to decide what channels and polarization
+to select in advance by looking at visibility spectra with 'specplot'.
+
+The averaging mode, 'aver_mode'
+------------------------------
+Spectra are formed from a weighted average of selected visibilities.
+Specplot supports two averaging modes:
+
+1. Vector averaging.
+
+   When visibilities are vector averaged the real and imaginary parts
+   of each visibility are individually averaged and later converted to
+   amplitude and phase for plotting.
+
+2. Scalar averaging.
+
+   When visibilities are scalar averaged the real and imaginary parts
+   of each visibility are first converted to amplitude and phase. The
+   amplitudes and phases are then individually averaged.
+   The resulting amplitude spectrum is biased updwards by noise but is
+   independant of phase calibration and position shifts.
+
+Selecting the number of plots per page.
+--------------------------------------
+To form a spectrum the 'specplot' command has to read raw visibilities
+from disk and apply accumulated edits, self-calibration corrections,
+resoff corrections, and position shifts. For large data-sets this is
+time consuming, so rather than repeat this separately for each
+spectrum, the 'specplot' command constructs a whole page full of
+spectra from a single pass through the data. This takes more memory
+but is potentially much faster when more than one plot is requested
+per page. The number of plots per page can be specified on the command
+line and/or interactively.
+
+The order in which spectra are plotted.
+--------------------------------------
+The visibilities that are averaged to form each spectrum are selected
+by U-V radius range, polarization, time and baseline.
+
+On a given page only one of these quantities is allowed to change
+between plotted spectra, but when all values of that quantity have
+been exhausted, one of the other quantities may be incremented before
+starting the next page. The order in which the different quantities
+are incremented is determined by the 'specorder' command. By default,
+only the baseline selection specified by the 'specbase' command is
+allowed to increment. This behavior is the equivalent of what one
+would see after typing:
+
+ 0>specorder baseline
+
+If one wanted the polarization selection to be incremented each time
+that spectra for all baselines had been plotted, one would type:
+
+ 0>specorder baseline, polarization
+
+The increment order can also be changed incteratively with the 'o'
+key (see below).
+
+See 'help specorder' for the names of each of the selection types.
+
+X-axis options
+--------------
+The type of X-axis that is plotted can be changed with the 'specopt'
+command. By default, amplitude and phase are plotted versus channel
+number.
+
+Spectral resolution
+-------------------
+The resolution of the plotted spectra can be reduced by smoothing
+them. The specsmooth command specifies the smoothing parameters to be
+used. The smoothing width may be specified in terms of channels or
+frequency.
+
+Error bars
+----------
+By default error bars are plotted for each spectral-line channel. They
+are toggled on or off with the 'e' key. They are formed from the
+individual visibility weights that go into the weighted average for
+each channel, which are interpretted as being the reciprocal of the
+square of the amplitude uncertainty. If this is not true, see the
+'wtscale' command. The error bars also take into account any smoothing
+that has been applied during plotting. This is described in the help
+pages of the specsmooth command.
+
+Plot styles
+-----------
+By default, neighboring channels are plotted joined by lines in a
+staircase or histogram-like manner. This shows the real channel widths
+and sampling. Altenatively, lines can be drawn between the centers of
+neigboring channels. The latter looks aesthetically better when
+multi-channel smoothing has been selected. A third alternative is to
+simply plot each spectral-line channel as an isolated point. Points
+are then plotted at the center of each channel.
+
+Interactive options
+-------------------
+At any time while running specplot, a list of the key bindings that
+specplot understands will be displayed if you hit the 'H' key on your
+keyboard. The current key bindings include:
+
+ H - List all key bindings.
+
+ X - Exit specplot (right-mouse-button).
+
+ L - Redisplay the current plot.
+
+ N - Display the next page of spectra.
+
+ P - Display the preceding page of spectra.
+
+ s - Change the number of spectra plotted per page.
+     Beware, this requires a new pass through the data and may take
+     some time with a large data-set.
+
+ S - Change the plotted spectral resolution by setting or de-selecting
+     smoothing parameters.
+
+ 1 - Plot only amplitudes.
+
+ 2 - Plot only phases.
+
+ 3 - Plot both amplitudes and phases.
+
+ E - Toggle whether error bars are plotted.
+
+ V - Toggle between vector and scalar averaged spectra.
+     Beware, this requires a new pass through the data and may take
+     some time with a large data-set.
+
+ t - Change the baselines, polarization or times used to construct
+     spectra.
+     You will be asked to specify a selection type name and zero or
+     more specification arguments. The specification arguments have
+     the same format as the equivalent command-line commands:
+
+      baseline, group|split, baseline_group1, ... (see help specbase).
+      polarization, polarization_name1, ...       (see help specpol).
+      time, start_time, end_time, scan_time       (see help spectime).
+      uvrange, uvmin, uvmax, uvstep               (see help specuvr).
+
+ o - Change the order in which selections are incremented.
+     You will be asked for one or more selection names, in the same
+     format as documented for the 'specorder' command.
+     See 'help specorder' for details.
+
+ u - Delimit a X-axis range with the cursor (hit u twice for full range).
+     Either press this key (u) a second time to undo a previous range
+     selection, or delimit the desired X-axis range by pressing the
+     'A' key (left mouse button), once at each end of its extent.
+     The range selection can be cancelled while in this mode by
+     pressing the 'D' key (middle mouse button).
+
+ U - Change the X-axis type.
+     You will be prompted for the name of a recognized axis type.
+     See help specopt for a list of valid type names.
+
+ Z - Select a new amplitude or phase range (hit Z twice for full range).
+     Either press this key (Z) a second time to undo a previous range
+     selection, or delimit the desired amplitude or phase range by
+     pressing the 'A' key (left mouse button), once at each end of its
+     extent.
+     The range selection can be cancelled while in this mode by
+     pressing the 'D' key (middle mouse button).
+
+ j - Toggle whether to join points with lines.
+     This toggles whether channel values are plotted as isolated
+     points, or are whether they are joined by lines. If joined points
+     are selected, there format can be further selected with the 'J'
+     key described below.
+
+ J - Toggle between two possible line styles.
+     By default the lines are drawn as bins, in a staircase like
+     pattern. The alternative is to simply draw straight lines
+     directly between the centers of each channel.
+
+ + - Toggle whether to use a crosshair cursor if available.
+     If the plot device supports a cross-hair cursor this will be
+     substituted for the normal cursor if toggled on with the '+' key.
+
+Related commands
+----------------
+specopt    -  Preset specplot display options.
+specsmooth -  Preset the spectral resolution displayed by specplot.
+specorder  -  Set the order in which spectra are to be displayed.
+specbase   -  Select the baselines to be displayed by specplot.
+specpol    -  Select the list of polarizations to be displayed by specplot.
+spectime   -  Select the time ranges to be displayed by specplot.
+specuvr    -  Select the UV radius ranges to be displayed by specplot.

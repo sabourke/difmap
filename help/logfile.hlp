@@ -1,0 +1,86 @@
+log_file_name
+Close any existing log file and optionally start a new one.
+
+EXAMPLE 1
+---------
+0>logfile difmap.log
+Started logfile: difmap.log_5 on Sat Sep 11 22:31:31 1993
+0>
+
+With an argument, the command closes any existing open log file, then
+opens a new one with the name given.
+
+
+EXAMPLE 2
+---------
+0>logfile
+Log file closed on Sat Sep 11 22:45:23 1993
+0>
+
+With no arguments the existing log file is closed.
+
+
+PARAMETERS
+----------
+log_file_name   -   If this argument is given then a new log file will
+                    be opened with the given name. If the file named
+                    already exists then the name of the new file will
+                    be that requested but with an underscore and
+                    version number appended. The version number used
+                    will be the lowest number for which no file
+                    currently exists.
+
+Whether an argument is given or not, any existing log file is closed.
+Thus to close a log file without opening a new one simply omit the
+file name argument, as in example 2 above.
+
+
+CONTEXT
+-------
+This command is used to open or close log files. As the name suggests
+these files are primarily intended as a log of everything done in the
+program while the log file is open. But in addition, the log files
+have been designed to work as command files. To this end all commands
+are echo'd verbatim into the log file, while command output is first
+pre-pended with the (!) comment character.
+
+After the log file has been closed - say by exiting the program - it
+may be used as a command file to re-play all events that happened
+while the log file was open.
+
+For example:
+
+0>logfile test.log
+Started logfile: test.log on Sat Sep 11 23:05:30 1993
+0>print date   
+Sat Sep 11 23:05:47 1993 
+0>print "pi =", pi
+pi = 3.14159 
+0>logfile
+Log file closed on Sat Sep 11 23:06:34 1993
+0>
+
+Use the log file as a command file.
+
+0>@test.log
+Sat Sep 11 23:06:39 1993 
+pi = 3.14159 
+0>
+
+The log file test.log in this case contained:
+
+! Started logfile: test.log on Sat Sep 11 23:05:30 1993
+print date
+! Sat Sep 11 23:05:47 1993 
+print "pi =", pi
+! pi = 3.14159 
+logfile
+! Log file closed on Sat Sep 11 23:06:34 1993
+
+
+WARNING
+-------
+Note that if the program has any other input mechanism such as input
+from a graphics cursor, such input is not logged and will have to be
+re-produced by the user if the log file is executed as a command
+file.

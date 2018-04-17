@@ -1,0 +1,35 @@
+distance
+Convert a UV plane distance from UV units to wavelengths.
+
+EXAMPLE
+-------
+
+The following example converts 10 kilowavelengths to wavelengths.
+
+  0>mapunits arcmin
+  Distances in the map plane now have units: arcmin.
+  Distances in the UV plane now have units: kilo-wavelengths.
+  0>print uv_to_wav(10)
+  10000
+  0>
+
+PARAMETERS
+----------
+distance    -  A distance in the UV plane, expressed in the currently
+               selected UV units.
+
+CONTEXT
+-------
+Use of the 'mapunits' command to specify which units should be used
+for specifying and displaying distances in the image plane, also
+changes the units that are used for the display and entry of UV
+coordinates.
+
+The 'uv_to_wav()' function allows the user to convert a distance in
+these units, into wavelengths.
+
+RELATED COMMANDS
+----------------
+wav_to_uv  - Convert a UV plane distance from wavelengths to UV units.
+map_to_rad - Convert an image plane distance from map units to radians.
+rad_to_map - Convert an image plane distance from radians to map units.

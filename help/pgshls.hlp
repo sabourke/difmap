@@ -1,0 +1,20 @@
+color_index, hue, lightness, saturation
+Change the color of a PGPLOT color index (HLS version).
+
+PARAMETERS
+----------
+
+color_index  -  The PGPLOT color index to be modified.
+
+hue          -  The color as an angle on the Hue-lightness-saturation
+                diagram. Blue is at 0, red at 120 and green at 240
+                degrees.
+
+lightness    -  How white the color appears 0 -> 1.
+
+saturation   -  The color purity. 0 is gray. 1 is pure color.
+
+RELATED COMMANDS
+----------------
+pgscr  - Change the color of a PGPLOT color index (RGB version).
+pgscrn - Set the color of a PGPLOT color index by name.

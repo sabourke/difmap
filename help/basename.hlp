@@ -1,0 +1,41 @@
+ibase, isub
+Returns the name of baseline 'ibase' of sub-array 'isub'.
+EXAMPLE
+-------
+Example 1  -  Print out all (nbase) baseline names in sub-array 1.
+
+0>do i=1,nbase 
+1>  print basename(i)
+1>end do
+1:WSRT-BOLOGNA 
+1:WSRT-HSTK 
+1:BOLOGNA-HSTK 
+1:WSRT-VLBA_KP 
+1:BOLOGNA-VLBA_KP 
+1:HSTK-VLBA_KP 
+1:WSRT-VLBA_LA 
+1:BOLOGNA-VLBA_LA 
+1:HSTK-VLBA_LA 
+1:VLBA_KP-VLBA_LA 
+0>
+
+Example 2  -  Print the name of the third baseline in sub-array 2.
+
+0>print basename(3,2)
+2:OVRO-WSRT
+
+The "number:" prefix indicates the number of the sub-array to which the
+baseline belongs.
+
+PARAMETERS
+----------
+ibase  -  The number of the baseline who's name is required.
+
+isub   -  Default: 1
+          The number of the sub-array from which the baseline name
+          is required.
+
+RELATED FUNCTIONS
+-----------------
+nbase - Return the number of baselines in a given sub-array.
+nsub  - Return the number of sub-arrays in an observation.

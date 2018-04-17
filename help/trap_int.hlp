@@ -1,0 +1,32 @@
+integration-axis, x-array, y-array, <wrap_period>
+Return the integral array of a data array via trapezium integration
+
+This is the function to use to integrate irregularly sampled functions.
+x-array is the array that will be integrated against, while the 1D
+arrays along axis 'integration_axis' are the functions to be integrated.
+   The function returns the array of integrals in a 3D array with the
+first N-1 dimensions used, where N is the number of dimensions in the
+original data array. In order to get just the dimensions used you will
+have to use array indexing notation on the function return value. eg.
+
+float ispec(100)
+float spec(100,10)
+ispec = trap_int(1, ramp(1,10), spec)(,1,1)
+
+This integrates the 10 values along the second axis (axis=1) of spec at
+each element of the 1st axis (axis=0) of spec, against a ramp of x values
+1,2,3,...,10. It returns a float (100,1,1) 3D array of which we only
+require the 1st dimension. This is extracted by the (,1,1) index specification.
+
+Optionally if wrap_period is given then the integral is assumed to be of
+a periodic function. The integral over one period of a periodic function
+cancels out the periodic components of the function, leaving the
+zero-offset of the function multiplied by the period. Thus if wrap_period is
+given then the zero-offset itself will be returned instead of the
+integral. In this case the data must not stretch over more than a period
+so it may need to be folded first using fold(). It is unlikely that it
+will cover exactly one period, so the final point in the integral,
+placed at xmin+period will be the first point - hence the name
+wrap_period.
+
+

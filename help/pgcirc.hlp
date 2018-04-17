@@ -1,0 +1,8 @@
+xcenter, ycenter, radius
+Draw a circle with a given radius and position.
+
+PARAMETERS
+----------
+xcenter, ycenter  -  The coordinate of the center of the circle.
+
+radius            -  The radius of the circle.

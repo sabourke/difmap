@@ -1,0 +1,24 @@
+text
+Append a new line to the recorded history of an observation.
+EXAMPLE
+-------
+
+ 0>addhis "DIFMAP This is a new history line."
+ 0>
+
+PARAMETERS
+----------
+
+text   -   The text of the new history line. This will be truncated to a
+           maximum of 80 characters where necessary.
+
+CONTEXT
+-------
+The only history information that difmap writes is a line to say when the
+UV FITS file was read into difmap. If you wish to record more processing
+history this command may be used to do it.
+
+RELATED COMMANDS
+----------------
+showhist - Display the history recorded with the current observation.
+clrhist  - Clear the history information recorded with the observation.

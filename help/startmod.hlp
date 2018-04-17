@@ -1,0 +1,61 @@
+starting_model_file_name, solint
+Read a starting model from disk and phase self-calibrate against it.
+EXAMPLE
+-------
+
+0>startmod 
+Applying default point source starting model
+Performing phase self-cal
+Adding 1 model components to the UV plane model.
+The established model now contains 1 components and 1 Jy
+ 
+Correcting IF 1.
+ A total of 21 un-correctable visibilities were flagged in sub-array 1.
+
+Fit before self-cal, rms=3.283113Jy  sigma=10.445014
+Fit after  self-cal, rms=3.282763Jy  sigma=10.437578
+ 
+Reinstating the default IF.
+clrmod: All model representations cleared.
+Redundant starting model cleared
+0>
+
+All but the first line are responses from the startmod command and
+its clients.
+
+PARAMETERS
+----------
+
+model_file - Default = ""
+             The file name containing delta and/or gaussian
+             model components. If no file name is given, a point source
+             model will be substituted.
+             This model will be the starting model used to correct the
+             phases via self-cal before mapping begins.
+             The model will be discarded after use.
+
+solint     - Default = 0.0.
+             The solution interval (minutes). See 'help selfcal' for
+             details.
+
+CONTEXT
+-------
+Invoking startmod is equivalent to the following sequence of commands:
+
+clrmod true
+rmodel "somefile.mod"
+selfcal
+clrmod true
+
+This results in the UV data being phase self-cal'd against a starting
+model (say from modelfit), without producing residuals between
+the model and the observed data. Since the model does not become part
+of the established model, the starting model need only be a coarse
+estimate of the true flux distribution.
+
+SIDE EFFECTS
+------------
+Any existing models will be cleared before reading in the starting
+model and the UV data will be re-inverted by the next operation that
+requires the residual map.
+

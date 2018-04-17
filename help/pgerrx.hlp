@@ -1,0 +1,47 @@
+left_x, right_x, y_coords, terminal-size
+Plot an array of horizontal error bars.
+
+EXAMPLES
+--------
+
+1. Plot constant, symmetric error bars.
+
+   0>float x_coords(100)
+   0>float y_coords(100)
+   0>float sigma
+   ...
+   0>pgerrx x_coords - sigma, x_coords + sigma, y_coords
+
+2. Plot varying, symmetric error bars.
+
+   0>float x_coords(100)
+   0>float y_coords(100)
+   0>float error_bars(100)
+   ...
+   0>pgerrx x_coords - error_bars, x_coords + error_bars, y_coords
+
+3. Plot varying asymmetric error bars.
+
+   0>float y_coords(100)
+   0>float left_bars(100)
+   0>float right_bars(100)
+   ...
+   0>pgerrx left_bars, right_bars, y_coords
+
+PARAMETERS
+----------
+left_x        -    The X-axis world-coordinates of the left end
+                   of each error bar.
+
+right_x       -    The X-axis world-coordinates of the right end
+                   of each error bar.
+
+y_coords      -    The Y-axis coordinates of each error bar.
+
+terminal-size -    (Optional: default=1)
+                   The height of the error-bar terminals relative to
+                   their default height.
+
+Note that if the three coordinate arrays contain differing numbers of
+elements, the smallest array will dictate the number of error bars
+drawn.

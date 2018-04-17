@@ -1,0 +1,537 @@
+#!/bin/sh
+#-----------------------------------------------------------------------
+# Configure site-specific make files.
+#
+# This script may be run any number of times.
+#-----------------------------------------------------------------------
+# Usage:
+#
+#  ./configure system_name
+#
+# Where system_name must be one of the following:
+#  sun4-gcc  -  Sun sparc running SUNOS4.* using gcc.
+#  sol2-gcc  -  Sun sparc running Solaris 2.* using gcc.
+#  sol2-cc   -  Sun Sparc running Solaris 2.* using the SUN ANSI cc
+#               compiler.
+#  hppa-c89  -  HP9000 700 or 800 series workstations using c89.
+#  IBM-c89   -  IBM 6xxx series workstations using c89.
+#  alpha-osf1-gcc - Alpha AXP running OSF1, using the Gnu C compiler, gcc.
+#  alpha-osf1-cc  - Alpha AXP running OSF1, using the native DEC C compiler.
+#  linux-i486-gcc - I486 PC running Linux, using the Gnu C compiler, gcc.
+#  linux-ia64-ecc - Itanium PC running Linux, using the Intel compiler ecc.
+#  linux-ia64-gcc - Itanium or AMD64 PC running Linux, using gcc.
+#  apple-osx-gcc  - Macintosh computer running OSX, using the Gnu C compiler.
+#  intel-osx-gcc  - Intel Mac computer running OSX, using the Gnu C compiler.
+#-----------------------------------------------------------------------
+
+# The following shell-variable assignments probably require modification.
+# To do this, read the information preceding each assignment and modify
+# the text on the right-hand-side of assignments that need to be changed.
+#
+# NOTE that the Bourne-shell will not tolerate any space around the '='
+# character in shell-variable assignments.
+
+# The directory that difmap looks in for HELP files is set at compile time.
+# This means that if you change the location of the help files at any time,
+# then you will also have to re-compile difmap. So it is important to
+# decide now where you are going to put the help files, and to then
+# write the name of the directory below. The chosen directory should
+# be visible to all users wanting to use difmap. You must copy the
+# help files there yourself, as demonstrated in the README file. The
+# default location given below is the directory in which the help
+# files reside in in the distribution. If this is OK, then you need
+# take no further action, but remember not to delete the distribution
+# in this case.
+
+HELPDIR="`pwd`/help"
+
+# If you don't want the difmap executable to initially be placed in the
+# current directory, specify the required directory below. Given that
+# the executable can be moved at any time, this is not a critical
+# choice. My recommendation is that you leave the following assignment
+# unchanged for now and simply copy the executable from the current
+# directory to its final installation directory later.
+
+BINDIR="`pwd`"
+
+# Specify the PGPLOT and X11 libraries in a form suitable for the
+# linker. If the libraries are in a location that is normally searched
+# by the linker then all that you will need to write is:
+#
+#  PGPLOT_LIB="-lpgplot -lX11"
+#
+# Otherwise you must precede each library with a -L argument to
+# specify the directory in which each library resides. For example
+# under SunOS this might be:
+#
+#  PGPLOT_LIB="-L/usr/local/lib -lpgplot -L/usr/openwin/lib -lX11"
+#
+# Under Solaris 2.x there is a complication in that when programs are
+# linked with shared libraries, as they are by default, the path used
+# to locate the libraries at compile time is not remembered at run
+# time. To cater for shared libraries you either have to specify the
+# run-time library path with the -R flag, or you have to require your
+# users to specify the directories in their LD_LIBRARY_PATH environment
+# variables. The former is obviously friendlier. An example of using
+# the -R flag is:
+#
+# PGPLOT_LIB="-L/usr/local/pgplot -L/usr/openwin/lib \
+#    -R/usr/local/pgplot:/usr/openwin/lib:/opt/SUNWspro/lib \
+#    -lpgplot -lX11"
+# 
+# Where /usr/local/pgplot and /opt/SUNWspro/lib are the directories that
+# contain the PGPLOT and FORTRAN libraries at our site.
+#
+# Under Mac OS X, assuming that the pgplot library is installed in
+# /usr/local/pgplot, the appropriate definition of PGPLOT_LIB is:
+#
+# PGPLOT_LIB="-L/usr/local/pgplot -lpgplot -L/sw/lib -lpng -L/usr/X11R6/lib -lX11"
+#
+# If using g77 to link under Solaris or Linux, the -R flag must be preceded
+# by a -Xlinker flag, to tell g77 to pass the option onto the linker.
+# Typically under Linux, you might thus use something like:
+#
+# PGPLOT_LIB="-L/usr/local/pgplot -L/usr/X11R6/lib \
+#    -Xlinker -R/usr/local/pgplot:/usr/X11R6/lib -lpgplot -lX11"
+
+PGPLOT_LIB="-lpgplot -lX11"
+
+# Since the free software foundation disallowed the use of gnu
+# readline in difmap, I am instead including my own interactive
+# keyboard input library, which is called libtecla. This has been
+# updated extensively since the beta version that was included in the
+# last release of difmap, and recent versions have been tested on all
+# systems supported by difmap, except old versions of SunOS, so it
+# should compile without any problems. If you do have any problems,
+# you can revert difmap to using the original command-line input code
+# by changing the following assignment from "1" to "0", re-running the
+# configure script, then re-running makemake. If you have to do this,
+# please send me an E-mail.
+
+USE_TECLA="1"
+
+#-----------------------------------------------------------------------
+# I recommend that you don't change anything below this point.
+#-----------------------------------------------------------------------
+INCDIR="`pwd`/include"
+LIBDIR="`pwd`/lib"
+
+#-----------------------------------------------------------------------
+#  THE FOLLOWING ARE DEFAULTS WHICH ARE OVERRIDEN LATER FOR YOUR OS.
+#                 DO NOT CHANGE THESE.
+#-----------------------------------------------------------------------
+# The following is the default set of options. After this list are
+# instructions on how to override the default for a specific system.
+
+# The default ANSI-C compiler and the flags that should be presented to it.
+
+CC="cc"
+CFLAGS="\$(OPT)"  # The OPT macro is provided by the makeall script.
+
+# The default FORTRAN compiler (the same one that PGPLOT was compiled with).
+# Also the flags that should be presented to it.
+
+FC="f77"
+FFLAGS="-O"
+
+# If the C run-time library is not automatically linked in when using
+# the FORTRAN compiler to link, cite the name of the library(ies) here.
+# The default shown here names the latest version of the gcc run-time
+# library.
+
+CCLIB=""
+
+# Flags to be sent to the loader (linker).
+
+LDFLAGS=""
+
+# The way to create a symbolic or (if symbolic links are not supported)
+# a hard link to a file.
+
+LN="ln -s"
+
+# How to run ranlib.
+
+RANLIB="ranlib"
+
+# On unix machines, deleting an open file only deletes the directory
+# entry of the file, leaving the file itself unscathed until the last
+# program that has it open, either explicitly closes it, or exits.
+# This is exploited to create unnamed scratch files which
+# automatically get deleted when the parent program exits for whatever
+# reason. When creating scratch files, they are opened with a unique
+# name, then immediately deleted to give them the above property. If
+# your operating system isn't a unix variant and doesn't support this
+# feature, change the following assignment to "0".
+
+HIDE_SCRATCH_FILES="1"
+
+# The default pager.
+
+PAGER="more"
+
+# Flags for the cpg_src/pgbind command that tell it how to construct
+# C wrappers for FORTRAN PGPLOT routines.
+
+PGBIND_FLAGS="bsd"
+
+# The following parameter lists the libraries that are needed by the
+# tecla library.
+
+TECLA_LIB="-ltecla -lcurses"
+
+#-----------------------------------------------------------------------
+# OVERRIDE SELECTED OPTIONS FOR THE GIVEN OS.
+# When compiling for a new OS-compiler combination, add a new
+#  OS-compiler)
+# case in the switch below and redefine any variables for which the default
+# is inappropriate.
+#-----------------------------------------------------------------------
+
+# Get the operating system name from the command line.
+
+if test $# -lt 1;then
+  echo "Usage: configure OS_name-compiler_name"
+  exit 1
+else
+  OS=$1
+fi
+
+# Override selected options for the given operating system-compiler
+# pair.
+
+case $OS in
+  sun4-gcc)   # SUN-Sparc running SUNOS4.*, using the gcc compiler.
+    CC=gcc
+#
+# Attempt to find libgcc.a.
+#
+    CCLIB="`gcc -print-libgcc-file-name`"
+    if test ! -f "$CCLIB"; then
+      echo ' Error: libgcc.a is not in the default location. Please edit'
+      echo '        ./configure to assign the path of libgcc.a to CCLIB under'
+      echo '         sun4-gcc), Eg. if libgcc.a is in /usr/local/lib. write:'
+      echo ' ';echo ' CCLIB="/usr/local/lib/libgcc.a"';echo ' '
+      exit 1
+    fi
+;;
+
+  sol2-gcc)  # SUN running Solaris2.* using gcc.
+    CC="gcc"
+    FC="f77"
+#
+# Attempt to find libgcc.a.
+#
+    CCLIB="`gcc -print-libgcc-file-name`"
+    if test ! -f "$CCLIB"; then
+      echo ' Error: libgcc.a is not in the default location, please edit'
+      echo '        ./configure to assign the path of libgcc.a to CCLIB under'
+      echo '         sol2-gcc), Eg. if libgcc.a is in /usr/local/lib. write:'
+      echo ' ';echo ' CCLIB="/usr/local/lib/libgcc.a"';echo ' '
+      exit 1
+    fi
+    RANLIB="echo ranlib"
+    PGPLOT_LIB="${PGPLOT_LIB} -lsocket -lnsl"
+    TECLA_LIB="-L/usr/ccs/lib -ltecla -lcurses"
+;;
+
+  sol2-cc)  # SUN running Solaris 2.* using the new SUN ANSI C compiler, cc.
+    CC="cc"
+    FC="f77"
+    RANLIB="echo ranlib"
+    PGPLOT_LIB="${PGPLOT_LIB} -lsocket -lnsl"
+    TECLA_LIB="-L/usr/ccs/lib -ltecla -lcurses"
+;;
+
+  hppa-c89)   # HP9000-series 700-800, using the vendor's c89 compiler.
+    CC="c89"
+    FC="fort77"
+    CFLAGS="$CFLAGS -D_HPUX_SOURCE -Dhpux -z"
+    RANLIB="echo ranlib"
+    PGBIND_FLAGS="bsd -suffix ''"
+;;
+
+  IBM-c89)   # IBM 6xxx using the vendor's c89 compiler.
+    CC="c89"
+    FC="xlf"
+    CFLAGS="$CFLAGS -Dibm_aix"
+    RANLIB="echo ranlib"
+    PGBIND_FLAGS="bsd -suffix ''"
+;;
+
+  alpha-osf1-gcc)   # Alpha AXP running OSF1, using the gcc compiler.
+    CC=gcc
+#
+# Attempt to find libgcc.a.
+#
+    CCLIB="`gcc -print-libgcc-file-name`"
+    if test ! -f "$CCLIB"; then
+      echo ' Error: libgcc.a is not in the default location, please edit'
+      echo '        ./configure to assign the path of libgcc.a to CCLIB under'
+      echo '        alpha-osf1-gcc), Eg. if libgcc.a is in /usr/local/lib.'
+      echo '        write:'
+      echo ' ';echo ' CCLIB="/usr/local/lib/libgcc.a"';echo ' '
+      exit 1
+    fi
+;;
+
+  alpha-osf1-cc)   # Alpha AXP running OSF1, using the native DEC cc compiler.
+    CC=cc
+    CFLAGS="$CFLAGS -std1 -D__alpha__ -ieee"
+    FFLAGS="$FFLAGS -ieee"
+    LDFLAGS="$LDFLAGS -ieee"
+;;
+
+  linux-i486-gcc)   # I486 PC running Linux, using the Gnu C compiler, gcc.
+    CC=gcc
+    FC="gfortran"
+    CFLAGS="$CFLAGS -Dlinux_i486_gcc"
+#
+# Attempt to find libgcc.a in its default location.
+#
+    CCLIB="`gcc -print-libgcc-file-name`"
+    if test ! -f "$CCLIB"; then
+      echo ' Error: libgcc.a is not in the default location, please edit'
+      echo '        ./configure to assign the path of libgcc.a to CCLIB under'
+      echo '        linux-i486-gcc), Eg. if libgcc.a is in /usr/local/lib.'
+      echo '        write:'
+      echo ' ';echo ' CCLIB="/usr/local/lib/libgcc.a"';echo ' '
+      exit 1
+    fi
+    TECLA_LIB="-ltecla -lncurses"
+;;
+
+  linux-ia64-ecc)   # Itanium PC running Linux, using the Intel compiler, ecc.
+    CC=ecc
+    FC=efc
+    CFLAGS="$CFLAGS -Dia64"
+;;
+
+  linux-ia64-gcc)   # Itanium or AMD64 PC running Linux, using gcc.
+    CC=gcc
+    CFLAGS="$CFLAGS -Dia64"
+#
+# Attempt to find libgcc.a in its default location.
+#
+    CCLIB="`gcc -print-libgcc-file-name`"
+    if test ! -f "$CCLIB"; then
+      echo ' Error: libgcc.a is not in the default location, please edit'
+      echo '        ./configure to assign the path of libgcc.a to CCLIB under'
+      echo '        linux-ia64-gcc), Eg. if libgcc.a is in /usr/local/lib.'
+      echo '        write:'
+      echo ' ';echo ' CCLIB="/usr/local/lib/libgcc.a"';echo ' '
+      exit 1
+    fi
+    TECLA_LIB="-ltecla -lncurses"
+;;
+
+  apple-osx-gcc)   # Macintosh computer running OSX, using the Gnu C compiler.
+    CC=gcc-4
+    FC=gfortran
+    CFLAGS="$CFLAGS -Dapple_osx"
+#
+# Attempt to find libgcc.a in its default location.
+#
+    CCLIB="`$CC -print-libgcc-file-name`"
+    if test ! -f "$CCLIB"; then
+      echo ' Error: libgcc.a is not in the default location, please edit'
+      echo '        ./configure to assign the path of libgcc.a to CCLIB under'
+      echo '        apple-osx-gcc), Eg. if libgcc.a is in /usr/local/lib.'
+      echo '        write:'
+      echo ' ';echo ' CCLIB="/usr/local/lib/libgcc.a"';echo ' '
+      exit 1
+    fi
+    CCLIB="$CCLIB \
+     /System/Library/Frameworks/Foundation.framework/Versions/Current/Foundation \
+     /System/Library/Frameworks/AppKit.framework/Versions/Current/AppKit"
+;;
+
+  intel-osx-gcc)   # Macintosh computer running OSX, using the Gnu C compiler.
+    CC=gcc-4
+    FC=gfortran
+    CFLAGS="$CFLAGS -Dintel_osx"
+#
+# Attempt to find libgcc.a in its default location.
+#
+    CCLIB="`$CC -print-libgcc-file-name`"
+    if test ! -f "$CCLIB"; then
+      echo ' Error: libgcc.a is not in the default location, please edit'
+      echo '        ./configure to assign the path of libgcc.a to CCLIB under'
+      echo '        apple-osx-gcc), Eg. if libgcc.a is in /usr/local/lib.'
+      echo '        write:'
+      echo ' ';echo ' CCLIB="/usr/local/lib/libgcc.a"';echo ' '
+      exit 1
+    fi
+    CCLIB="$CCLIB \
+     /System/Library/Frameworks/Foundation.framework/Versions/Current/Foundation \
+     /System/Library/Frameworks/AppKit.framework/Versions/Current/AppKit"
+;;
+
+  *)
+    echo "Unknown OS-compiler combination: $OS"
+    exit 1
+;;
+esac
+
+
+#-----------------------------------------------------------------------
+# You should not have to change anything below this line.
+#-----------------------------------------------------------------------
+
+# Keep the user informed.
+
+echo 'Configuration follows:'
+echo ' BINDIR       =' $BINDIR
+echo ' INCDIR       =' $INCDIR
+echo ' LIBDIR       =' $LIBDIR
+echo ' HELPDIR      =' $HELPDIR
+echo ' PGPLOT_LIB   =' $PGPLOT_LIB
+echo ' CC           =' $CC
+echo ' CCLIB        =' $CCLIB
+echo ' FC           =' $FC
+echo ' CFLAGS       =' $CFLAGS
+echo ' FFLAGS       =' $FFLAGS
+echo ' LDFLAGS      =' $LDFLAGS
+echo ' LN           =' $LN
+echo ' RANLIB       =' $RANLIB
+echo ' PAGER        =' $PAGER
+echo ' PGBIND_FLAGS =' $PGBIND_FLAGS
+if [ "$USE_TECLA" = "1" ] ; then
+  echo ' USE_TECLA = yes'
+  TECLA_DEPEND="$LIBDIR/libtecla.a $INCDIR/libtecla.h"
+else
+  echo ' USE_TECLA = no'
+  TECLA_LIB=""
+  TECLA_DEPEND=""
+fi
+if [ "$HIDE_SCRATCH_FILES" = "1" ] ; then
+  echo ' HIDE_SCRATCH_FILES = yes'
+else
+  echo ' HIDE_SCRATCH_FILES = no'
+fi
+echo ' '
+
+# Create the include file which defines the macro which tells the
+# program where to look for help files.
+
+cat > include/new_helpdir.h <<EOF
+#ifndef HELP_DIR
+#define HELP_DIR "$HELPDIR/"
+#endif
+EOF
+
+# If either include/helpdir.h doesn't yet exist, or differs from
+# include/new_helpdir.h, replace it with the new version. Making
+# this check stops make from unnecessarily recompiling all files
+# that include this header.
+
+if cmp include/helpdir.h include/new_helpdir.h 1>/dev/null 2>&1; then
+  rm include/new_helpdir.h
+else
+  mv include/new_helpdir.h include/helpdir.h
+fi
+
+# Create the makefile header.
+
+cat > make.configure << EOF
+# Copyright (c) 1993 by the California Institute of Technology.
+
+# ANSI-C compiler.
+
+CC = $CC
+
+# ANSI-C run-time library
+
+CCLIB = $CCLIB
+
+# FORTRAN compiler.
+
+FC = $FC
+
+# C and FORTRAN compilation flags.
+
+CFLAGS = $CFLAGS
+FFLAGS = $FFLAGS
+
+# Directory for executables.
+
+BINDIR = $BINDIR
+
+# Directory for includes.
+
+INCDIR = $INCDIR
+
+# Directory for libraries.
+
+LIBDIR = $LIBDIR
+
+# Directory of help files.
+
+HELPDIR = $HELPDIR
+
+# Directory in which the PGPLOT library can be found.
+
+PGPLOT_LIB = $PGPLOT_LIB
+
+# Use the tecla keyboard input library?
+
+USE_TECLA = $USE_TECLA
+TECLA_LIB = $TECLA_LIB
+TECLA_DEPEND = $TECLA_DEPEND
+
+# Loader flags.
+
+LDFLAGS = $LDFLAGS
+
+# Symbolic link creation.
+
+LN = $LN
+
+# The way to invoke ranlib.
+
+RANLIB = $RANLIB
+
+# The default pager.
+
+PAGER = $PAGER
+
+# The flags used by cpg_src/pgbind.
+
+PGBIND_FLAGS = $PGBIND_FLAGS
+
+EOF
+
+# Create include and library directories if not already there.
+
+if test ! -d include; then
+  mkdir include
+fi
+
+if test ! -d lib; then
+  mkdir lib
+fi
+
+# Create site-specific make files in each of the source directories.
+
+echo 'Configuring make files.'
+echo ' '
+
+cat make.configure cpg_src/makefile.lis cpg_src/makefile.distrib > cpg_src/makefile
+cat make.configure sphere_src/makefile.distrib > sphere_src/makefile
+cat make.configure difmap_src/makefile.distrib > difmap_src/makefile
+cat make.configure logio_src/makefile.distrib > logio_src/makefile
+cat make.configure pager_src/makefile.distrib > pager_src/makefile
+cat make.configure recio_src/makefile.distrib > recio_src/makefile
+cat make.configure scrfil_src/makefile.distrib > scrfil_src/makefile
+cat make.configure fits_src/makefile.distrib > fits_src/makefile
+cat make.configure slalib_src/makefile.distrib > slalib_src/makefile
+\rm make.configure
+
+# Make the tecla library?
+
+if [ "$USE_TECLA" = "1" ] ; then
+  (cd libtecla_src; ./configure --without-man-pages)
+  touch libtecla_src/needed
+else
+  rm -f libtecla_src/needed
+fi

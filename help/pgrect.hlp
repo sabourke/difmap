@@ -1,0 +1,2 @@
+xmin, xmax, ymin, ymax
+Draw a rectangle using the current fill attributes

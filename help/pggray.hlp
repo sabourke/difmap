@@ -1,0 +1,67 @@
+array, i1, i2, j1, j2, levels, tr
+Make a gray-scale plot of a 2D array using pgplot.
+
+EXAMPLE
+-------
+
+ First we create a test 2D array of 10x10 elements and make element
+ i,j have the value (i+1) * (j+1):
+
+  0>float a(10,10)
+  0>a = {10,10} (#0 + 1) * (#1 + 1)
+
+ Start a new page and create the standard viewport.
+
+  0>pgpage
+  0>pgvstd
+
+ Draw graph axes in which both x and y go from 0.5 to 10.5.
+
+  0>pgswin 0.5, 10.5, 0.5, 10.5
+  0>pgbox "BCNST", 0,0, "BCNST", 0,0
+
+ Set up a transfer matrix to map the center of cell i,j to
+ coordinate value i,j.
+
+  0>float tr(6)
+  0>tr = 0,1,0,0,0,1
+
+ Display a gray-scale image of the array, with the value
+ 100.0 being shown in the foreground color, and the value
+ 1.0 in the background color.
+
+  0>pggray a, 1, 10, 1, 10, 100.0, 1.0, tr
+
+
+PARAMETERS
+----------
+array      -    The 2D array to be imaged.
+i1, i2     -    The range of the first index of the array. This
+                delimits a sub-image to be displayed (inclusive).
+j1, j2     -    The range of the first index of the array to be
+                displayed (inclusive).
+fg, bg     -    The range of values in the array over which to
+                spread the possible grey-levels, with elements
+                having value 'fg' displayed with the foreground
+                color and element with having value 'bg' shown
+                in the background color.
+tr         -    A 6 element transformation matrix, used to map
+                the i,j indexes of cells in the array to the
+                corresponding x,y positions of their centers
+                in the coordinate system of the graph:
+
+                   x = tr(1) + tr(2)*i + tr(3)*j
+                   y = tr(4) + tr(5)*i + tr(6)*j
+                
+                Normally tr(3) and tr(5) are zero. For example, if
+                you wanted to map i1 to a value x1 and i2 to the
+                value x2, and map j1 to a value y1 and j2 to the
+                value y2, you would use:
+
+                   tr(1) = x1 - i1 * (x2-x1) / (i2-i1)
+                   tr(2) = (x2-x1) / (i2-i1)
+                   tr(3) = 0.0
+                   tr(4) = y1 - j1 * (y2-y1) / (j2-j1)
+                   tr(5) = 0.0
+                   tr(6) = (y2-y1) / (j2-j1)
+

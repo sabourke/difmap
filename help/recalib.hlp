@@ -1,0 +1,2 @@
+cal_cube, model_cube, ref_peak
+Re-calibrate raw spectra to have same flux at ref_peak as model.

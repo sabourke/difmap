@@ -1,0 +1,19 @@
+
+Undo accumulated position shifts from the data, windows and models.
+EXAMPLE
+-------
+
+0>unshift
+unshift: Removing accumulated position shifts.
+0>
+
+CONTEXT
+-------
+The 'shift' command can be used to incrementally shift the position of the
+phase center of the data, and the associated positions of models and CLEAN
+windows. The 'unshift' command puts the data back to the position that
+they had when the observation was read into difmap.
+
+ASSOCIATED COMMANDS
+-------------------
+shift - Shift the observation phase-center, CLEAN window and model positions.

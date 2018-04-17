@@ -1,0 +1,74 @@
+planet, epoch
+Return the geometry of a given planet.
+EXAMPLES
+--------
+
+1. In the first example, the 'observe' command is first used to
+   read in an observation of Jupiter. This enables the
+   'planet_geometry' command to get the planet name and the epoch
+   of interest from the observation.
+
+     0>obs jupiter.uvf
+     ...
+     0>planet_geometry
+     jupiter: Equatorial diameter=35.4563 arcsec
+	      Flattening=0.06487
+	      Geometric diameter=34.287 arcsec
+	      Solid angle=923.314 arcsec^2
+     0>
+
+    or in its functional form:
+
+     0>obs jupiter.uvf
+     ...
+     0>print planet_geometry()
+     35.4563 0.06487 34.287 923.314 
+     0>
+
+2. If no planet observation has been read in, the planet name and
+   epoch must be specified.
+
+     0>planet_geometry jupiter, mjd(13-jun-2001:7:12)
+     jupiter: Equatorial diameter=32.2457 arcsec
+	      Flattening=0.06487
+	      Geometric diameter=31.1823 arcsec
+	      Solid angle=763.672 arcsec^2
+     0>
+
+   or in its functional form:
+
+     0>print planet_geom(jupiter, mjd(13-jun-2001:7:12))
+     32.2457 0.06487 31.1823 763.672 
+     0>
+
+   Note that the mjd() function has been used specify the Modified
+   Julian Date of 2001-jun-13 at 7:12am UTC.
+
+PARAMETERS
+----------
+planet      -    Default=""
+                 The name of the planet of interest.
+                 If this argument is omitted, or specified as "", the
+                 source name of the current observation is used. This
+                 must be a simple un-embellished planet name, specified
+                 in uppercase, lowercase or mixed case letters. Only
+                 the planets Mercury, Venus, Mars, Jupiter, Saturn,
+                 Uranus and Neptune are recognized. Pluto isn't well
+                 enough characterized to be usable.
+
+epoch       -    Default=0.0
+                 The UTC date of the observation, expressed as a
+                 Modified Julian Date. If this argument is omitted,
+                 or specified as 0.0, the mid date of the current
+                 observation is substituted.
+
+RETURN ARRAY
+------------
+If the command is used as a function, it returns an array of values, these
+being the following parameters, in the following order:
+
+ (1) - The equatorial diameter (a) in arc-seconds.
+ (2) - The flattening (a-b)/a).
+ (3) - The geometric diameter in arc-seconds.
+ (4) - The solid angle subtended by the planet,
+       in arc-seconds squared.

@@ -1,0 +1,15 @@
+fill_style
+Set the fill-area style for subsequent graphics.
+
+PARAMETERS
+----------
+
+fill_style   -   The fill-area style, chosen from:
+
+                     1 - solid (the default)
+                     2 - outline
+                     3 - hatched
+                     4 - cross-hatched
+
+                   Other values evoke an error message and are
+                   treated as 2.

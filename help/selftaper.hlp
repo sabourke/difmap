@@ -1,0 +1,80 @@
+gaussian_value, gaussian_radius
+Sets a (1 - gaussian) taper to weight down SHORT baselines.
+EXAMPLE
+-------
+
+1. To set a gaussian taper.
+
+   0>selftaper 0.1,10
+   Selfcal gaussian taper: value 0.1 at UV radius = 10 mega-wavelengths.
+   0>
+
+   The second line is the response from the selftaper command, confirming
+   the taper selection.
+
+2. To see the currently selected taper value omit all arguments:
+
+   0>selftaper
+   Selfcal gaussian taper: value 0.1 at UV radius = 10 mega-wavelengths.
+   0>
+
+3. To cancel a previously selected gaussian taper, type:
+
+   0>selftaper 0
+   No selfcal UV-taper is currently set.
+   0>
+
+PARAMETERS
+----------
+gaussian_value  - The value of the (1 - gaussian) taper at
+                  'gaussian_radius'. Valid values lie between 0 -> 1
+                  exclusive. Other values cause the cancellation of
+                  any existing gaussian taper.
+gaussian_radius - The UV radius at which (1 - gaussian) taper should
+                  have RISEN to 'gaussian_value'. (values <= 0
+                  de-select gaussian tapering). Unless changed with
+                  the mapunits command, the units are
+                  million-wavelengths.
+
+To cancel a previous gaussian taper you should type: selftaper 0
+Whenever a new UV data set is read with the 'observe' command
+any existing gaussian taper is cancelled.
+
+CONTEXT
+-------
+When required, this command should be called before using the selfcal
+command.
+
+Repeated cycles of clean tend to build up a model that first becomes
+complete on long baselines. If amplitude selfcal is applied at this
+point it will probably find solutions that pull down the observed
+amplitudes at the shorter UV radii to match the incomplete model
+there. To circumvent this, you should get selfcal to heavily weight
+down the short baselines wrt the longer baselines by calling
+selftaper.
+
+A good indication of where the model and observed visibilities
+diverge is given by the plot of UV amplitude vs UV radius in radplot.
+
+Selftaper forces subsequent invocations of selfcal to weight down
+the visibilities as a function of radius. The form of this function
+is.
+
+ (1-gaussian(uv_radius))
+
+In detail:
+
+ (1 - exp(log(1-gaussian_value)*(uv_radius/gaussian_radius)^2)
+
+This goes from 0 at zero UV radius, reaches value=gaussian_value at
+a UV radius=gaussian_radius and approaches 1 as UV radius tends
+to infinity.
+
+RELATED COMMANDS
+----------------
+selfcal   - Performs self-calibration. 
+selflims  - Used to set limits to amp and phase corrections in selfcal.
+selfflag  - Used to control the fate of un-correctable data.
+selfant   - Set antenna based constraints in selfcal.
+gscal     - Calculate overall telescope amplitude corrections.
+startmod  - Phase selfcal to a starting model then discard the model.

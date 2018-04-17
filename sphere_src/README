@@ -1,0 +1,125 @@
+All files in this distribution are copyrighted by the following
+declaration.
+
+Copyright (c) 1992 by the California Institute of Technology.
+
+Author: Martin C. Shepherd  (mcs@phobos.caltech.edu) or (15237::mcs)
+
+NOTE this is the first official release of libsphere.a. Currently it has
+only been tried on SUN sparc workstations running BSD UNIX, compiled
+using gcc. Also, I have only produced a FORTRAN->C PGPLOT interface library
+for SUNs. This current distribution is unlikely to work on any
+other machine.
+
+
+SHOPPING LIST
+-------------
+
+To succesfully install difmap you will need the following items:
+
+ 1. A SUN-sparc running SUNOS 4.*.
+
+ 2. An ANSI-C compiler (prefereably gcc). You can get the gcc
+    distribution via anonymous ftp from prep.ai.mit.edu in
+    directory /pub/gnu/.
+
+ 3. A FORTRAN-77 compiler.
+
+ 4. PGPLOT at version 4.9f or above. This may be obtained via
+    anonymous ftp from deimos.caltech.edu (131.215.240.18) in directory
+    pgplot.
+
+ 5. The libcpgplot.a PGPLOT C wrapper library. If you are reading this as
+    part of the difmap distribution then the libcpgplot.a code is in directory
+    ../cpgplot_src/. Otherwise, it may be obtained via anonymous ftp from the
+    same site as PGPLOT above. 
+
+INSTALLATION INSTRUCTIONS
+-------------------------
+To make libsphere.a on a SUN sparc running SUNOS perform the following steps:
+
+1. You should find a bourne shell script called configure in the same
+   directory as the file that you are now reading. This script configures
+   the make files for a particular site. Before running this file you
+   must edit it. Follow the instructions in the configure file on what
+   to change and how. When you have edited this to your satisfaction
+   you should type:
+
+
+    ./configure
+
+2. The ./configure script creates a file called makefile. You should
+   now use this to compile libsphere.a by typing:
+
+    make
+
+   If the compilation fails, check your changes to ./configure and if
+   you can't figure out the problem, send me an email displaying the
+   compiler generated error codes and any other information that you
+   can garner.
+
+3. If you decided to move the help files from ./help to a new directory,
+   you should now type:
+
+     mkdir the_name_of_the_new_directory
+     cp -R ./help/ the_name_of_the_new_directory/
+
+5. The only files that are needed by libsphere.a are the help files (in the
+   directory that you chose to install them in). All other files can
+   now be deleted if you wish to conserve space.
+
+COMPILING AND LINKING YOUR PROGRAMS WITH LIBSPHERE and LIBPGC
+-------------------------------------------------------------
+
+ Make sure that the path to wherever you put the libraries is named
+ in your LD_LIBRARY_PATH environment variable. This is normally
+ defined in one's ~/.login or ~/.cshrc file.
+
+ Since PGPLOT is written in FORTRAN and libsphere.a and libcpgplot.a
+ are written in C, you will have a choice of whether to LINK your program
+ with your C compiler or your fortran
+ compiler. For the link step, both compilers simply call SUN's linker,
+ ld. The only difference is that the fortran invokation will implicitly
+ insert the fortran system libraries as arguments to ld, whereas the C
+ invokation will implicitly insert the C libraries as arguments to ld.
+ Since there are typically more fortran libraries (that YOU would need
+ to cite when using the C compiler to link your program), I find it
+ more convenient to use the fortran compiler to link my programs.
+
+ Typically I might type:
+
+ gcc -c -g *.c
+
+ f77 -c -g *.f
+
+ f77 *.o -lsphere -lcpgplot -lpgplot -lX11 \
+	-L/usr/local/lib/gcc-lib/sparc-sun-sunos4.1/2.1 -lgcc
+
+Its probably best to use aliases or make files to do this.
+
+The first line compiles any C files that I want to include. The
+second line compiles any FORTRAN files that I want in the program
+and the final line links them together with pgplot etc...
+
+The "-L..... -lgcc" part of the final line links in the gnu compiler's
+library. The rest links in libsphere.a, libcpgplot.a, PGPLOT itself, 
+and any graphics libraries that the pgplot drivers may require.
+
+Note that -lcpgplot MUST precede -lpgplot (as above). This is because the
+SUN linker only reads the libraries in the order given and only links
+in parts of each succesive library that resolve un-resolved symbols
+from the previous libraries, *.o files etc..
+
+Also note that f77 automatically links in the math library so you
+shouldn't have to cite -lm in the link line.
+
+On SUNOS 4.1.2 the linker is slightly broken. If your main program
+is a C function rather than FORTRAN then the linker will complain
+about _MAIN_ being undefined. You can normally ignore this - an
+executable file will still be produced and I haven't had any further
+problems. If you find this annoying create a function:
+
+int MAIN_(void){return 0};
+
+and link this with the rest of your code.
+

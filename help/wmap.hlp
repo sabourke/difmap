@@ -1,0 +1,31 @@
+file_name
+Save the clean (restored) map to a FITS file.
+EXAMPLES
+--------
+
+0>wmap map.fits
+Writing clean map to FITS file: map.fits
+0>
+
+PARAMETERS
+----------
+file_name - The file name to be given to the new FITS file.
+
+CONTEXT
+-------
+'wmap' can be used to save the restored map to a FITS file at any point
+during mapping. Many other programs, such as AIPS can read such files.
+If necessary the map will be restored first. The model used to restore
+the map is also recorded in an 'AIPS CC' binary extension table.
+
+Only the inner cleaned region (the same as the region that mapplot
+displays by default) is saved to the file.
+
+RELATED COMMANDS
+----------------
+wdmap  - Save the dirty (residual) map.
+wbeam  - Write the dirty beam to a FITS file.
+wobs   - Write the UV data to a random-groups UV FITS file.
+wmodel - Write the CLEAN model to a (text) VLBI model file.
+wwins  - Write CLEAN windows to a text file.
+save   - Save UV data, models, windows and the restored map.

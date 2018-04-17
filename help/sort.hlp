@@ -1,0 +1,2 @@
+sort_axis, index_array, <data_array,...>
+Sort an index array and rearrange other arrays into the same order.

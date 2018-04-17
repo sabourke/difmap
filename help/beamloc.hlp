@@ -1,0 +1,64 @@
+xcenter, ycenter, minsize, maxsize
+Change when and where mapplot plots the clean beam ellipse.
+
+EXAMPLE
+-------
+
+  0>beamloc 1.0, 0.0, 0.5
+  Mapplot clean beam ellipse center: 1,0. Max size: 0.5.
+
+  0>beamloc -1
+  Mapplot will not plot a clean beam ellipse.
+
+PARAMETERS
+----------
+
+xcenter   -    The location of the beam center along the X-axis,
+               measured in normalized plot coordinates (0 -> 1).
+               The initial default is 0.0, the left of the plot.
+
+ycenter   -    The location of the beam center along the Y-axis,
+               measured in normalized plot coordinates (0 -> 1).
+               The initial default is 0.0, the bottom of the plot.
+
+minsize   -    The minimum allowed fractional extent of the beam ellipse
+               with respect to the plot width and height. The beam will
+               not be plotted when its size is smaller than this limit.
+               The initial default is 0.01.
+
+maxsize   -    The maximum allowed fractional extent of the beam ellipse
+               with respect to the plot width and height. The beam will
+               not be plotted when its size exceeds this limit.
+               The initial default is 0.3.
+
+CONTEXT
+-------
+When plotting clean maps, mapplot usually plots a filled ellipse
+representation of the clean beam in the bottom left corner of the
+map. 
+
+For esthetic and practical reasons, it is usually desireable to
+prevent the beam ellipse from being plotted when it is either very
+small with respect to the size of the plot, or so big that it comes to
+dominate or obscure important parts of the plot. The latter is
+particularly important when zooming in on fine detail. The 'minsize'
+and 'maxsize' arguments allow one to specify the allowable range of
+sizes as fractions of the width and height of the plot.
+
+The position at which the center of the beam is plotted can also be
+changed via the 'xcenter' and 'ycenter' arguments. Both positions are
+specified in normalized plot coordinates, with 0,0 refering to the
+bottom left corner and 1,1 refering to the top right corner. If either
+'xcenter' or 'ycenter' lies outside the range 0 and 1, then no beam
+will be drawn. Otherwise the beam will be positioned at the position
+given, with the exception that if the position would place part of the
+beam outside the map, it will be moved inwards, suitably spaced from
+the edge.
+
+RELATED COMMANDS
+----------------
+mapplot  -  Display map and beam images.
+xyrange  -  Set the boundaries of the sub-image to be displayed in mapplot.
+loglevs  -  Set logarithmic levels.
+mapcolor -  Select mapplot colormap type and transfer function.
+mapfunc  -  Change the transfer function used in mapplot.

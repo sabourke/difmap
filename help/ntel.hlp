@@ -1,0 +1,37 @@
+subarray
+Return the number of telescopes in a given sub-array.
+EXAMPLE
+-------
+
+Example 1  -  Write a message saying how many telescopes are in the first
+              sub-array.
+
+0> print "There are", ntel, "telescopes in sub-array 1"
+There are 13 telescopes in sub-array 1 
+
+Example 2  -  List the names of all 'ntel' telescopes in sub-array 2.
+
+0> do i=1,ntel(2)
+1>   print telname(i,2)
+1> end do
+BONN 
+WSRT 
+JBNK1 
+BOLOGNA 
+VLBA_KP 
+VLBA_PT 
+VLBA_LA 
+VLA27 
+OVRO 
+0>
+
+PARAMETERS
+----------
+subarray  -  Optional: Defaults to 1.
+             This is the number of the antenna sub-array to return the
+             telescope count from. The 'header' command may be used to
+             examine what sub-arrays are available.
+
+RELATED FUNCTIONS
+-----------------
+telname  -  Return the name of the n'th telescope of a given sub-array.

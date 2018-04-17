@@ -1,0 +1,139 @@
+type, contrast, brightness
+Select the colormap type, brightness and contrast to use in mapplot.
+EXAMPLES
+--------
+
+1. To disable psuedo-color plotting.
+
+   0>mapcolor none
+   Mapplot colormap: none, contrast: 1 brightness: 0.5.
+   0>
+
+2. To select a grey-scale color map.
+
+   0>mapcol grey
+   Mapplot colormap: grey, contrast: 1 brightness: 0.5.
+   0>
+
+3. To select the current default color colormap:
+
+   0>mapcolor color
+   Mapplot colormap: rainbow, contrast: 1 brightness: 0.5.
+   0>
+
+4. To change the default colormap to the AIPS TVFIDDLE colormap
+   and select it for the next mapplot:
+
+   0>mapcolor aips
+   Mapplot colormap: aips, contrast: 1 brightness: 0.5.
+   0>
+
+PARAMETERS
+----------
+
+     type  -  The type of colormap to use, selected from:
+                none   -   Turn off psuedo-color plotting.
+                grey   -   Use a grey-scale ramp [initial default].
+                color  -   Use the default RGB colormap.
+                aips   -   The AIPS TVFIDDLE colormap.
+                heat   -   Flame colored colormap.
+                ramp   -   This is a three ramp colormap, based on
+                           one in Iraf's ximtool.
+                red    -   Red ramp.
+                green  -   Green ramp.
+                blue   -   Blue ramp.
+
+brightness -  The brightness of the color bar between 0 and 1.
+              With the gray-scale colormap, the image will be
+              completely black for brightness <= 0, and completely
+              white at brightness >= 1.
+
+              The initial default is 0.5, which places the center
+              of the colormap at the center of the color bar.
+
+contrast   -  The contrast of the colormap, expressed as the reciprocal
+              of the width of the colormap on the displayed color bar.
+              The initial default of 1.0 spreads the colormap over the
+              length of the color bar. Higher contrasts compress the
+              colormap, while lower contrasts expand it.
+
+CONTEXT
+-------
+Mapplot can display maps using contours, and/or grey-scale or
+psuedo-color. The colormap command provides a means of selecting
+these options prior to running mapplot. There are three classes
+of colormap that you can choose:
+
+   none - This turns off grey-scale and color plotting entirely.
+
+   grey - This selects the default grey-scale colormap.
+
+  color - All colormaps except those named above, are of class
+          'color'. Specifying 'color' to the colormap command
+          selects the last colormap of class 'color' that was
+          previously selected. Thus after selecting 'aips' once,
+          either interactively in 'mapplot', or via the mapcolor
+          command, and then subsequent requests for 'color'
+          install the 'aips' colormap. Other 'color' color-maps
+          are listed above under the explanation of the 'type'
+          argument.
+
+You also have the option of specifying how the colormap will be
+mapped onto the mapplot image intensity. By default, the contrast
+is set to 1 and the brightness to 0.5. This fits the colormap exactly
+within the color bar plotted under the mapplot image. The center of
+the colormap can be moved up or down the color bar by changing the
+colormap brightness. This is best done interactively in mapplot,
+but can also be set on the command line with the mapcolor command.
+The width of the colormap compared to that of the color bar can also
+be changed by altering the contrast. High contrast equates to a
+colormap that occupies only a small fraction of the color bar. Low
+contrast equates to a colormap extent that exceeds the width of the
+color bar, such that only a small range of its colors are visible.
+Negative contrasts act the same as positive contrasts except that the
+colormap is reversed. Again, the contrast is best set interactively
+in mapplot, but can be preset with the 'mapcolor' command.
+
+Note that to completely flip the sense of a color map you should
+first run the mapcolor command without arguments, to see what the
+current brightness and contrast are. Then run the mapcolor command and
+substitute -contrast for the original contrast, and 1-brightness for
+the original brightness.
+
+To see what the current colormap settings are, invoke the colormap
+command with no arguments.
+
+Note that changes to the colormap selection, brightness and
+contrast within mapplot remain in place after you exit mapplot.
+It is thus possible to set these parameters interactively in mapplot
+for subsequent mapplot plots. In particular, this is invaluable for
+making hard copies in color after setting the desired colors on
+an interactive device.
+
+Also see 'help mapfunc' for details on how to specify the transfer
+function and data range to plot.
+
+Limitations
+-----------
+When using this command note that:
+
+1. Some devices are not capable of displaying color. In such
+   cases RGB colormap types will be translated into grey-levels. This
+   is device dependant and the results may not be what you expect.
+
+2. Some devices can't even display different levels of grey.
+   On such devices a random-stipple pattern is used to simulate
+   different grey-levels.
+
+3. If you are using an old version of PGPLOT that does not have
+   the PGIMAG call, then only grey-scale colormaps are generally
+   available on hard-copy devices.
+
+RELATED COMMANDS
+----------------
+mapplot  -  Display map and beam images.
+xyrange  -  Set the boundaries of the sub-image to be displayed in mapplot.
+loglevs  -  Set logarithmic contour levels for use in 'mapplot'.
+mapfunc  -  Change the transfer function used in mapplot.
+mapplot  -  Display map and beam images.
+beamloc  -  Change when and where mapplot plots the clean beam ellipse.

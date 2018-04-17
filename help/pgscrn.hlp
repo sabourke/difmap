@@ -1,0 +1,24 @@
+color_index, color_name, ierr
+Set the color of a given PGPLOT color index by name.
+
+PARAMETERS
+----------
+color_index  -   The PGPLOT color index who's color is to be
+                 changed. See 'help pgsci' for the pre-defined
+                 color assignments.
+
+color_name   -   The name of a color in the current color
+                 definition file. This is usually given by
+                 $PGPLOT_DIR/rgb.txt. See the PGPLOT documentation
+                 of pgscrn for further details.
+
+ierr         -   Optional.
+                 If provided, this variable will be set to 1 if
+                 the color can't be found, or 0 on success. If not
+                 provided then the script that is running will be
+                 aborted if the color can't be found.
+
+RELATED COMMANDS
+----------------
+pgscr  -   Change the color of a PGPLOT color index (RGB version).
+pgshls -   Change the color of a PGPLOT color index (HLS version).

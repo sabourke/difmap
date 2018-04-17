@@ -1,0 +1,48 @@
+file_name, do_continuum
+Read a new CLEAN model from a VLBI model file.
+EXAMPLE
+-------
+
+0>rmodel test.mod
+A total of 26 model components were read from file test.mod
+0>
+
+PARAMETERS
+----------
+file_name    - The name of an existing model file.
+
+do_continuum - (Default=false)
+               If omitted or given as FALSE, the contents of the model
+               file will supersede the established and tentative
+               models. If it is given as TRUE, then the contents will
+               be used to supersede the continuum model.
+
+CONTEXT
+-------
+There are at least two reasons why one might want to read in an external
+a model file. The first is to provide a starting model for
+self-calibration - this is best done using the 'startmod' command. The
+second is to let one re-start mapping where one left off at an earlier
+date.
+
+A third reason that is relevant to spectral-line work, is to read in a
+model from a separate observation of the continuum underlying a
+spectral-line source. The model produced by the continuum observation
+can then be used as a model to be subtracted prior to spectral-line
+mapping. See the 'setcont' command for further details.
+
+SIDE EFFECTS
+------------
+The models read supersede any existing models of the same type. Thus,
+if do_continuum is FALSE, the current established and tentative models
+will be discarded before reading the new model. If do_continuum is TRUE,
+then the current continuum model will be discarded before reading the
+new model. So, if you wish to retain these models for later, remember
+to use the wmodel command before using rmodel.
+
+RELATED COMMANDS
+----------------
+startmod - Self-calibrate an observation with a temporary point-source
+           model.
+wmodel   - Write clean models to a VLBI model file.
+save     - Save all data files and the difmap running parameters.

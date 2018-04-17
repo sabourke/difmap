@@ -1,0 +1,40 @@
+file_name, do_shift
+Save UV data to a random-groups UV FITS file.
+EXAMPLE
+-------
+
+0>wobs 3c345.uvf
+Writing UV FITS file: 3c345.uvf
+0>
+
+ARGUMENTS
+---------
+file_name  -  The name to give the new FITS file.
+do_shift   -  (Default=false)
+              By default the recorded data don't include any shifts
+              applied with the 'shift' command. This is the mode used
+              by the 'save' command, which arranges instead to reapply
+              the shift with another 'shift' command on rereading the
+              data into difmap. To force difmap to freeze the accumulated
+              position shifts in the output file, specify this argument
+              as true.
+
+CONTEXT
+-------
+Once UV data have been read into difmap with the 'observe' command, it
+may be saved to a new random-groups UV FITS file with the 'wobs'
+command. If visibilities have been edited then the new file will
+contain the edited data. Any edits that were applied in difmap, as
+well as self-calibration and residual offset corrections, will be
+applied to the saved data. This command is automatically called by the
+'save' command.
+
+RELATED COMMANDS
+----------------
+observe - Read a new random-groups UV FITS file.
+wmap    - Write the clean (restored) map to a FITS file.
+wdmap   - Save the dirty (residual) map.
+wbeam   - Write the dirty beam to a FITS file.
+wmodel  - Write the CLEAN model to a (text) VLBI model file.
+wwins   - Write CLEAN windows to a text file.
+save    - Save UV data, models, windows and the restored map.

@@ -1,0 +1,48 @@
+itel, isub
+Returns the name of telescope 'itel' of sub-array 'isub'.
+EXAMPLE
+-------
+example 1  -  Print out all (ntel) telescope names in sub-array 1.
+
+0>do i=1,ntel
+1>  print telname(i)
+1>end do
+1:BONN
+1:WSRT
+1:JBNK1
+1:BOLOGNA
+1:VLBA_KP
+1:VLBA_PT
+1:VLBA_LA
+1:VLA27
+1:OVRO
+0>
+
+example 2  -  Display the self-cal corrections for each telescope in turn
+              from sub-array 2.
+
+0>
+0>do i=1,ntel
+1>  corplot `telname(i,2)`
+1>end do
+
+Example 3  -  Print the name of the third telescope in sub-array 2.
+
+0>print telname(3,2)
+2:OVRO
+
+The "number:" prefix indicates the number of the sub-array to which the
+telescope belongs.
+
+PARAMETER
+---------
+itel  -  The sequential number of the telescope who's name is required.
+
+isub  -  Default: 1
+         The number of the sub-array from which the telescope name
+         is required.
+
+RELATED FUNCTIONS
+-----------------
+ntel - Return the number of telescopes in a given sub-array.
+nsub - Return the number of sub-arrays in an observation.

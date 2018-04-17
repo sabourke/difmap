@@ -1,0 +1,2 @@
+index, red, green, blue
+Return the current RGB components of a given pgplot color index.

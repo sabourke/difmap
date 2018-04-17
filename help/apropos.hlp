@@ -1,0 +1,47 @@
+search-string
+Locate functions, commands and help topics by keyword lookup.
+EXAMPLE
+-------
+
+To look up all command and help topics whose one-line desciptions or
+symbol names contain the string "trig", one would type:
+
+ 0>apropos trig
+ 
+ Matching functions and commands in module: maths
+  acos
+    Trig arc cosine - returns radians
+  asin
+    Trig arc sine - returns radians
+  atan
+    Trig arc tangent - returns radians
+  cos
+    Trig cosine(x)
+  sin
+    Trig sine(x)
+  tan
+    Trig tangent(x)
+ 0>
+
+ARGUMENT
+--------
+search-string  -  The string to search for. Case is not significant.
+
+CONTEXT
+-------
+The apropos command provides one way of finding commands and help
+topics related to a given subject. It is not a perfect method, since
+it depends upon how each entry is documented, but it is a first line
+of attack to try.
+
+The apropos command works by performing a case-insensitive search for
+the string that you specify. It searches for the string in the
+one-line help associated with each command and help topic, as well as
+the each command and topic name. Any commands and topics for which
+this search succeeds are displayed along with the name of the module
+in which they were found.
+
+RELATED COMMANDS
+----------------
+help    -  Show documentation on a command, function or help topic.
+varlist -  List variables and their characteristics.

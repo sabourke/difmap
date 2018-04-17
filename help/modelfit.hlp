@@ -1,0 +1,178 @@
+niter
+Fit image-plane model components to visibilities in the UV plane.
+EXAMPLE
+-------
+
+ 0>modelfit 4
+ Partitioning the model into established and variable parts.
+ The fixed established model contains 0 components (0 Jy).
+ The variable part of the model contains 2 components (0.97 Jy).
+ There are 10 variables and 4510 usable visibilities.
+ This gives 2 x 4510 - 10 = 9010 degrees of freedom.
+ Reduced Chi-squared = Chi-squared / 9010.
+
+ Iteration 00: Reduced Chi-squared=46.315838
+ ! Flux (Jy) Radius (mas)  Theta (deg)  Major (mas)  Axial ratio   Phi (deg) T \
+ ! Freq (Hz)     SpecIndex
+   0.950000v     0.00000      0.00000      1.00000v     1.00000v    0.00000v 1 \
+  3.10000e+10    0.0
+  0.0200000v     1.00000v    -130.000v     1.00000v     1.00000v    0.00000v 1 \
+  3.10000e+10    0.0
+
+ Iteration 01: Reduced Chi-squared=4.3881679
+ ! Flux (Jy) Radius (mas)  Theta (deg)  Major (mas)  Axial ratio   Phi (deg) T \
+ ! Freq (Hz)     SpecIndex
+   0.416386v     0.00000      0.00000     0.524179v    0.437841v   -6.49258v 1 \
+  3.10000e+10    0.0
+  0.0826878v     1.00780v    -137.060v     3.31603v    0.732082v   -56.6298v 1 \
+  3.10000e+10    0.0
+
+ Iteration 02: Reduced Chi-squared=0.89815858
+ ! Flux (Jy) Radius (mas)  Theta (deg)  Major (mas)  Axial ratio   Phi (deg) T \
+ ! Freq (Hz)     SpecIndex
+   0.493566v     0.00000      0.00000     0.371532v    0.167305v   -7.53078v 1 \
+  3.10000e+10    0.0
+  0.0209711v     1.20514v    -165.679v     3.93011v    0.331629v   -49.3905v 1 \
+  3.10000e+10    0.0
+
+ Iteration 03: Reduced Chi-squared=1.0050499 (Increased)
+ Iteration 04: Reduced Chi-squared=1.0088361 (Increased)
+ 0>
+
+ARGUMENTS
+---------
+
+niter   -   The number of iterations to try, or zero to just see the
+            current fit. 10 and 20 are good numbers to try, before the
+            first selfcal. 
+
+CONTEXT
+-------
+Model fitting directly to the visibilities of interferometric data has
+two common uses.
+
+1. It is employed to find good starting models for the initial phase
+   self-calibration of phase-unstable data, especially when a point
+   source starting model has proved insufficient.
+
+2. It is commonly used to parameterise the general characteristics of
+   sources with as few variables as possible.
+
+The difmap modelfit program fits aggregates of various forms of model
+components, fitting directly to the real and imaginary parts of the
+observed visibilities using the powerful Levenberg-Marquardt
+non-linear least squares minimization technique. This makes it
+substantially faster and a lesser consumer of memory than the Caltech
+VLBI package modelfit program, that fitted to an ad hoc combination of
+closure-phase and amplitude.
+
+The disadvantage of the newer algorithm is that it assumes that the
+phases are well calibrated. The older algorithm was insensitive to
+this through its use of closure phases. As a result, using modelfit in
+difmap may require a number of interleaved self-calibration steps to
+converge on the model that agrees well with the closure phases.
+
+Note that in version 2.3d the scope of the uvrange command was
+extended to include modelfitting. Thus you can now restrict modelfit
+to only fit to visibilities that lie within a given range of distances
+from the center of the UV plane. This can be useful if you only have
+believable flux in the short baselines, or if you want to start by
+fitting the brighter larger scale features before complicating the
+model with weaker fine structures.
+
+SPECIFYING MODELS FOR MODELFIT
+------------------------------
+There are three ways to specify model components to modelfit.
+
+1. In model files, components with variable parameters are denoted by
+   a 'v' character post-fixing each of the variable parameters.
+
+   Thus in the following model the first component is an elliptical
+   gaussian component with all parameters variable except its
+   position, while the second component has all parameters variable.
+
+ ! Flux (Jy) Radius (mas)  Theta (deg)  Major (mas)  Axial ratio   Phi (deg) T
+   0.140490v     0.00000      0.00000     0.704297v    0.147144v   -48.4654v 1
+   0.118984v     1.01917v     137.776v     1.10527v    0.544262v   -57.5779v 1
+
+   The meaning of each of the above parameters (as originally defined
+   for the Caltech VLBI package), is as follows:
+
+   Flux     -  The integrated flux in the component (Jy).
+   Radius   -  The radial distance of the component center from the
+               center of the map (milli-arcsec).
+   Theta    -  The position angle of the center of the component (degrees
+               North -> East) wrt an imaginary line drawn vertically
+               through the map center.
+
+   The following components may be omitted for delta components, except
+   when you want to specify spectral indexes, in which case they should
+   be specified as zero.
+
+   Major    -  The FWHM major axis of the elliptically stretched
+               component (milli-arcsec).
+   Ratio    -  The ratio of the minor axis to the major axis (0 -> 1).
+   Phi      -  The Position angle of the major axis (degrees North -> East).
+   T        -  The type of component. Recognised types are:
+
+                0 - Delta function.
+                1 - Gaussian.
+                2 - Uniformly bright disk.
+                3 - Optically thin sphere.
+                4 - Ring.
+                5 - Un-supported component type - kept for compatibility.
+                6 - Sunyaev-Zel'dovich.
+
+   The following two parameters are used to optionally give components
+   spectral indexes.
+
+    Freq    -  The frequency for which the specified Flux value is defined,
+               specified in Hz.
+    SpecInd -  The spectral index.
+
+   When modelfitting multiple IFs the above two parameters are used to
+   compute different fluxes for each IF, such that given an IF frequency
+   of f, the corresponding model component flux is:
+
+      Flux * (f/Freq)^SpecInd
+
+   where Flux, Freq and SpecInd are model component parameters
+   described above. Note that when multiple spectral line channels are
+   selected per IF, the frequency used for each IF is the mean of the
+   selected spectral line channel frequencies within that IF. It is
+   assumed that the flux doesn't change significantly between
+   spectral-line channels within an IF.
+
+   Internally the positions of components are recorded by their X and Y
+   axis positions wrt the map center and fitting is wrt these parameters.
+   For this reason if either Radius or Theta is made variable, both will
+   be taken as variable. It is not possible to fix one or the other
+   individually. Similarly, except for the special case of a circular
+   component where only Major is marked as variable and the axial ratio
+   is exactly 1.0, it is not possible to individually mark Major,Ratio
+   and Phi to be fixed. Marking one as variable sets them all as variable.
+
+   More obviously, the model component type T can not be marked to be
+   variable.
+
+2. While model components can be specified via a model file in the
+   above format, it is usually more convenient to incrementally add
+   and remove components interactively via the difmap 'mapplot'
+   command. See help mapplot for further details.
+
+3. The final method is really directed towards changing the trial
+   parameters of an existing variable model, although new components
+   may also be created. This method uses the difmap 'edmodel' command,
+   which invokes an editor on an internally generated model scratch
+   file, initialized with the existing variable model components,
+   appropriately shifted if the 'shift' command has previously been
+   used. See help edmodel for further details.
+
+RELATED COMMANDS
+----------------
+edmodel - Edit the current models with an external editor.
+rmodel  - Read a new model for modelfit.
+mapplot - Maplot allows interactive addition and removal of
+          components. 
+addcmp  - Add a model component by hand to the tentative model.
+uvrange - Set the min and max UV radii of usable visibilities.

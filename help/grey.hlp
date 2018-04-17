@@ -1,0 +1,2 @@
+image-array, <black, white, (window_args..)>
+Plot a grey-scale of an image within the current plot axes

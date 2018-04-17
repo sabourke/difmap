@@ -1,0 +1,154 @@
+#!/bin/sh
+#-----------------------------------------------------------------------
+# Configure site-specific make files.
+#
+# This script may be run any number of times.
+#-----------------------------------------------------------------------
+# Usage:
+#
+#  ./configure system_name
+#
+# Where system_name must be one of the following:
+#  sun4-gcc  -  Sun sparc running SUNOS4.* using gcc.
+#  hppa-c89  -  HP9000 700 or 800 series workstations using c89.
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# The following variables may require modification.
+#-----------------------------------------------------------------------
+#
+# The following shell-variable assignments may require modification.
+# To do this, read the information preceding the assignments and replace
+# the text on the right-hand-side of the assignment if it doesn't meet
+# your requirements.
+#
+# NOTE that the Bourne-shell will not tollerate any space around the '='
+# character in shell-variable assignments.
+#
+# Specify installation directories for the executables,include files,the
+# libraries, and the HELP files. The defaults below place then under
+# in sub-directories of the parent directory (`pwd`/../).
+
+INCDIR="`pwd`/../include"
+LIBDIR="`pwd`/../lib"
+HELPDIR="`pwd`/../help"
+
+
+#-----------------------------------------------------------------------
+#  THE FOLLOWING ARE DEFAULTS WHICH ARE OVERRIDEN LATER FOR YOUR OS.
+#                 DO NOT CHANGE THESE.
+#-----------------------------------------------------------------------
+# The following is the default set of options. After this list are
+# instructions on how to override the default for a specific system.
+
+# The default ANSI-C compiler and the flags that should be presented to it.
+
+CC="cc"
+CFLAGS="-O"
+
+# The way to create a symbolic or (if not an option) hard link to a file.
+
+LN="ln -s"
+
+# How to run ranlib.
+
+RANLIB="ranlib"
+
+
+#-----------------------------------------------------------------------
+# OVERRIDE SELECTED OPTIONS FOR THE GIVEN OS.
+# When compiling for a new OS-compiler combination, add a new
+#  OS-compiler)
+# case in the switch below and redefine any variables for which the default
+# is inappropriate.
+#-----------------------------------------------------------------------
+
+# Get the operating system name from the command line.
+
+if test $# -lt 1;then
+  echo "Usage: configure OS_name-compiler_name"
+  exit 1
+else
+  OS=$1
+fi
+
+# Override selected options for the given operating system-compiler
+# pair.
+
+case $OS in
+  sun4-gcc)   # SUN-Sparc running SUNOS4.*, using the gcc compiler.
+    CC=gcc
+;;
+
+  hppa-c89)   # HP9000-series 700-800, using the vendor's c89 compiler.
+    CC="c89"
+    RANLIB="echo ranlib"
+;;
+
+  *)
+    echo "Unknown OS-compiler combination: $OS"
+    exit 1
+;;
+esac
+
+
+#-----------------------------------------------------------------------
+# You should not have to change anything below this line.
+#-----------------------------------------------------------------------
+
+# Ensure that the path in HELPDIR has a trailing '/'.
+
+HELPDIR="$HELPDIR/"
+
+# Keep the user informed.
+
+echo 'Configuration follows:'
+echo ' INCDIR     =' $INCDIR
+echo ' LIBDIR     =' $LIBDIR
+echo ' HELPDIR    =' $HELPDIR
+echo ' CC         =' $CC
+echo ' CFLAGS     =' $CFLAGS
+echo ' LN         =' $LN
+echo ' RANLIB     =' $RANLIB
+echo ' '
+
+
+# Create the makefile header.
+
+cat > make.configure << EOF
+# Copyright (c) 1993 by the California Institute of Technology.
+
+# ANSI-C compiler.
+
+CC = $CC
+
+# C compilation flags.
+
+CFLAGS = $CFLAGS
+
+# Directory for includes.
+
+INCDIR = $INCDIR
+
+# Directory for libraries.
+
+LIBDIR = $LIBDIR
+
+# Directory of help files.
+
+HELPDIR = $HELPDIR
+
+# Symbolic link creation.
+
+LN = $LN
+
+# The way to invoke ranlib.
+
+RANLIB = $RANLIB
+
+EOF
+
+# Create site-specific make file.
+
+cat make.configure makefile.distrib > makefile
+\rm make.configure

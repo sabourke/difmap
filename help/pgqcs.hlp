@@ -1,0 +1,2 @@
+units, xch, ych
+Return the current PGPLOT character height in specified units.

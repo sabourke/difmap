@@ -1,0 +1,43 @@
+
+Display a list of difmap configuration parameters.
+EXAMPLE
+-------
+
+0>showpar
+Difmap configuration state:
+mapunits mas
+select I, 1, 1
+uvtaper 0, 0
+uvrange 0, 0
+uvweight 2, 0, false
+uvzero 0
+selftaper 0, 0
+selflims 0, 0
+xyrange 0, 0, 0, 0
+integer niter; niter=100
+float gain; gain=0.05
+float cutoff; cutoff=0
+float cmul; cmul=0
+logical docont; docont=true
+mapcolor grey, 1.000000, 0.500000
+mapfunc linear, 0.000000, 0.000000
+string vflags; vflags=""
+string rflags; rflags=""
+string pflags; pflags=""
+selfflag true, 3, 4
+float levs(1)
+levs(1:1) = 0
+0>
+
+CONTEXT
+-------
+Some aspects of Difmap behavior are controlled by parameters set
+through configuration variables and commands. The 'showpar' command
+lists the current state of these parameters. It does this in an
+indirect manner, by showing the command file that the 'save' command
+would record if invoked to record difmap's internal state.
+
+This is not the most convenient way that one could conceive of, but
+unless I get a chance to re-write the difmap interface, I have
+little choice but to show the parameters in this fashion.
+

@@ -1,0 +1,109 @@
+
+An overview of multi-IF mapping.
+Mapping multiple IFs in Difmap.
+------------------------------
+
+CONTEXT
+-------
+The word "IF" is as an acronym for "Intermediate Frequency", which
+refers to the frequency of the receiver stage at which most signal
+amplification and filtering occurs. In Radio Astronomy the term has
+been generalized to mean any single signal path between a telescope
+and the correlator. Thus, a telescope that simultaneously receives two
+bandpasses centered at different frequencies, is said to have two IFs.
+This should be distinguished from the multiple frequency channels of
+spectral-line observations, where a single bandpass is split into
+multiple channels during, or after correlation.
+
+UV FITS RESTRICTIONS
+--------------------
+Random groups UV FITS files impose certain constraints on IFs. In
+particular, although each IF is usually centered at a different
+frequency, the number of spectral-line frequency channels, and the
+number and types of stokes parameters in each IF, must be identical.
+
+DIFMAP RESTRICTIONS
+-------------------
+In addition to the general restrictions imposed by random-groups UV
+FITS files, there are other restrictions imposed by Difmap.
+
+While Difmap does accept most multi-IF UV FITS files, it rejects
+those in which the frequencies assigned to the IFs change during
+the observation. In AIPS parlance, this can be restated by saying that
+Difmap rejects any file that has multiple frequency IDs in its FQ
+table.
+
+Mapping multiple IFs in Difmap.
+------------------------------
+Before mapping a multi-IF observation, one should decide which IFs
+to map first. For continuum this will normally be all IFs, whereas for
+spectral-line it is more likely to be a group of spectral-line
+channels from a single IF. The 'select' command caters for both of
+these choices, along with others. It takes a polarization name, and
+one or more spectral-line channel ranges for each IF. IFs of
+continuum observations are regarded as single-channel spectral-line
+IFs. For each IF in which channels are selected, the 'select' command
+forms a psuedo-continuum channel by averaging together visibilities
+of those channels. One is left with one or more psuedo-continuum IFs,
+known as the current processing stream. Most commands operate on this
+stream. The major exception to this rule is that edits and other
+corrections are applied to the original data as well as to the current
+stream. In addition the following commands work directly on the
+complete data-set and ignore the current stream selection:
+
+ uvaver   - Time average a UV data set.
+ wobs     - Save UV data to a random-groups UV FITS file.
+ specplot - Plot time-averaged visibility spectra.
+
+The operations performed by most Difmap commands are automatically
+applied to all the currently selected IFs, one after the other.
+Exceptions are certain plotting commands where it only makes sense to
+display data from one IF at a time. However such commands provide both
+a command-line argument to explicitly specify a start IF, as well the
+option to interactively step through sampled IFs, one at time. The
+relevant plot commands are:
+
+ vplot   -  Display baseline visibility amplitudes and phases versus time.
+ tplot   -  Display the time-sampling of each telescope.
+ corplot -  Display accumulated self-calibration corrections.
+ cpplot  -  Display observed and model closure phases.
+
+Other plot commands separately display data from all IFs on the same
+plot. Edits in those commands are applied to the source IFs of the
+individual points selected for editing. Such plot commands include:
+ 
+ radplot  -   Display visibility amplitude vs. UV radius.
+ projplot -   Display visibility amplitude/phase vs. projected UV distance.
+ uvplot   -   Display the sampling of the UV plane.
+
+The only command that explicitly combines IFs is the 'invert' command.
+This is a command that is usually called for you by Difmap commands
+that require an up to date version of the latest residual map. The
+'invert' command convolves all the residual UV data one IF at a time
+onto a single regular two dimensional grid of the UV plane, and then
+Fourier inverts the result to produce a residual map. Combining the
+data together in this fashion avoids the inter-IF bandwidth smearing
+that would otherwise occur if visibilities of the same baselines,
+taken at the same times but at different frequencies were simply
+averaged to a single point in the UV plane.
+
+Given that Difmap maps are formed by combining all selected IFs, the
+model that is built up by 'clean' or 'modelfit', is a model that
+simultaneously represents the structure in all those IFs. This is
+clearly only a reasonable assumption if the actual structure being
+mapped doesn't change significantly over the frequency range covered
+by the selected IFs. The more general case is called multi-frequency
+synthesis, and is not catered for by Difmap. In such cases you should
+map each IF separately.
+
+The end result of multi-IF mapping is a single clean map formed from
+the combination of data from all IFs.
+
+Note that the fact that the selected channels of each IF are averaged
+to form psuedo-continuum IFs, currently procludes the spectral-line
+bandwidth synthesis mode of continuum mapping.
+
+PERTINENT COMMANDS AND FUNCTIONS.
+--------------------------------
+nif   - Return the number of IFs in the current observation.
+nchan - Return the number of channels per IF.

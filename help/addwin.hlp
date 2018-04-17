@@ -1,0 +1,33 @@
+xa, xb, ya, yb
+Append a new entry to the list of clean windows.
+EXAMPLE
+-------
+
+0> addwin -1.5,1.0,-3.0,2
+0>
+
+PARAMETERS
+----------
+
+xa  -   The relative Right-Ascension of either edge of the new window.
+xb  -   The relative Right-Ascension of the opposite edge to 'xa', of
+        the new window.
+ya  -   The relative Declination of either edge of the new window.
+yb  -   The relative Declination of the opposite edge to 'ya', of the
+        new window.
+
+Coordinates should be specified with the same sign convention and
+units as displayed in mapplot. (See help on the mapunits command).
+
+CONTEXT
+-------
+Normally clean windows should be set with the cursor in the mapplot
+command. Each new window added is appended to a list of clean windows
+for use in clean. The addwin command provides a way to add windows
+to the same list, but directly at the command line.
+
+RELATED COMMANDS
+----------------
+mapplot - Allows adding and deleting windows with the cursor.
+delwin  - Deletes all clean windows.
+clean   - Cleans within the specified clean windows.

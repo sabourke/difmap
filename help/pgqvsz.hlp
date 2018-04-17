@@ -1,0 +1,2 @@
+units, xmin, xmax, ymin, ymax
+Return the dimensions of the view-surface in specified units.

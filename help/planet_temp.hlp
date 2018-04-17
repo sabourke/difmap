@@ -1,0 +1,103 @@
+flux, planet, epoch, freq
+Find the brightness temperature implied by the measured flux of a planet.
+EXAMPLES
+--------
+
+1. In the following example, the 'observe' command was first used to
+   read in an observation of Jupiter,then a range of channels was
+   selected using the 'select' command. Then, modeling it as a point
+   source with spectral index of 2.0, modelfit returned a best fit
+   flux of 181.454 Jy at the center frequency of the observation.
+
+   Presenting the planet_temp command with this flux, caused it to deduce
+   that Jupiter was being observed by looking at the source name that
+   was read from the UV FITS file. Since no frequency or epoch were
+   specified, it substituted the middle frequency and the date of the
+   mid point of the observation.
+   
+    0>planet_temp 181.454
+    Apparent brightness temperature = 150.83 Kelvin
+
+2. The second example is the same as the first, except that instead
+   of just displaying the result to the user, we capture the returned
+   temperature in a variable.
+
+    0>float temp
+    0>temp = planet_temp(181.454)
+
+3. If no observation has been read in, using the planet_temp command is
+   more cumbersome, in that since the planet name, the epoch of
+   interest, and the frequency can't be taken from the observation,
+   they have to be specified explicitly. For example,
+
+     0>planet_temp 1.0, jupiter, mjd(13-jun-2001:7:12), 30e9
+     Apparent brightness temperature = 2.01477 Kelvin
+     0>
+    
+   equivalently using the functional form,
+    
+     0>print planet_temp(1.0,jupiter,mjd(13-jun-2001:7:12),30e9)
+     2.01477
+     0>
+
+   Note that the mjd() function has been used specify the Modified
+   Julian Date of 2001-jun-13 at 7:12am UTC.
+
+ARGUMENTS
+---------
+flux        -    The flux to be converted to a brightness temperature.
+
+planet      -    Default=""
+                 The name of the planet which returned the above flux.
+                 If this argument is omitted, or specified as "", the
+                 source name of the current observation is used. This
+                 must be a simple un-embellished planet name, specified
+                 in uppercase, lowercase or mixed case letters. Only
+                 the planets Mercury, Venus, Mars, Jupiter, Saturn,
+                 Uranus and Neptune are recognized. Pluto isn't well
+                 enough characterized to be usable.
+
+epoch       -    Default=0.0
+                 The UTC date of the observation, expressed as a
+                 Modified Julian Date. If this argument is omitted,
+                 or specified as 0.0, the mid date of the current
+                 observation is substituted.
+
+freq        -    Default=0.0
+                 The frequency of the observation (Hz). If this
+                 argument is omitted, or specified as 0.0, the mean
+                 frequency of the currently selected channels is
+                 used.
+
+CONTEXT
+-------
+
+To compute the brightness temperature of a planet, given its measured
+flux in Jy, one needs the solid angle, w, subtended by the planet in
+steradians and the frequency, f, at which the flux was measured. One
+can then use the Rayleigh-Jeans approximation to compute a brightness
+temperature defined by the following equation:
+
+ T = c^2 * flux * 1.0e-26 / (w * 2 * k * f^2)
+
+where c is the speed of light, k is Boltzmann's constant, and
+the factor 1.0e-26/w converts Jy to W/m^2/Hz/sr.
+
+In order to compute the solid angle subtended by the planet, an
+approximate algorithm implemented in slalib is used to compute the
+distance of the target planet at the specified epoch, and this is
+combined with the equatorial diameter and flatnesses tabulated in the
+Explanatory Supplement to the Astronomical Almanac.
+
+If you are planning to use the 'modelfit' command to fit for the flux
+of the planet, and you are doing this over a wide range of frequency
+channels, I suggest that you create the initial model component
+interactively using the 'n' key in the 'mapplot', then use the 'edmod'
+command to change the spectral index to 2.0 before preceding to run
+the modelfit command (you could also use the 'addcmp' command to do
+both of these steps non-interactively). Model fitting will then
+provide you with a flux that reflects the thermal nature of the
+radiation, as implicitly assumed by the 'planet_temp' command. The
+frequency that you present to the 'planet_temp' command should be the same
+frequency as was associated with the spectral index in the model
+component.

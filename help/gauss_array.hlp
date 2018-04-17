@@ -1,0 +1,30 @@
+fwhm, nsigma, step
+Return an array sampling a gaussian out to a given number of sigma.
+EXAMPLE
+-------
+
+The following example prints a gaussian with a FWHM of 1.0 sampled
+every 0.1 units along its x-axis, out to just under 2 standard
+deviations.
+
+ 0>print gauss_array(1.0, 2.0, 0.1)
+ 1 0.972655 0.895025 0.779165 0.641713 0.5 0.368567 0.257028 0.169576 
+ 0>
+
+PARAMETERS
+----------
+fwhm        - The full-width at half maximum of the gaussian.
+
+nsigma      - The distance out to which to sample the gaussian,
+              expressed as a multiple of the standard deviation
+              of the gaussian (NB. the standard deviation of
+              a gaussian is 0.4246609001 times its FWHM).
+
+step        - The step along the x-axis between consecutive
+              samples of the gaussian.
+
+CONTEXT
+-------
+This function provides a convenient way to compute an array sampling the
+positive half of a gaussian function out to a given number of standard
+deviations.

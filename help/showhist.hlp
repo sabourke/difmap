@@ -1,0 +1,7 @@
+
+Display the history that was recorded with the current observation.
+
+This command displays a chronological list of entries made in the
+history file that was loaded with the current observation.
+
+See 'help help' for directions on using the difmap pager.

@@ -1,0 +1,4 @@
+side, out_by, along_by, justification, text
+Non-standard alias for the pgmtxt command.
+
+See help pgmtxt.

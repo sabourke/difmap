@@ -1,0 +1,50 @@
+#-----------------------------------------------------------------------
+# This is the (hopefully) site independant part of the librecio.a makefile.
+# The site-specific part should be appended to this makefile and named
+# Makefile by the configure script. You should not have to modify this
+# file - changes should only be made to the configure script.
+# The configure script must define CC, CFLAGS, INCDIR, LIBDIR, HELPDIR,
+# RANLIB. In addition, if it defines HIDE_SCRATCH_FILES, and gives this
+# the value 1, then the directory entries of scratch files will be
+# deleted immediately after creation to hide them.
+#-----------------------------------------------------------------------
+# Description: Makefile for the record I/O interface library.
+#
+# Martin Shepherd  (mcs@phobos.caltech.edu)
+#-----------------------------------------------------------------------
+
+# Compile time C compiler flags.
+
+CFLAGC = -c $(CFLAGS) -I$(INCDIR)
+
+# This tells make how to compile a C file - don't touch.
+
+.c.o:
+	$(CC) $(CFLAGC) $<
+
+# List recio object files.
+
+RECIO_OBS = recio.o
+
+# The library name.
+
+LIBRECIO = $(LIBDIR)/librecio.a
+
+#-----------------------------------------------------------------------
+
+default: $(LIBRECIO) install-header
+
+$(LIBRECIO): $(RECIO_OBS)
+	ar ru $(LIBRECIO) $(RECIO_OBS)
+	$(RANLIB) $(LIBRECIO)
+
+install-header:	$(INCDIR)/recio.h
+
+$(INCDIR)/recio.h: recio.h
+	cp recio.h $(INCDIR)/recio.h
+	chmod ugo+r $(INCDIR)/recio.h
+
+#-----------------------------------------------------------------------
+# list object file dependancies
+
+recio.o: recio.h $(INCDIR)/scrfil.h

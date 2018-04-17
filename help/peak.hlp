@@ -1,0 +1,64 @@
+attribute, pixel_type
+Return details of the min,max or absolute max flux in a map.
+EXAMPLE
+-------
+1. Display the min,max and absolute max flux in the current map.
+
+ 0>pr peak(flux,min),peak(flux,max),peak(flux,abs)
+ -0.543233 3.44326 3.44326 
+ 0>
+
+2. Shift the phase-center to that of the map pixel that contains the
+   max absolute flux to the center of the map.
+
+ 0>shift -peak(x),-peak(y)
+ shift: Shifting UV data, clean models and windows by: 20 (mas) East
+ shift: Shifting UV data, clean models and windows by: -20 (mas) North
+ 0>
+
+PARAMETERS
+----------
+attribute  -  The name of the attribute of the selected pixel to be
+              returned by the function.
+              Possible values are:
+               flux -  The flux of the selected pixel.
+               x    -  The X-axis position of the pixel.
+               y    -  The Y-axis position of the pixel.
+               ra   -  The Right Ascension of the pixel (degrees).
+                       Beware that this is returned in a single
+                       precision number which only has 6 significant
+                       figures of precision.
+               dec  -  The declination of the pixel (degrees).
+                       Beware that this is returned in a single
+                       precision number which only has 6 significant
+                       figures of precision.
+
+pixel_type -  Default = abs
+              The name of the type of pixel to return the details of.
+              Possible values are:
+               abs  -  The pixel with the max absolute flux in the map.
+               min  -  The pixel with the min flux in the map.
+               max  -  The pixel with the max flux in the map.
+
+CONTEXT
+-------
+peak() is a function that returns details about one of two specific
+pixels of the current residual or clean map. The two pixels are, the
+pixel having the mininum flux in the map, and the pixel having the
+maximum flux in the map. In addition, one of these pixels has a higher
+abolute flux than the other, and requesting the pixel with the max
+absolute flux will return details about this pixel.
+
+The selectable attributes of the requested pixel are its (signed)
+flux, and its X and Y axis positions with respect to the center of the
+map, all measured in map units.
+
+SIDE EFFECTS
+------------
+If the map is not up to date, then it will be inverted before a value
+is returned.
+
+RELATED FUNCTIONS
+-----------------
+mapvalue - Return the value of the map pixel closest to a given position.
+imstat  - Return image plane map statistics.

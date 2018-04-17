@@ -1,0 +1,23 @@
+filename
+Discard the current set of channel-range/polarization specific models.
+
+EXAMPLE
+-------
+
+  0>clear_models 3c84.mtab
+
+CONTEXT
+-------
+
+In multi-model mode (see help multi_model), different models are
+associated with different channel-range/polarizations
+selections. Previously made models for a given
+channel-range/polarization selection are switched in by the 'select'
+command when the same selection is made again. To start afresh, the
+'clear_models' command allows one to discard all of these models.
+
+RELATED COMMANDS
+----------------
+multi_model  - Switch to and from multi-model mode.
+read_models  - Restore a set of multi-model models from a file.
+write_models - Save the current set of multi-model models to a file.

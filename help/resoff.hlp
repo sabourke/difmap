@@ -1,0 +1,83 @@
+baseline_name
+Determine and apply a baseline based amplitude and phase correction.
+EXAMPLE
+-------
+
+To correct for correlator offsets on baseline BONN-WSRT of the first
+subarray.
+
+  0> resoff "BON-WSRT"
+  1:BONN-WSRT: 0.945151 amplitude change, -0.399408 degrees phase offset
+  0>
+
+To correct for correlator offsets on baseline HSTK-OVRO of the 3rd
+sub-array.
+
+  0> resoff 3:HSTK-OVRO
+  3:HSTK-OVRO: 0.988347 amplitude change, -3.50419 degrees phase offset
+  0>
+
+To correct all baselines of sub-array 2.
+
+  0> resoff 2
+  2:WSRT-JBNK: 0 amplitude change, -5.63816 degrees phase offset
+  2:WSRT-BOLOGNA: 0 amplitude change, 13.0693 degrees phase offset
+  2:WSRT-HSTK: 0 amplitude change, -0.687232 degrees phase offset
+  2:JBNK-BOLOGNA: 0 amplitude change, 12.97 degrees phase offset
+  2:JBNK-HSTK: 0 amplitude change, 2.05668 degrees phase offset
+  2:BOLOGNA-HSTK: 0 amplitude change, 2.33325 degrees phase offset
+
+To correct all baselines.
+
+  0> resoff
+  1:BONN-WSRT: 0.945151 amplitude change, -0.399408 degrees phase offset
+  .....etc....
+
+PARAMETER
+---------
+baseline_name  -  Default=""
+                  The name of the baseline(s) to be corrected. See the
+                  antenna_names help topic for a discussion of the
+                  syntax and interpretation of baseline specification
+                  arguments.
+
+CONTEXT
+-------
+The use of this command is NOT recommended except in exceptional
+circumstances. The only recommended use of this command is for
+inspection to determine whether a data-set contains closure offsets
+with respect to a given model - in which case it should be followed by
+clroff to remove the closure offsets instated. In very high dynamic
+range mapping it can be used to fix baseline dependent amplitude and
+phase "non-closing" errors. On other data-sets it is just as likely to
+introduce new non-closing errors and should not be used.
+
+resoff should only be used after all possible cleaning and
+self-calibration has been performed and then only when the data appear
+to fit very well on all but one or two baselines. Visual inspection of
+the data is essential before embarking on this coarse, so use the
+vplot and radplot commands first. If the miscreant baselines are short
+baselines, then the real cause of the errors is undoubtedly an
+incomplete model, possibly due to insufficient sampling at short UV
+spacings. In such cases use of resoff is not justified. 
+
+resoff determines and applies a single amplitude and phase correction
+for the requested baseline. The amplitude correction is determined as
+the ratio of the weighted means of the model and observed amplitudes
+on the requested baseline, over the whole observation. The phase
+correction is the weighted mean phase difference between the model and
+observed phases over the same range.
+
+Be warned, unlike self-calibration, resoff is not constrained by any
+closure or other constraints. It will always make a map look more like
+the model but at the expense of reality if the model isn't correct.
+
+SIDE EFFECTS
+------------
+Resoff establishes the latest clean model when necessary. It also
+invalidates the current residual map, which will be re-calculated by
+the next command that needs it.
+
+RELATED COMMANDS
+----------------
+clroff  -  Undo the effects of all resoff commands in this difmap session.

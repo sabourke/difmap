@@ -1,0 +1,113 @@
+command, function, module name or help topic
+Give help on a command, function or module
+EXAMPLE
+-------
+
+0>help sin
+sin(angle_in_radians)
+  Trig sine(x)
+  An elemental function returning a float scalar.
+Args:
+     float_value
+ 
+Help listing for sin completed
+0>
+
+In the above case no extra explanation of the trigonometric sin()
+function was provided and the help entry fits easily on the usual
+24-line terminal screen - see under PAGE CONTROL below to see what
+happens when many pages of text are delivered.
+
+PARAMETERS
+----------
+If the help command is invoked with no argument then the list of
+modules in the program is presented. A module names a collection of
+related commands, functions, variables and help topics. To see a list
+of the commands, functions and help topics available in a given module
+invoke the help command with the module name as its argument. Each
+contained function and command name will be printed, along with a
+1-line description of its use.
+
+To get help on a specific command or function or to list a given help
+topic, invoke the help command with the name of that function as its
+argument. In this case, as in the example above, first the declaration
+of the function and its arguments is given. Then, if a help file
+exists for the function, that help file is printed.
+
+To review the contents of one of the help topics listed in the help of
+one of the modules, invoke the help command with the name of that help
+topic as its argument.
+
+PAGE CONTROL
+------------
+At the end of each page of text displayed by the help command, you
+will be presented with the following two lines:
+
+Press return to continue, Q [or command] to quit, or P to page.
+#
+
+The program will then wait for you to enter text at the # prompt.
+
+To see the next page of help information simply press the RETURN key
+without entering any text.
+
+To invoke an external pager type the letter p or P, followed by the
+return key. If when you started difmap, your PAGER environment
+variable contained a valid command to be used as a pager, that command
+will then be invoked to display the whole text of the help
+information. If the PAGER environment variable was not set, and a
+default exists for your system (eg. more) then that command will be
+invoked in its place.
+
+To abort from the help session without seeing the rest of the help
+text, type the letter q or Q, followed by the RETURN key, and you will
+be returned to the normal command level.
+
+Alternatively you may abort the help session by entering any normal
+command or list of commands. If you do this the help session will be
+aborted and what you typed will be parsed immediately and executed
+(before any remaining commands on the command line from which you
+invoked the help command).
+
+For instance if you typed:
+
+0>help help;print "Hello"
+
+and then aborted the help session by typing the command:
+
+print "Testing 1 2 3"
+
+at the # prompt, you would see the following:
+
+Help listing for help completed
+Testing 1 2 3 
+Hello 
+
+Note that the  print "Testing 1 2 3"  command was executed before the
+print "Hello" command.
+
+WRITING HELP FILES
+------------------
+Help files are structured as follows. If the help file is for a
+command or function, then the first line contains a comma-separated
+list of argument names. Otherwise, the first line should be left
+blank. The second line is a one line description of the command or
+help topic. This is the line displayed when the list of topics is
+shown with 'help module_name', and is also searched by the 'apropos'
+command. The content and format of the remaining lines is not
+important.
+
+The index of help topics shown with the 'help module_name' command is
+kept in a file named with the module name postfixed with an '.idx'
+extension. In order that this remain up to date, when you add or
+remove a help file, or modify the 1-line intro of an existing help
+file, you should invoke the 'makeindex' command to recreate the
+appropriate index file.
+
+RELATED COMMANDS
+----------------
+apropos    -  List all commands and functions whose names or 1-line
+              descriptions contain a given string.
+varlist    -  List all declared user-variables along with their
+              declarations. 
+makeindex  -  Update one or more help topic index file.

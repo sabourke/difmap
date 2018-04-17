@@ -1,0 +1,9 @@
+x-array, y-array
+Draw line through a set of coordinates.
+
+PARAMETERS
+----------
+
+x-array   -   The X-axis coordinates of each point.
+
+y-array   -   The Y-axis coordinates of each point.

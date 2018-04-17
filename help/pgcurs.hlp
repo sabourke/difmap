@@ -1,0 +1,64 @@
+x, y, ch
+Display the cursor and read a user-selected position.
+
+EXAMPLES
+--------
+
+ 1. Using pgcurs as a command:
+
+    0>float x,y
+    0>string ch
+    0>pgcurs x, y, ch
+    0>print x,y,ch
+    0.245595 0.793777 A 
+    0>
+    0>dev /null
+    0>pgcurs x, y, ch
+    %PGPLOT, output device has no cursor: NULL
+    cpgcurs: PGPLOT cpgcurs() returned an error.
+    Error occured in command: pgcurs
+    0>
+   
+ 2. Using pgcurs as a function:
+
+    0>float x,y
+    0>string ch
+    0>if(pgcurs(x, y, ch) != 1)
+    1>  print "The current PGPLOT device has no cursor."
+    1>else
+    1>  print x,y,ch
+    1>end if
+    0.242566 0.678689 A 
+    0>
+    0>dev /null
+    0>if(pgcurs(x, y, ch) != 1)
+    1>  print "Substitting default values."
+    1>  x = 0.5; y=0.5; ch="A"
+    1>end if
+    %PGPLOT, output device has no cursor: NULL
+    Substitting default values. 
+    0>print x,y,ch
+    0.5 0.5 A
+    0>
+    
+PARAMETERS
+----------
+
+x,y       -   The input and returned cursor position. If posn=1
+              then the input values will specify where to first
+              display the cursor. Otherwise the input values are
+              ignored.
+
+ch        -   On output this will contain the character of the key
+              that the user typed, as a one-character string.
+
+RETURN VALUE
+------------
+When used as a function, pgcurs will return 1 if the call succeded or
+0 if it failed. When used as a command, pgcurs will abort script
+execution if pgcurs() would have returned 0.
+
+USAGE
+-----
+Note the existence of the newer pgband command which provides
+rubber-band cursors.

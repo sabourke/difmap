@@ -1,0 +1,2 @@
+mincolor, maxcolor
+Return the range of available pgplot color indexes.

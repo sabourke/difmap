@@ -1,0 +1,53 @@
+#-----------------------------------------------------------------------
+# This is the (hopefully) site independant part of the libscrfil.a makefile.
+# The site-specific part should be appended to this makefile and named
+# Makefile by the configure script also present in this directory. You
+# should not have to modify this file - changes should only be made to
+# the configure script.
+# The configure script must define CC, CFLAGS, INCDIR, LIBDIR, HELPDIR,
+# RANLIB.
+#-----------------------------------------------------------------------
+# Description: Makefile for the scratch file utilities library.
+#
+# Martin Shepherd  (mcs@phobos.caltech.edu)
+#-----------------------------------------------------------------------
+
+# Compile time C compiler flags.
+
+CFLAGC = -c $(CFLAGS) -I$(INCDIR)
+
+# This tells make how to compile a C file - don't touch.
+
+.c.o:
+	$(CC) $(CFLAGC) $<
+
+# List scrfil object files.
+
+SCRFIL_OBS = scrnam.o exist.o edfile.o
+
+# The library name.
+
+LIBSCRFIL = $(LIBDIR)/libscrfil.a
+
+#-----------------------------------------------------------------------
+
+default: $(LIBSCRFIL) install-header
+
+$(LIBSCRFIL): $(SCRFIL_OBS)
+	ar ru $(LIBSCRFIL) $(SCRFIL_OBS)
+	$(RANLIB) $(LIBSCRFIL)
+
+install-header:	$(INCDIR)/scrfil.h
+
+$(INCDIR)/scrfil.h: scrfil.h
+	cp scrfil.h $(INCDIR)/scrfil.h
+	chmod ugo+r $(INCDIR)/scrfil.h
+
+#-----------------------------------------------------------------------
+# list object file dependancies
+
+scrnam.o: scrfil.h
+
+exist.o: scrfil.h
+
+edfile.o: scrfil.h

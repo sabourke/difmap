@@ -1,0 +1,33 @@
+ra, dec
+Delete the closest map marker to a given Right Ascension and Declination.
+EXAMPLES
+--------
+
+1. The following example finds the map marker that is nearest,
+   Right Ascension 12:29:06.7 and declination 2:03:08.60, and
+   deletes it.
+
+   0>delmarker 12:29:06.7, 2:03:08.60
+
+PARAMETERS
+----------
+ra       - The target Right Ascension expressed in hours, minutes and
+           seconds of time.
+
+dec      - The target Declination expressed in degrees, minutes and
+           seconds of arc.
+
+CONTEXT
+-------
+Although markers can be created both with mark_radec and mark_xy, the
+locations of all markers are stored in Right Ascension and Declination.
+Thus to delete a marker you must identify it by this position.
+The current list of markers, with their equatorial positions, can be
+seen with the wmarkers command.
+
+ASSOCIATED COMMANDS
+-------------------
+mapplot        - Draw a map.
+mark_xy        - Specify a map marker relative to the map center.
+clear_markers  - Delete the current list of markers.
+wmarkers       - List map marker commands to stdout or a file.

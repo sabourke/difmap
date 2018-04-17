@@ -1,0 +1,182 @@
+subarray, IF_index
+Plot time sampling for each telescope of an observation.
+EXAMPLES
+--------
+
+1. Displaying telescope sampling on an interactive device.
+
+   0>tplot
+   Graphics device/type (? to see list, default /NULL): /xw
+   Move the cursor into the plot window and press 'H' for help
+
+   All but the first line of the above is output from tplot.
+
+2. Displaying telescope sampling of all sub-arrays, on a hard-copy
+   device. 
+
+   0>dev /ps
+   0>tplot
+   Page 01: Subarray 1
+   Page 02: Subarray 2
+   0>
+
+   One page was plotted per sub-array to a postscript file.
+
+3. Displaying telescope sampling of a single selected sub-array, on a
+   hard-copy device.
+
+   0>dev /ps
+   0>tplot 3
+   Page 01: Subarray 3
+   0>
+
+   A single page was plotted to a postscript file, showing telescope
+   sampling in sub-array 3.
+
+4. Starting the plot from sub-array 1 of IF 2.
+
+   0>tplot 1, 2
+   Move the cursor into the plot window and press 'H' for help
+
+ARGUMENTS
+---------
+subarray    -    Default="" which selects all sub-arrays, starting from 1.
+                 To start plotting at a specific sub-array, provide its
+                 number here. The first sub-array is number 1. If the
+                 output device is a non-interactive (eg. hard-copy)
+                 device then only this sub-array will be plotted.
+
+IF_index    -    Default=The index of the first sampled IF.
+                 The index of the IF to plot first.
+
+CONTEXT
+-------
+tplot plots the sampling of all telescopes, using one page per
+sub-array and IF. Each telescope is assigned a line parallel to the
+time axis of the plot. At the time-stamp of each integration, each
+telescope whose visibilities have not been completely deleted is shown
+as a dot. In general, each telescope is sampled on a number of
+baselines per integration. If the visibilities to all those baselines
+are not flagged, then the point is plotted in green. If some are
+flagged but at least one is not flagged then orange is used, and if
+all visibilities are flagged then the point is plotted either in red
+or blue depending on whether the flagging is dominated by visibility
+flags or by selfcal correction flags.
+
+Note that what the visibilities that go into determining the flag
+status of the plotted points, are those selected with the 'select'
+command, rather than all visibilities in the observation.
+
+INTERACTIVE MODE
+----------------
+If the device that you are plotting on possesses a cursor, then tplot
+goes into an interactive mode. In this mode, move the cursor into the
+plot area and press one of the following keys:
+
+   H - (Help) Briefly list all keyboard options.
+
+   X - Quit the tplot session, and return to the difmap prompt.
+
+   L - Re-display the plot.
+
+   . - Toggle the marker symbol used to display the data between the
+       smallest available and the next largest. By default
+       the smallest possible marker symbol is used for speed, but if
+       if the data are sparse then the larger marker symbol may be more
+       convenient.
+
+   N - Display the sampling of the next sub-array.
+
+   P - Display the sampling of the previous sub-array.
+
+   ] - Display sampling of the next IF.
+
+   [ - Display sampling of the previous IF.
+
+   T - Prompt for the next sub-array to be plotted. This is then
+       entered by its numeric ID, at the keyboard.
+
+   U - Select the time range to be plotted. Initially tplot plots
+       sampling over the full range of integration times. To restrict
+       the range press U, move the cursor to the start of the new
+       range and press A (left mouse button), then move the cursor to
+       the end of the required range and press A again. Sampling of
+       the current sub-array will be re-plotted within the new range.
+       To return to the full time range press U twice in succession.
+
+   B - Break the displayed time range into scans. A scan is defined as
+       a block of data, separated from the next block of data by more
+       than an hour (this can be changed with the 'scangap' command).
+       If there are no gaps this large then no change in plotting will
+       result. Otherwise, each scan will be plotted within its own box
+       and the gaps between scans will no longer be plotted. Scan mode
+       will remain in effect until B is pressed again.
+
+   C - Flag any un-flagged samples within a given area (see below).
+
+   R - Restore any flagged samples within a given area (see below).
+
+   W - Toggle the scope of edits with respect to spectral-line
+       channels. Each plotted point comes from a single IF, and
+       its displayed flag status is determined from the combined
+       status of all the channels currently selected from that IF on
+       each baseline of the telescope being sampled. By default, if
+       you select such a point to be flagged, then all spectral-line
+       channels of the source IF will be flagged for each of the
+       effected baselines, irrespective of the channels which actually
+       went into making the plot. The alternative is to edit just the
+       channels that went into making the plot. The 'W' key toggles
+       which of the two options is used, and a mode line above the
+       plot describes which option is currently in effect.
+
+   + - This key toggles whether the cursor is shown as a small cross
+       or as a cross-hair that extends the full width and height of
+       the display. Currently only the /xserve and /xwindow PGPLOT
+       devices support this feature.
+
+   @ - This key toggles between plotting universal time and Greenwhich
+       mean sidereal time along the X-axis of the plot.
+
+EDITING
+-------
+The Clip and Restore keys, 'C 'and 'R' enable you to edit all points
+inside a rectangular box selected with the cursor. With the 'C'
+option, all visibilities related to the selected stations over the
+selected integrations are flagged. Similarly, the 'R' option unflags
+all related visibilities in the area. To use these facilities, press
+the respective key and then move the cursor to one corner of the
+required region and press 'A' (left mouse button). Then move the
+cursor to the opposite corner of the required region and again press
+'A'. The display will be updated to show the results.
+
+Examples of how one might use this facility include, removing a whole
+scan at a time for all telescopes, or flagging a bad station over the
+whole time range.
+
+Also see the description of the 'W' toggle, which determines whether
+to restrict the edits to the channels that went into making the plot,
+or whether to edit all channels of the displayed IF.
+
+CONFIGURATION VARIABLES
+-----------------------
+The display-mode option keys listed above may be preset in the
+variable, 'tflags'. If tflags is an empty string, "", then the default
+option string is used. This is currently also an empty string. To
+override this default and have radplot start up by displaying with
+large dot sizes, on the command line one would type:
+
+0> tflags="."
+
+If you always want to override the default, then place such an
+assignment  line in your difmap login file (the file named in the
+optional DIFMAP_LOGIN environment variable).
+
+RELATED COMMANDS
+----------------
+scangap  -   Change the time gap used to delimit neighboring scans.
+radplot  -   Display visibility amplitude/phase vs. UV radius.
+projplot -   Display visibility amplitude/phase vs. projected UV distance.
+uvplot   -   Display the sampling of the UV plane.
+vplot    -   Display observed and model visibilities from the current IF.
+cpplot   -   Display observed and model closure phases interactively.
+corplot  -   Display the self-cal corrections of the current IF.

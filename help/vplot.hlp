@@ -1,0 +1,384 @@
+nplots, reftel, IF_index, npage
+General visibility plotting and editing command.
+
+PARAMETERS
+----------
+nplots   - (Optional) Default=0 (All baselines to each station).
+           The number of baselines to be displayed per page. This may
+           be changed interactively. Since only the baselines of one
+           station are displayed on one page, the maximum number of
+           plots per page at a given time is 1 less than the number of
+           stations in the sub-array being displayed.
+
+reftel   - (Optional) Default=""
+           A baseline specification or the form
+
+            [sub-array-index:][antenna_name_1][ antenna_name_2]
+
+           On interactive devices this specifies which baseline should
+           be plotted first. On non-interactive devices it specifies
+           the range of baselines to be plotted. For instance on a
+           non-interactive device "1:" means plot all baselines of
+           sub-array 1, whereas on an interactive device, it means,
+           start plotting baselines for the first available antenna of
+           sub-array 1. For further details of baseline
+           specifications, read the antenna_names help topic.
+
+IF_index - (Optional) Default = The first sampled IF.
+           The index of the IF to start plotting visibilities from.
+
+npage    - (Optional) Default = 0 (with requests no page limit).
+           The maximum number of pages to plot when plotting to
+           a non-interactive device.
+
+CONFIGURATION VARIABLES
+-----------------------
+
+vflags  -  This is a string variable that over-rides the default
+           display attributes. It is particularly useful when
+           displaying to a hard-copy device, where interactive
+           changes to the default attributes can not be made.
+
+By default vflags="". In this case vplot substitutes the equivalent of
+vflags="efmb3".
+
+When vflags is not "", all toggled attributes are initially set to
+off, and the contents of the vflags string determine which of the
+attributes get turned back on.
+
+The entries in the vflags string are the keys used in interactive mode
+to toggle the respective attributes on and off, and are interpretted
+exactly as though you had pressed them interactively. This means that
+if an option appears twice in vflags the second instance cancels the
+first! The available keys are listed further below.
+
+For example after typing:
+
+vflags="efm1"
+
+Subsequent use of vplot after typing this will initially plot
+visibilities with error-bars (e), will show flagged-data (f),
+will show the model (m), and only display amplitudes (1).
+
+CONTEXT
+-------
+This command can be used in non-interactive mode to display visibility
+data on a hard-copy device, or interactively to examine and/or
+edit visibilities.
+
+When displayed, flagged data appear as red '+' symbols, un-flagged data
+as green points and the model as a continuous light-blue line. In
+addition, if a visibility is flagged by a selfcal correction flag, but
+not by a normal visibility flag, it is displayed as a blue 'x' symbol.
+
+Only visibilities from a single IF are displayed at one time, but
+the selected IF can be changed interactively, or preset on the command
+line.
+
+HARD COPY MODE
+--------------
+If this command is invoked when the PGPLOT output device is a
+hard-copy device, such as a laser printer, one can specify which
+baselines to plot and how to arrange them. This is illustrated in the
+following examples:
+
+1. Plot all of the baselines in the observation, grouped by telescope
+   name and sub-array, displaying 5 baselines per page. This could
+   take some time so be prepared to wait.
+
+   0> vplot 5
+
+2. Plot all baselines from sub-array 1, at 5 baselines per page.
+
+   0> vplot 5, 1
+
+3. Plot all HSTK baselines of sub-array 2 in IF 3, again at 5
+   baselines per page.
+
+   0> vplot 5, 2:HSTK, 3
+
+4. Plot all HSTK baselines of sub-array 2, starting from baseline
+   HSTK-BONN, using as many plots per page as there are telescopes in
+   sub-array 2 (minus 1).
+
+   0> vplot 0, 2:hstk bonn
+
+INTERACTIVE MODE
+----------------
+If the display device has a cursor, then an interactive session will
+be invoked. In this mode, one page of baselines is initially plotted
+and mouse-keys and keyboard keys are used to guide the task through
+plotting and data editing.
+
+Once vplot has been invoked, move the cursor into the display window
+and press the 'H' key on your keyboard. Whenever this is pressed
+during the vplot session a list of key bindings will be displayed in
+the terminal window from which vplot was invoked.
+
+Most keys are case-insensitive, such that both 'H' and 'h' have the
+same effect.
+
+On standard PGPLOT conforming devices with a mouse or other cursor
+control device, mouse buttons are treated as equivalent to the
+following keyboard keys:
+
+Left button   = 'A'   (This is the normal key for selecting positions).
+Middle button = 'D'   (This is used to cancel incomplete select ranges).
+Right button  = 'X'   (Use this to exit vplot).
+
+Note that on a windowing system, the cursor must be within the display
+window before pressing keyboard keys (and mouse buttons) will be
+noticed. However, after pressing a key that needs more complex
+answers, such as the entry of the number of baselines to display or
+the entry of a telescope name, the cursor should be moved to the
+original text window where a prompt will be displayed to guide your
+entry.
+
+MOVING ABOUT BETWEEN BASELINES
+------------------------------
+
+ n - (Lower-case n) Display next set of baselines
+ p - (Lower-case p) Display preceding set of baselines
+
+Pressing 'n' in vplot causes the Next set of baselines of the current
+telescope to be displayed from the current sub-array. Once all
+baselines to that telescope have been displayed, pressing 'n' will
+proceed to display those of the next telescope in the observation.
+Once all telescopes have been displayed in this manner, pressing 'n'
+will display start to display baselines from the next sub-array. So
+by repeatedly pressing 'n' you will see all baselines in every
+sub-array of the observation. The 'p' key works identically but shows
+the Previous set of baselines.
+
+ N - (Upper-case n) Display baselines from the next sub-array.
+ P - (Upper-case p) Display baselines from the previous sub-array.
+
+Upper-case 'N' and 'P' provide a means to jump to the next or previous
+sub-arrays without having to view all of the intermediate baselines.
+
+ T - Specify reference telescope from the keyboard (text screen)
+
+To move to another telescope without having to wade through all the
+baselines of previous telescopes in the observation, press 'T'. Back
+on the text screen you will be prompted for the name of the telescope.
+The name entered may be any unambiguous abbreviation of the full
+telescope name.
+
+eg BOLOGNA and BONN are ambiguous up to BO. BOL or BON are the
+shortest names that could be used to refer to them.
+
+A optional second telescope name may also be entered on the same
+input line, separated from the first by spaces or a hyphen, in which
+case the combination of the two telescope names will be used to
+designate the first baseline to be displayed to the new reference
+telescope.
+
+If the required telescope(s) are from a different sub-array than the
+one currently being displayed, then specify the sub-array number
+preceding the first telescope name and separated from it with a colon.
+Thus BONN-BOL selects baseline BONN-BOLOGNA in the currently displayed
+sub-array, while 3:BONN-BOL selects baseline BONN-BOLOGNA in sub-array 3.
+
+MOVING BETWEEN IFs
+------------------
+Visibilities are only displayed from one IF at a time. The identity of
+this IF is displayed above the collection of plots. To move onto the
+next or previous IF in which any channels were selected with the
+'select' command, use the following keys:
+
+ ] - Move to the next sampled IF.
+ [ - Move to the previous sampled IF.
+
+The title above the plots will change to indicate which IF is being
+displayed.
+
+CHANGING HOW BASELINES ARE DISPLAYED
+------------------------------------
+The following keys toggle attributes on or off. The display will
+not be re-plotted immediately whenever one of these is toggled, so
+you can press a sequence of toggle keys before re-displaying with
+the new attributes. When the sequence is complete, simply press
+any key that is not in the list below, such as the RETURN key
+and the display will be updated with the new attributes.
+
+ M - Toggle display of model visibilities
+ F - Toggle display of flagged visibilities
+ E - Toggle display of error bars
+ 1 - Plot only amplitudes.
+ 2 - Plot only phases.
+ 3 - Plot both amplitudes and phases.
+ B - Toggle breaking the plot into scans (where present)
+ V - Toggle inclusion of flagged data in auto-scaling
+ - - Toggle between the default of displaying absolute amplitudes
+     and/or phases, and the option of displaying the amplitudes
+     and/or phases of the vector difference between the data and
+     the current model.
+
+NB. By default, a scan is taken to be any set of integrations which is
+    separated by more than an hour from its nearest neighbors. This
+    can be changed with the 'scangap' command.
+
+CHANGING THE NUMBER OF BASELINES DISPLAYED
+------------------------------------------
+
+ S - Select number of sub-plots per page
+
+To change the number of baselines displayed, press the 'S' key.
+You will be prompted for a number on the text screen. The first
+baseline plotted will be the same as before, but only the requested
+number will follow.
+
+CHANGING THE DISPLAYED UT RANGE
+-------------------------------
+
+ U - select UT range to be displayed (hit U twice for full range)
+
+Press 'U' to request a change in the displayed UT range. You will
+then be expected either to press 'U' again to display the whole
+UT range, or to move the cursor to the start UT of the required
+range and press 'A' (left mouse button), then move the cursor to
+the end UT of the required range and press 'A' again. The plot
+will then be re-displayed over the new range and all subsequent
+plots will be displayed over this range. At any point before
+the UT range selection has been completed, pressing the 'D' key
+(middle mouse button) will quietly abort the selection.
+
+SWITCHING BETWEEN TIME SYSTEMS
+------------------------------
+
+ G - Toggle between displaying the default Universal Coordinated
+     Time and Greenwhich Means Sidereal Time along the X axis
+     of the plot.
+
+CHANGING THE DISPLAYED AMPLITUDE OR PHASE RANGE
+-----------------------------------------------
+
+ Z - Select amplitude or phase range to be displayed.
+
+Press 'Z' to zoom in on a selected amplitude or phase range.
+You should then either to press 'Z' again to revert to the default
+range, or move the cursor to the first (top or bottom) amplitude or
+phase value of the required vertical range and press 'A'
+(left mouse button), then move the cursor up or down to the end
+of the required range and press 'A' again. The plot will then be
+re-displayed over the new range and all subsequent plots will be
+displayed over this range. At any point before the selection has been
+completed, pressing the 'D' key (middle mouse button) will quietly
+abort the selection. 
+
+CHANGING WHETHER REDUNDANT BASELINES ARE DISPLAYED
+--------------------------------------------------
+By default, for each reference telescope that it plots, vplot displays
+all of the baselines that include that telescope. This is recommended
+because it aids in finding telescope dependent errors. However, it
+does result in you seeing each baseline twice if you step through all
+antennas. This can be annoying if you have a very large number of
+baselines. For this reason vplot also provides the option to only show
+each baseline once, by only showing baselines in which the second
+antenna of the baseline comes later in the antenna listing than the
+reference antenna. Thus for the first antenna you see all of the
+baselines for that antenna, but for the second you see one less
+baseline, and so on, until by the time you reach the last antenna,
+there are no baselines to be plotted.
+
+  O - Toggle telescope ordering to only show non-redundant baselines.
+
+EDITING DATA
+------------
+There are two main modes for editing and it is important to select
+the right one before proceeding.
+
+Station based edits flag or un-flag the selected visibilities on
+ALL baselines that include the current reference telescope. If you
+have more than one baseline displayed at a time, then this will be
+evident, as the selected visibilities will change color on all the
+displayed baselines.
+
+Baseline based editing only affects the baseline in which the
+selection was made.
+
+   - (SPACE BAR) Toggles station based vs. baseline based editing.
+
+The current editing mode is displayed above the plots on the
+right-hand side of the display and can be toggled by pressing the
+SPACE-BAR.
+
+It is also possible to further specify the scope of edits.
+
+ I - Toggle IF editing scope.
+ W - Toggle spectral-line editing scope.
+
+By default, edits are applied to all polarizations, spectral-line
+channels and IFs related to the selected visibility. To specify that
+edits only be applied to the displayed IF, press the 'I' key. To
+specify that edits be only applied to the channels that were specified
+with the 'select' command, press the 'W' key. The mode line above the
+collection of plots, describes which of these editing modes is in
+effect.
+
+ A - Flag or unflag the nearest visibility to the cursor.
+     (Left mouse button)
+
+Pressing 'A' on the keyboard or the left mouse button near a displayed
+visibility point causes the status of that visibility to be toggled
+from un-flagged to flagged or vice versa. If flagged data are displayed,
+then toggling an un-flagged visibility will produce a red cross
+signifying its new flagged status. Otherwise the point will magically
+disappear, but can be seen subsequently if the display of flagged data
+is enabled.
+
+ C - Flag all data inside select box
+ R - Restore data inside select box
+
+If you wish to flag or un-flag an extended region of data, point by
+point editing is tedious. The Clip and Restore keys, 'C 'and 'R'
+enable you to edit all points inside a square box selected with the
+cursor. To use this facility, press the respective key and then
+move the cursor to one corner of the required region and press 'A'
+(left mouse button). Then move the cursor to the opposite corner of
+the required region and again press 'A'. The selected points will be
+re-displayed with their changed statuses. Note that it is especially
+important to know whether station or baseline based editing is
+required before doing this since in station based editing restoring a
+region that you have just clipped may restore points on related
+baselines that were originally clipped for other reasons.
+
+FLAGGING A WHOLE SCAN
+---------------------
+To flag a whole scan on a given baseline, move the cursor into the
+selected scan on the baseline to be edited and press the 'Z' (ie. zap)
+key. All points on that baseline within the scan will be flagged, even
+those not in the currently displayed UT range. In this context a scan
+is either a single scan obtained after using the 'B'
+(break-into-scans) key, or the whole UT time range otherwise.
+Note that the current station/baseline editing mode has no effect on
+the behavior of this command - so only one baseline will be flagged
+at a time. 
+
+ENDING A vplot SESSION
+----------------------
+To end a vplot session, press 'X' or the right mouse button.
+If substantial editing was performed in vplot then it is advisable to
+use the wmerge command to save the modified file before continuing
+to map the data.
+
+MISCELLANEOUS features
+----------------------
+The following interactive key bindings have not bee discussed above.
+
+ L - When you press this key the current plot is re-displayed.
+
+ + - This key toggles whether the cursor is shown as a small cross or
+     as a cross-hair that extends the full width and height of the
+     display. Currently only the /xserve and /xwindow PGPLOT devices
+     support this feature.
+
+RELATED COMMANDS
+----------------
+scangap  -   Change the time gap used to delimit neighboring scans.
+radplot  -   Display visibility amplitude vs. UV radius.
+projplot -   Display visibility amplitude/phase vs. projected UV distance.
+uvplot   -   Display the sampling of the UV plane.
+tplot    -   Display the time-sampling of each telescope.
+corplot  -   Display accumulated self-calibration corrections.
+cpplot   -   Display observed and model closure phases interactively.

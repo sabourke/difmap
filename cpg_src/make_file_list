@@ -1,0 +1,13 @@
+#!/bin/sh -e
+#-----------------------------------------------------------------------
+# Create the part of the PGPLOT makefile that lists cpgplot object and
+# source code files. The lists are found from the prototypes file in
+# the current directory.
+#-----------------------------------------------------------------------
+
+(
+ echo "# List cpgplot object files."
+ echo "";echo CPGPLOT_OBS=`./listfn .o`;echo ""
+ echo "# List cpgplot source files."
+ echo "";echo CPGPLOT_SRC=`./listfn .c`;echo ""
+) > makefile.lis

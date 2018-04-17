@@ -1,0 +1,21 @@
+
+Return the count of the number of spectral-line channels per IF.
+EXAMPLE
+-------
+
+0>print "There are", nchan, "spectral-line channels."
+There are 96 spectral-line channels. 
+0>
+
+CONTEXT
+-------
+'nchan()' is a function that returns the integer count of the number
+of spectral-line channels per IF of the current observation.
+
+RELATED FUNCTIONS AND COMMANDS
+------------------------------
+nif    -  Return the number of IFs in the current observation.
+nsub   -  Return the number of sub-arrays in the current observation.
+nbase  -  Return the number of baselines in a given sub-array.
+ntel   -  Return the number of telescopes in a given sub-array.
+header -  Displays the characteristics of the current observation.

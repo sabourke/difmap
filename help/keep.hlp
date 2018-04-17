@@ -1,0 +1,40 @@
+
+Establish the latest CLEAN model and compute its UV representation.
+EXAMPLE
+-------
+
+0>keep
+Computing UV representation of latest clean model (91 components)
+The established model now contains 182 components and 8.18052 Jy
+0>
+
+All but the first line are responses from the 'keep' command.
+
+CONTEXT
+-------
+During mapping, two separate CLEAN models are kept. These are the
+"established model" and the "latest clean model". The former is
+subtracted from the visibilities during invert and is kept both as a
+model component list AND as model visibilities in the UV plane. The
+latter - the latest clean model - is the model that has been
+accumulated by CLEANing since the last time that 'keep' was run. Also
+if a model is read from an external file using the 'rmodel' command
+then it replaces the latest clean model and deletes the established
+model. The latest clean model is added in to the established model 
+and converted to its UV representation every time that the 'keep'
+command is called. There is rarely a need to do this explicitly, since
+commands that require the UV representation of the complete model,
+call 'keep' for you. Such commands include 'invert', 'selfcal' and
+'vplot'. However, if you just keep cleaning the residual map without
+calling any of these other commands then to remove aliased artifacts
+it may be desireable to call the 'keep' command explicity once in a
+while.
+
+A separate UV plane representation of the established model is kept
+for each IF, in the uvmodel.scr scratch file, and automatically paged
+in and out by difmap as required.
+
+RELATED COMMANDS
+----------------
+clrmod  - Used to clear one or more of the established, tentative and
+          continuum models.

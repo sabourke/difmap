@@ -1,0 +1,21 @@
+
+Clear the history information recorded with the observation.
+EXAMLE
+------
+
+0> clrhist
+
+CONTEXT
+-------
+It is normal for UV FITS files to contain an extensive processing
+history, such as that recorded by AIPS. While Difmap adds very little
+to this Difmap does preserve it and passes it on to output UV FITS
+and map image FITS files, and while in some cases it might be useful,
+in others it may significantly enlarge data files for no good reason.
+
+The 'clrhist' command clears the currently recorded history.
+
+RELATED COMMANDS
+----------------
+addhist  - Add a new line of history.
+showhist - Display the currently recorded history.

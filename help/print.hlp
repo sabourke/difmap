@@ -1,0 +1,49 @@
+<any_expression,....>
+Show values of any arguments, one after the other separated by a space.
+
+EXAMPLE 1
+---------
+
+0>float r
+0>r = 2.5
+0>print "The area of a circle of radius", r, "is", pi*r^2
+The area of a circle of radius 2.5 is 19.635 
+0>
+
+EXAMPLE 2
+---------
+ 0>print ramp(1,50)
+ 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 
+ 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 
+ 46 47 48 49 50 
+ 0>
+
+This demonstrates both how an 1-dimensional array expression is printed
+and how, by default, the print command wraps forces line breaks every
+time an output argument passes column 60.
+
+ 0>wrap_print_output=false
+ 0>print ramp(1,50)
+ 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 
+ 0>
+
+This demonstrates that the default line wrapping can be disabled via the
+boolean wrap_print_output variable.
+
+CONTEXT
+-------
+The print command provides a simple way of displaying the values of
+variables, outputing messages or evaluating expressions.
+
+Multi-dimensional array variables and expressions are printed as though
+they are uni-dimensional. To see them with their true shapes, use the
+'type' command instead.
+
+By default, the print command starts a new line whenever a printed
+argument went past column 60. To turn off this behavior set the
+value of the boolean 'wrap_print_output' variable to false.
+
+RELATED COMMANDS
+----------------
+type    - Display variables, expressions etc with their dimensional shapes.
+fprintf - An analog of the C language fprintf function.

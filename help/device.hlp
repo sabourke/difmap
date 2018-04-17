@@ -1,0 +1,22 @@
+<device-name, x-num, y-num>
+Open a new display device
+
+PARAMETERS
+----------
+device-name  -  Default: "?"
+                The PGPLOT name for the required plot device. If no
+                argument is provided or ? is specified then PGPLOT
+                will list all the available devices.
+
+x-num        -  Default: 1
+                The number of plot panels along the X-axis.
+
+y-num        -  Default: 1
+                The number of plot panels along the Y-axis.
+
+This command is an interface to the PGPLOT PGBEG() function. Each new
+plot is displayed in the next un-used of the available (x-num * y-num)
+panels on the display. When these are exhausted the display is cleared
+and the cycle continues from the first panel on the display. By default
+only one plot panel is assigned, and every plot clears the display.
+

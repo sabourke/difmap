@@ -1,0 +1,205 @@
+polarization, ca, cb, ...
+Select a polarization and ranges of spectral-line channels to be processed.
+EXAMPLES
+--------
+
+1. Select visibilities of polarization I over two inclusive
+   spectral-line channel ranges.
+
+   0>select I, 20, 25, 47, 65
+   Selecting polarization: I,  channels: 20..25 47..65
+   Reading IF 1 channels: 20..25 47..65
+   0>
+
+2. Select continuum channels either side of a spectral-line feature
+   that occupies the range 21 to 60:
+
+   0>select I, 1, 20, 60, nif*nchan
+   Selecting polarization: I,  channels: 1..20 60..112
+   Reading IF 1 channels: 1..20 60..112
+   0>
+
+3. Select channel ranges that span more than one IF. The following
+   example is based on an observation that has three IFs, each of
+   which has 64 channels.
+
+   0>select i,50,70
+   Selecting polarization: I,  channels: 50..70
+   Reading IF 1 channels: 50..64
+   Reading IF 2 channels: 65..70
+   Reading IF 3 channels: (none)
+   0>
+
+4. Channel ranges can be given in any order and can overlap. The
+   following example shows that the select command re-organizes ranges
+   into non-overlapping ranges.
+
+   0>select I, 23,45, 60,70, 25,30, 51,53, 40,50
+   Selecting polarization: I,  channels: 23..53 60..70
+   Reading IF 1 channels: 23..53 60..70
+   0>
+
+5. If the last range given is unpaired, then this denotes a range
+   consisting of a single channel.
+
+   0>select I,10
+   Selecting polarization: I,  channels: 10..10
+   Reading IF 1 channels: 10..10
+   0>
+
+
+ARGUMENTS
+---------
+
+polarization  - (Default = The polarization last selected, or on the
+                first call, either I if available, or the first
+                recorded polarization.
+                The name of a polarization that was recorded in the UV
+                FITS file, or one that can be derived from other
+                recorded polarizations. Use the 'header' command to
+                see which polarizations were recorded.
+                Further details are provided below.
+
+ca, cb, ...   - Default = The ranges of a previous selection, or all
+                          channels on the first call.
+                One or more ranges of spectral-line channels from one
+                or more IFs are specified by giving the indexes of the
+                first and last channels of each range, using channel
+                indexes taken from the set [1..nif*nchan].
+
+                If an odd number of channel indexes is specified, the
+                last index is taken to represent a range that contains
+                a single channel.
+
+                The select command sorts channel ranges into ascending
+                order and coalesces overlapping and contiguous ranges.
+
+CONTEXT
+-------
+In Difmap, one combination of stokes parameters and spectral-line
+channels is mapped at a time.  This combination is known as the
+"current processing stream". The 'select' command allows you to
+specify the scope of this stream in terms of the polarization to be
+processed and one or more ranges of spectral-line channels. Once such
+a selection has been made, most difmap commands operate on this data,
+rather than the raw data from the UV FITS file. However edits, and
+'selfcal' and 'resoff' calibrations are not restricted to the selected
+data, and are applied both to the raw data set and to all future
+selections.
+
+For example, to map a spectral-line data-set, one would typically
+select one or more channels containing strong line-emmission from a
+single IF. This would then be mapped, and in the course of doing so,
+self-calibration would be applied. The corrections accumulated for the
+channels of the selected IF would thereafter be applied to all other
+channel selections from that IF, unless the corrections were cleared
+with the 'uncal' command. Furthermore, future corrections, based on
+other spectral-line channels of the same IF, would build upon the
+existing corrections. This ensures that the relative positions of
+features in different channels are preserved.
+
+Note that the 'specplot' command is independent of the current
+processing stream selection. This makes it a convenient way to see
+what channels to select before using the 'select' command. See also
+the spectral_line help topic.
+
+POLARIZATION SELECTION
+----------------------
+The polarizations recorded in the originating UV FITS file can
+be displayed with the 'header' command.
+
+The polarization argument may either be one of these polarizations, or
+be the name of a polarization that can be derived from them.
+
+The names of recognised polarizations are:
+
+  I  Q  U  V  RR  LL  RL  LR  XX  YY  XY  YX  PI
+
+The following is a list of polarizations that may be contructed from
+other polarizations:
+
+Name       Derived from:           Derived as:
+   
+ I         RR and LL               (RR + LL)/2
+ Q         RL and LR               (RL + LR)/2
+ U         RL and LR             i.(LR + RL)/2
+ V         RR and LL               (RR - LL)/2
+PI         RR and/or LL            (Either RR, LL or the weighted mean
+                                    of RR and LL, as explained below)
+
+The PI polarization stands for pseudo-I polarization. It is intended
+for observations of non-circularly polarized sources, where one can
+then consider LL and RR as being independent measures of I
+polarization.  This is particularly useful for observations made with
+interferometers with baselines that only sample one of LL or RR.  In
+such cases, selecting 'I' would result in flagged visibilities on
+these baselines, whereas selecting PI results in the unmatched LL or
+RR visibility being used. Similarly, since PI considers both LL and RR
+to be independent measures of I, on baselines that do have both RR and
+LL, selecting PI results in the weighted mean of these visibilities
+being used, rather than (RR+LL)/2.
+
+CHANNEL RANGES (and IF ranges)
+------------------------------
+The channel numbers that the 'select' command understands start at 1,
+and end with the total number of channels in the observation. When
+there are multiple IFs, the latter is the sum of the number of
+channels in all IFs. For specification purposes, channel numbers
+increase seamlessly from the first IF to the last IF, regardless of
+the relationship between neighboring IFs and the sign of their
+inter-channel frequency increments. This is the same convention used
+by the 'specplot' command, so if you are confused by this, use the
+'specplot' command to look at the assignments of channels to IFs.
+
+For example, consider an observation that has two IFs, each with 64
+channels. In the example, the 'header' command shows the following
+assignment of frequencies to the IFs:
+
+  There are 2 IFs, and a total of 128 channels:
+
+   IF  Channel    Frequency  Freq offset  Number of   Overall IF
+        origin    at origin  per channel   channels    bandwidth
+   ------------------------------------------------------------- (Hz)
+   01        1  1.53575e+10       125000         64        8e+06
+   02       65  1.53655e+10       125000         64        8e+06
+
+In this example channel number 1 refers to the first channel of IF 1
+and has a center frequency of 1.53655e+10 Hz, whereas channel number
+65 refers to the first channel of IF 2 and has a center frequency
+of 1.53575e+10 Hz.
+
+Note that when no channels are selected from a given IF, that IF is
+said to be unsampled, and it will not be processed, apart from the
+application of global editing. This is essential for spectral-line
+observations, but can also be used in continuum observations if
+different IFs must be mapped separately.
+
+Note that continuum observations are treated as spectral-line
+observations with only one channel per IF. In such cases, the channel
+numbers are equivalent to IF indexes, and one can then select ranges
+of IF indexes directly.
+
+IMPLEMENTATION DETAILS
+----------------------
+The 'select' command extracts the requested data from a scratch file
+called uvdata.scr that contains all the raw UV data from the last UV
+FITS file that was read. For each baseline of each integration,
+'select' derives a single visibility per IF. This is formed by vector
+averaging visibilities of the given polarization, over the given range
+of spectral-line channels. These visibilities are then stored in
+another scratch file called ifdata.scr, from which one IF at a time
+is temporarily paged into memory for display or other processing.
+
+RELATED HELP TOPICS
+-------------------
+spectral_line - An overview of spectral-line mapping in Difmap.
+multi_IF      - An overview of multi-IF mapping in Difmap.
+
+RELATED COMMANDS
+----------------
+observe  - Read a random-groups UV FITS file.
+header   - Use this to see what polarizations, IFs and spectral-line
+           channels are available.
+specplot - This plots visibility spectra, and provides a convenient
+           way to see what channel ranges to select, based upon the
+           location of spectral features.

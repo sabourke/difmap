@@ -1,0 +1,37 @@
+ 
+repeat;commands;until(false) - Looping control statement.
+
+ repeat
+   <commands>
+ until(logical_expression)
+
+This is a special looping structure for use in writing procedures.
+At the end of each iteration of the loop, the logical argument of
+the until command is evaluated.  If it is FALSE then the next
+iteration proceeds and the commands within the loop are executed.
+Otherwise execution will continue from the command following the
+'until()' command.  This means that commands inside the loop will
+be executed at least once - if this is not desirable, use the
+alternative while(condition);...;end while structure.
+
+There are also break and continue commands for breaking out of the
+loop or starting the next iteration prematurely. See help looping
+for more details.
+
+Example:
+0> i=0
+0> repeat
+1>   i=i+1
+1>   print i
+1> until(i>5)
+1> print "Loop completed - i is now=",i
+
+results in:
+1.000000
+2.000000
+3.000000
+4.000000
+5.000000
+6.000000
+Loop completed - i is now= 6.000000
+

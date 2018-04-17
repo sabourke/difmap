@@ -1,0 +1,186 @@
+
+An overview of the current spectral-line facilities.
+
+Difmap can make maps from spectral-line FITS files, but a full set of
+spectral-line facilities has yet to be implemented.
+
+Major features that have not yet been implemented.
+-------------------------------------------------
+A major omission is a command to write spectral-line map cubes. At the
+moment, each spectral-line map must be written to a separate FITS
+file, and then be combined externally (eg. by MCUBE in AIPS). I hope
+to do something about this in the near future.
+
+How to make spectral-line maps in Difmap.
+----------------------------------------
+It is only possible to make a map of one aggregate of channels at a
+time. This isn't as bad as it sounds, as I will attempt to show in the
+following discussion.
+
+1. Looking at visibility spectra.
+
+   In order to determine which spectral line channels contain
+   interesting features and thus which channels to map, the first
+   thing to do is to make plots of visibility spectra. The 'specplot'
+   command provides this facility. By default, this command shows
+   individual spectra to each baseline in the observation. For each
+   baseline it performs a vector average of the visibility spectrum
+   over all integrations. This is the default mode of display.
+   However, the specplot command also allows one to restrict the
+   source of visibilities to specified time ranges, polarizations, UV
+   ranges, or groups of baselines. One can plot mulitple spectra
+   per page for different values of these selections, so for instance,
+   one can see how a spectrum of a given baseline falls off with UV
+   radius.
+
+   Specplot is a complicated command, and further details of how to
+   use it can be found in the on-line specplot help pages.
+
+2. Selecting one or more channels to be mapped.
+
+   The 'select' command allows one to average together one or more
+   ranges of channels per IF. The resulting averages (one per IF)
+   constitute the data that will thereafter be processed, until the
+   'select' command is again invoked to change the selection.
+
+   For instance:
+
+   0>select I, 10,20, 30,40
+
+   extracts the total intensity (I) over channels 10..20 and 30..40
+   and averages the results into a single psuedo channel, referred to
+   as the current processing stream.
+
+   If the observation contains more than one IF, then channel numbers
+   are assigned contiguously across all IFs. For example, if one has
+   two IFs, containing 64 channels each, then channel numbers between
+   1 and 64 refer to channels of the first IF, and 65 to 128 refer to
+   channels of the second IF. The same convention is used by the
+   'specplot' command. Note that this does not require that IFs be
+   contiguous in frequency, or even that the interchannel frequency
+   increment have the same sign in neighboring IFs. It is just a
+   convenient way to specify IF-specific channel ranges without
+   actually having to specify IF numbers. When doing spectral-line
+   mapping the averaged channels are usually taken from a single IF.
+   When this happens, the other IFs are unsampled and will not be
+   displayed in any of the visibility plotting commands.
+
+   Note that channel averaging as described above precludes the
+   possibility of bandwidth synthesis. Thus if the bandwidth enclosing
+   the averaged channels is too wide, bandwidth smearing will result.
+   Note that this is different from the way that multiple IFs are
+   handled. Multiple IFs are kept apart, except during the gridding
+   step of fourier inverting visibilities into the map plane.
+
+3. Processing a selected stream.
+
+   Once the 'select' command has been used to average together a range
+   of channels for processing, all difmap commands operate on the
+   resulting psuedo channel, or processing stream. In particular all
+   plot commands display just this stream. One may then make a map as
+   though one were processing continuum data, using the 'clean',
+   'selfcal' and other commands to build up a model of the image plane
+   representation of the data. See the cookbook for details on making
+   continuum maps.
+
+4. Selfcal calibrations.
+
+   A common practice in spectral-line work is to make a good map of
+   one strong channel (or range of channels) and use the selfcal
+   calibrations that were needed to produce that map, to calibrate the
+   rest of the channels. In recognition of this fact difmap
+   automatically applies selfcal calibrations identically to all
+   channels (and polarizations), regardless of the selected data
+   stream. This is an important feature. If instead, one were allowed
+   to self-calibrate different channels separately, the relative
+   positions of features in different channels would be lost.
+
+   A special case of the above technique is to map the background
+   continuum and use the calibrations needed to get a good continuum
+   map as the basis for the spectral-line calibration. To do this, all
+   you have to do is select the range of channels that contain just
+   continuum data and map them, using selfcal wherever appropriate.
+
+5. Editing.
+
+   Editing is accomplished interactively with various plot commands.
+   By default, although these commands only display visibilities of
+   the selected stream, edits are applied equally across all
+   spectral-line channels of all IFs. The plot commands provide
+   toggleable options to change this default, such that edits can be
+   applied just to the displayed IF and/or just to the spectral-line
+   channels of the selected stream. The key bindings for these two
+   toggles are 'I' and 'W' respectively. The 'I' toggle is not
+   provided in commands which display all IFs simultaneously since
+   edits are then always applied just to the IFs of the specified
+   visibilities.
+
+6. Continuum subtraction.
+
+   Continuum subtraction in difmap exploits difference-mapping
+   facilities to provide a more flexible scheme than is generally
+   provided in other programs. To use it one must make a clean map of
+   the continuum channels to build up a model of the continuum. Once
+   this has been done the model can be installed as a background
+   continuum model using the 'setcont' command. The UV representation
+   of this model is then subtracted from the current and future
+   processing streams, until deliberately discarded with the 'clrmod'
+   command. Inportant advantages of this technique are that
+   self-calibration is still applied to the unsubtracted data, that
+   the continuum model can be incrementally improved by later
+   additions with the 'setcont' command, and that the continuum model
+   can even be removed with the 'clrmod' command when no longer 
+   required. For further details read the help information on the
+   'setcont' command.
+
+7. Making a cube of maps.
+
+   To produce multiple channel maps it is necessary to map each
+   channel range separately. At the moment, the only way to save these
+   maps is in separate FITS files, using multiple calls to the 'wmap'
+   command. I hope to support map cubes in the future. To create a map
+   cube, it is thus necessary to produce multiple map files and then
+   combine them into a cube in another program, eg. MCUBE in AIPS.
+
+   If you follow the scheme described above, where one psuedo channel
+   is mapped in order to solve for self-calibration solutions for all
+   channels, then all that is then required is a way to run the
+   'select', 'clean' and 'wmap' commands in a loop to produce multiple
+   channel maps. This can be done using difmap 'do' loops. For
+   example:
+
+     0>integer channel
+     0>do channel=10,20,4
+     1>  select I, channel, channel+3
+     1>  clrmod true
+     1>  clean 300,0.01
+     1>  wmap `"map_" // strnum(channel) // ".fits"`
+     1>end do
+     0>
+
+   This would produce maps of channels 10..13, 14..17, and 18..21, and
+   write them to fits files called: map_10.fits, map_14.fits and
+   map_18.fits.
+
+   These maps could then be read into AIPS via a one-line loop on the
+   AIPS command line, of the form:
+
+     >for i=10 to 20 by 4;infile='dir:map_'!!char(i)!!'.fits';go fitld
+      wait fitld; end
+
+   Where 'dir' is the name of an environment variable that you must
+   define before running AIPS to point at the directory in which the
+   files reside. The individual maps could then be combined into a
+   cube via AIPS MCUBE.
+
+   The above Difmap loop is not very sophisticated and is just an
+   example. A better example would include the addition of the mapplot
+   command to allow interactive selection of clean windows. This in
+   turn could be put in a nested loop along with the clean command
+   (using a smaller number of clean iterations per loop), so that the
+   clean windows could be adjusted during cleaning, as opposed to
+   setting them once before cleaning each map plane.
+
+   The ` ` syntax in the above simply allows a string expression to
+   be used where a literal string (one without enclosing ""s) is expected.
+

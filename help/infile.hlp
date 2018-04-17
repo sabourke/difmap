@@ -1,0 +1,2 @@
+file_name, <is_binary_file>
+Open an input file to be read - returns file_unit_no

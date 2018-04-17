@@ -1,0 +1,21 @@
+x, y, angle, justif, text
+Plot text at a given position and angle in a graph.
+
+PARAMETERS
+----------
+
+x      -  The X-coordinate at which to place the hot-spot of the
+          text string.
+
+y      -  The Y-coordinate at which to place the hot-spot of the
+          text string.
+
+angle  -  The angle of the baseline of the text, measured
+          anti-clockwise from the horizontal.
+
+justif -  The position of the hot-spot within the string. A value
+          of 0 places the hot-spot at the first character of the
+          string, 0.5 places the hot-spot at the center of the
+          string and 1 places the hot-spot at the end of the string.
+
+text   -  The text string to be rendered.

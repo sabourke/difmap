@@ -1,0 +1,75 @@
+x_units, flags
+Preset specplot display options.
+EXAMPLES
+--------
+
+1. To see the currently selected options without changing them, omit
+   all arguments.
+
+   0>specopt 
+   Specplot x-axis=channels  flags="3jJe".
+   0>
+
+2. To select an X-axis that is labelled in units of frequency instead
+   of channels, and change the flags such that lines are drawn as
+   simple vectors instead of bins.
+
+   0>specopt 5, frequency, 3j
+   Specplot nplot=5  x-axis=frequency  flags="3j".
+   0>
+
+ARGUMENTS
+---------
+x_units   -   Remembered. Initial default = channel
+              The units plotted on the X-axis of each spectrum.
+              Valid values are:
+                channels  -  Spectral-line channels.
+                frequency -  Spectral-line channel center frequencies.
+              Unambiguous abbreviations are recognized.
+
+flags     -   Remembered. Initial default = "3jJ".
+              Plot option flags.
+              Many of the toggled options that are bound to keyboard
+              keys for interactive use in specplot, can be preset by
+              placing those same keys in a string.
+              The initial default string of flags specifies that
+              both amplitude and phase will be plotted (3), that
+              neighboring points will be joined (j) to form a
+              histogram style plot (J) and that error bars be plotted
+              (e). See 'help specplot' for the meaning of other toggle
+              options.
+
+CONTEXT
+-------
+The specplot command plots time-averaged visibility spectra. By
+default it plots one spectrum for each baseline in one's observation,
+at 3 plots per page, plotting each as amplitude and phase versus
+channel number. Neighboring points are joined by lines, using a style
+similar to a histogram to indicate how the data are binned into
+channels.
+
+The x-axis of the plotted spectra is always plotted in order of
+increasing channel number, and IF number. However the values plotted
+along the axis can be changed to other forms with the 'x_unit'
+argument. This effects the X-axis scale, but not the ordering of
+points. Thus two IFs plotted side by side may show frequencies that
+increase in opposite directions.
+
+There are a number of other binary options that effect the way that
+spectra are plotted but do not require that the spectra be
+reconstructed. Interactively these are toggled via keyboard keys and
+those options will be remembered between specplot sessions. These can
+be seen by typing specopt without any arguments, or they can be
+replaced by specifying a new string of option flags with the 'flags'
+argument. The individual flags are described in the specplot help
+pages.
+
+Related commands
+----------------
+specplot   -  Plot time-averaged visibility spectra.
+specsmooth -  Preset the spectral resolution displayed by specplot.
+specorder  -  Set the order in which spectra are to be displayed.
+specbase   -  Select the baselines to be displayed by specplot.
+specpol    -  Select the list of polarizations to be displayed by specplot.
+spectime   -  Select the time ranges to be displayed by specplot.
+specuvr    -  Select the UV radius ranges to be displayed by specplot.

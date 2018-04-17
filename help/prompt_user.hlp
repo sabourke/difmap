@@ -1,0 +1,44 @@
+prompt, default
+Prompt the user for a reply string (with optional default).
+EXAMPLES
+--------
+
+1. Asking for input without providing a default.
+   Note that prompt_user keeps re-prompting until the user
+   enters something.
+
+    print prompt_user("What is your name")
+    What is your name: 
+    What is your name: 
+    What is your name: Cyclops
+    Cyclops
+
+2. Asking for input with a default reply.
+   Note that prompt_user substitutes the default string of the user
+   presses return without enterring anything.
+
+    print prompt_user("What is your name", "Anonymous")
+    What is your name (Anonymous): Cyclops
+    Cyclops 
+    0>
+
+    print prompt_user("What is your name", "Anonymous")
+    What is your name (Anonymous): 
+    Anonymous
+    0>
+
+3. Allowing the user to enter an empty string.
+
+    print prompt_user("Title", "")
+    Title: 
+
+    0>
+
+ARGUMENTS
+---------
+prompt    -   The string to prompt the user with.
+
+default   -   Optional.
+              The string to substitute as the reply if the user
+              presses return without entering anything.
+

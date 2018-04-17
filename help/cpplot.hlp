@@ -1,0 +1,368 @@
+nplot, triangle, IF_index, npage
+Interactive display and editing of observed and model closure phases.
+EXAMPLE
+-------
+
+1. Plot closure phases of triangles of telescope WSRT, using 10 plots
+   per page.
+
+   0>cpplot 10, wsrt
+   Using default options string "efbm"
+   For help move the cursor into the plot window and press 'H'.
+   0> 
+
+2. Plot the closure phases of all triangles that include
+   the baseline WSRT-BONN, using 10 plots per page.
+
+   0>cpplot 10, wsrt-bonn
+   Using default options string "efbm"
+   For help move the cursor into the plot window and press 'H'.
+   0> 
+
+PARAMETERS
+----------
+nplot     -  (Default = 5 plots per page).
+             The maximum number of plots per page. The actual number
+             of plots per page used will be restricted to the number
+             of possible triangles that depend on the telescopes
+             described in the 'triangle' argument.
+
+triangle  -  (Default = "")
+             A triangle specification comprised of an optional sub-array
+             index plus colon, followed by between one and three telescope
+             names each separated by a hyphen. Read the antenna_names
+             help topic for more details
+
+             1. If only one telescope is given, then all independent
+                closure triangles with that telescope will be displayed
+                at 'nplot' plots per page. There are up to
+                ntel*(ntel-1)/2 - (ntel - 1) of these.
+
+             2. If two telescopes are given then all independent
+                closure triangles with the resulting baseline are
+                plotted at 'nplot' plots per page. There are up to
+                ntel-2 of these.
+
+             3. If three telescopes are provided then this completely
+                defines a single triangle to be plotted. Thus only one
+                plot per page will be displayed.
+
+IF_index  -  (Optional) Default = The first sampled IF.
+             The index of the IF to start plotting visibilities from.
+
+npage     -  (Optional) Default = 0 (with requests no page limit).
+             The maximum number of pages to plot when plotting to
+             a non-interactive device.
+
+CONTEXT
+-------
+In the absence of noise and correlator errors, the only remaining
+sources of measurement errors are at the individual telescopes. In
+terms of phases, where the absolute phase at any telescope is
+irrelevant, there are thus only N-1 telescope based phase errors
+compared to N(N-1)/2 baseline visibility measurements. There are thus
+N(N-1)/2 - (N-1) phase quantities that are un-corrupted by telescope
+based phase errors. Such quantities can be formed by summing
+visibility phases around a closed loop of three telescopes to cancel
+out telescope phase errors, and are known as closure phases.
+
+Closure phases are thus independent of the phase errors caused by
+local atmospheric fluctuations over individual telescopes. They
+are also independent of phase-center position errors, because such
+errors translate to antenna dependant time-variable phase shifts.
+
+In reality, noise, mismatched telescope bandpasses, correlator errors
+and limited precision mean that closure phases are less than perfect,
+but they are often still useful indicators of source structure if
+telescope based errors dominate visibility phases.
+
+Closure phase is implicitly used in self-calibration to solve for and
+remove telescope based phase errors. This command may be profitably
+used to determine whether the closure phases are sufficiently well
+behaved that phase self-cal is possible.
+
+CONFIGURATION VARIABLES
+-----------------------
+
+vflags  -  This is a string variable (shared with vplot) that
+           over-rides the default display attributes. It is
+           particularly useful when displaying to a hard-copy device,
+           where interactive changes to the default attributes can not
+           be made.
+
+By default vflags="". In this case cpplot substitutes the equivalent of
+vflags="efmb", which means plot error bars, flagged data, the model,
+and break the plot into scans.
+
+When vflags is not "", all toggled attributes are initially set to
+off, and the contents of the vflags string determine which of the
+attributes get turned back on.
+
+HARD COPY MODE
+--------------
+If this command is invoked when the PGPLOT output device is a
+hard-copy device, such as a laser printer, then all triangles
+corresponding to the given triangle specification will be plotted.
+For example:
+
+ 0>dev /ps
+ Attempting to open device: '/ps'
+ 0>cpplot 5,ovro
+ Using default options string "efbm"
+ Page 01: Triangles of 1:OVRO
+ Page 02: Triangles of 1:OVRO
+ Page 03: Triangles of 1:OVRO
+ Page 04: Triangles of 1:OVRO
+ Page 05: Triangles of 1:OVRO
+ Page 06: Triangles of 1:OVRO
+ Page 07: Triangles of 1:OVRO
+ Page 08: Triangles of 1:OVRO
+ Page 09: Triangles of 1:OVRO
+ 0>
+
+This plotted all closure triangles of OVRO at 5 plots per page.
+
+INTERACTIVE MODE
+----------------
+If the display device has a cursor, then an interactive session will
+be invoked. In this mode, one page of baselines is initially plotted
+and mouse-keys and keyboard keys are used to guide the command through
+plotting and data editing.
+
+Once cpplot has been invoked, move the cursor into the display window
+and press the 'H' key on your keyboard. Whenever this is pressed
+during the cpplot session a list of key bindings will be displayed in
+the window from which cpplot was invoked.
+
+Most keys are not case-sensitive, such that both 'H' and 'h' have the
+same effect.
+
+On standard PGPLOT conforming devices with a mouse or other cursor
+control device, mouse buttons are equivalent to the following keyboard
+keys:
+
+Left button   = 'A'   (This is the normal key for selecting positions).
+Middle button = 'D'   (This is used to cancel incomplete select ranges).
+Right button  = 'X'   (Use this to exit cpplot).
+
+Note that on a windowing system, the cursor must be within the display
+window before pressing a keyboard key or mouse button will be noticed.
+However, after pressing a key that needs more complex answers, such as
+the entry of the number of baselines to display or the entry of a
+new triangle specification, the cursor should be moved to the original
+text window where a prompt will be displayed to read your selection.
+
+
+MOVING ABOUT BETWEEN TRIANGLES
+------------------------------
+
+ N - Display next set of triangles.
+ P - Display preceding set of triangles.
+
+Pressing 'N' in cpplot causes the Next set of closure triangles that
+match the last triangle specification, to be plotted on a new page. The
+'P' key works identically but shows the Previous set of triangles.
+
+ T - Specify a new triangle specification from the keyboard (text screen)
+
+When you press this, a prompt will be displayed on the text screen and
+you will be expected to enter a new triangle description using the
+same format as described above for the 'triangle' command-line
+argument. See the antenna_names help topic for a description of
+triangle specification arguments.
+
+MOVING BETWEEN IFs
+------------------
+Visibilities are only displayed from one IF at a time. The identity of
+this IF is displayed above the collection of plots. To move onto the
+next or previous IF in which any channels were selected with the
+'select' command, use the following keys:
+
+ ] - Move to the next sampled IF.
+ [ - Move to the previous sampled IF.
+
+The title above the plots will change to indicate which IF is being
+displayed.
+
+CHANGING HOW CLOSURE PHASES ARE DISPLAYED
+-----------------------------------------
+The following keys toggle attributes on or off. The display will
+not be re-plotted immediately whenever one of these is toggled, so
+you can press a sequence of toggle keys before re-displaying with
+the new attributes. When the sequence is complete, simply press
+any key that is not in the list below, such as the RETURN key
+and the display will be updated with the new attributes.
+
+ M - Toggle display of model visibilities
+ F - Toggle display of flagged visibilities
+ E - Toggle display of error bars
+ B - Toggle breaking the plot into scans (where present)
+
+By default, a scan is taken to be any set of integrations which is
+separated by more than an hour from its nearest neighbors. This can be
+changed with the 'scangap' command.
+
+CHANGING THE NUMBER OF PLOTS PER PAGE.
+--------------------------------------
+
+ S - Select number of sub-plots per page
+
+You will be prompted for a number on the text screen. Your answer will
+be used to change the number of plots that appear per page on the
+screen.
+
+CHANGING THE DISPLAYED UT RANGE
+-------------------------------
+
+ U - select UT range to be displayed (hit U twice for full range)
+
+Press 'U' to request a change in the displayed UT range. You will
+then be expected either to press 'U' again to display the whole
+UT range, or to move the cursor to the start UT of the required
+range and press 'A' (left mouse button), then move the cursor to
+the end UT of the required range and press 'A' again. The plot
+will then be re-displayed over the new range and all subsequent
+plots will be displayed over this range. At any point before
+the UT range selection has been completed, pressing the 'D' key
+(middle mouse button) will quietly abort the selection.
+
+CHANGING THE DISPLAYED CLOSURE-PHASE RANGE
+------------------------------------------
+
+ Z - Select closure-phase range to be displayed (hit Z twice for full range)
+
+Press 'Z' to zoom in on a selected closure-phase range. (Press it
+twice to revert to the full -180 to 180 degree range). You will then
+be expected either to press 'Z' again to display the whole
+closure-phase range, or to move the cursor to the first (top or
+bottom) closure-phase of the required vertical range and press 'A'
+(left mouse button), then move the cursor up or down to the end
+closure-phase of the required range and press 'A' again. The plot will
+then be re-displayed over the new range and all subsequent plots will
+be displayed over this range. At any point before the closure-phase
+range selection has been completed, pressing the 'D' key (middle mouse
+button) will quietly abort the selection.
+
+CHANGING WHETHER REDUNDANT BASELINES ARE DISPLAYED
+--------------------------------------------------
+By default, for each reference telescope specification (eg. each
+reference baseline or telescope) that it plots triangles for, cpplot
+displays all unique triangles that include that spec. This is easy
+to understand and helps to highlight errors that are specific to the
+reference specification. However, it does result in you seeing each
+triangle more than once if you step through all reference
+specifications of a given type. This can be annoying if you have a 
+very large number of triangles. For this reason cpplot also provides
+the option to only show each triangle once, by only showing triangles
+with telescopes that are in increasing sequential order with respect
+to the last antenna of the reference specification. Thus if your
+reference specification is a baseline, the final telescope is only
+allowed to be taken from the set of telescopes that follow the last
+telescope of the reference baseline, in the list of all telescopes.
+
+  O - Toggle telescope ordering to only show non-redundant triangles.
+
+EDITING DATA
+------------
+Cpplot gives you the option to edit closure phases interactively. You
+can edit visibilities of a specific station, a specific baseline, or
+all three baselines of a selected triangle.
+
+When displayed, flagged data appear as red '+' symbols, un-flagged data
+as green points and the model appears as a continuous light-blue line.
+In addition, if a visibility is flagged by a selfcal correction flag,
+but not by a normal visibility flag, it is displayed as a blue 'x'
+symbol.
+
+Station editing:
+
+ If you wish edits to be applied to all visibilities of a specific
+ station have cpplot display closure phases for just that station.
+ This is done by specifying just that station name when you invoke
+ cpplot, or via the 'T' key. The rational behind this is that if a
+ single station is responsible for closure phase errors (surprisingly
+ this IS possible) you will probably only see this when plotting many
+ closure triangles of that station.
+
+Baseline editing:
+
+ If you wish edits to be only applied to visibilities of a specific
+ baseline, have cpplot display closure phases for just that baseline.
+ This is done by specifying just that baseline name when you invoke
+ cpplot, or via the 'T' key. The rational behind this is that if a
+ single baseline is responsible for closure phase errors, you will
+ probably only see this when simultaneously plotting many closure
+ triangles of that baseline.
+
+Triangle editing:
+
+ If you ask cpplot to plot closure phases of a single triangle, then
+ all edits are applied to each of the three baselines that make up the
+ triangle. This mode of editing can also be selected when displaying
+ closure phases of a specific station or baseline, by toggling between
+ the default editing mode and triangle editing with the space bar.
+
+' ' - (SPACE BAR) Toggles to and from triangle based editing.
+      When this toggle is active, the mode title above the plot will
+      change between "Triangle editing..." and the default editing
+      mode.
+
+Note that cpplot displays a closure phase as flagged if any of the
+three visibilities that form it are flagged. Thus if you try to
+restore a flagged closure phase in baseline editing mode, then the
+closure phase will not appear to change state unless only that
+baseline was flagged.
+
+
+It is also possible to further specify the scope of edits.
+
+ I - Toggle IF editing scope.
+ W - Toggle spectral-line editing scope.
+
+By default, edits are applied to all polarizations, spectral-line
+channels and IFs related to the selected visibility. To specify that
+edits only be applied to the displayed IF, press the 'I' key. To
+specify that edits be only applied to the channels that were specified
+with the 'select' command, press the 'W' key. The mode line above the
+collection of plots, describes which of these editing modes is in
+effect.
+
+ A - Flag or unflag the nearest closure sample to the cursor.
+     (Left mouse button)
+
+Pressing 'A' on the keyboard or the left mouse button near a displayed
+closure sample causes the status of the visibilities of that closure
+triangle to from un-flagged to flagged or vice versa. If flagged data
+are displayed, then toggling an un-flagged closure-phase will produce
+a red cross signifying its new flagged status. Otherwise the point
+will magically disappear, but can be seen subsequently if the display
+of flagged data is enabled.
+
+ C - Flag all data inside select box
+ R - Restore data inside select box
+
+If you wish to flag or un-flag an extended region of data, point by
+point editing is tedious. The Clip and Restore keys, 'C 'and 'R'
+enable you to edit all points inside a square box selected with the
+cursor. To use this facility, press the respective key and then
+move the cursor to one corner of the required region and press 'A'
+(left mouse button). Then move the cursor to the opposite corner of
+the required region and again press 'A'. The selected points will be
+re-displayed with their changed statuses.
+
+ENDING A CPPLOT SESSION
+----------------------
+To end a cpplot session, press 'X' or the right mouse button.
+If substantial editing was performed in cpplot then it is advisable to
+use the wmerge command to save the modified file before continuing
+to map the data.
+
+RELATED COMMANDS
+----------------
+scangap  -   Change the time gap used to delimit neighboring scans.
+radplot  -   Display visibility amplitude vs. UV radius.
+projplot -   Display visibility amplitude/phase vs. projected UV distance.
+uvplot   -   Display the sampling of the UV plane.
+vplot    -   Display observed and model visibilities.
+tplot    -   Display the time-sampling of each telescope.
+corplot  -   Display accumulated self-calibration corrections.

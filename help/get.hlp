@@ -1,0 +1,56 @@
+prefix_name
+Restore UV data, models and windows from files.
+EXAMPLE
+-------
+
+0>get 3c345
+Attempting to open FITS file: 3c345.uvf
+... details of UV FITS file contents
+A total of 94 model components were read from file 3c345.mod
+rwins: Read 3 windows from 3c345.win
+0>
+
+PARAMETERS
+----------
+
+prefix_name  -  All the required files must have this as there prefix
+                followed by the standard suffixes listed below.
+
+STANDARD SUFFIXES
+-----------------
+
+To the prefix name that you enter the following extensions are
+appended to indicate the file type:
+
+ .uvf  -  The suffix of the UV-FITS data file.
+ .mod  -  The suffix of any model file.
+ .win  -  The suffix of any windows file.
+
+CONTEXT
+-------
+Before leaving difmap it is important to save all processed data
+unless the data is to be discarded. The 'save' command provides a
+convenient method for saving all relevant data with a single command.
+
+The 'get' command provides the matching facility for reading the
+files back into difmap.
+
+Note that it doesn't read the FITS restored map file. 
+
+IMPORTANT
+---------
+The get command does not restore the running parameters (such as the
+UV weighting and map size) to the states that they held when the save
+command was called - it only restores the data files. To do this don't
+use the 'get' command directly. Instead execute the .par file command
+file that was produced with the save command (in the above example
+this file would be called 3c345.par). This file contains all the
+commands necessary to restore both the data files and the state of all
+running parameters. See help on the 'save' command for more details.
+
+RELATED COMMANDS
+----------------
+save   - Save UV data, models, windows, the restored map and a command
+         file to use to restore the running parameters.
+rwins  - Read previously saved CLEAN windows from a text file.
+rmodel - Read a CLEAN model from a VLBI model file.

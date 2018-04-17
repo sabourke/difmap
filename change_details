@@ -1,0 +1,3498 @@
+
+This file contains the details of recent difmap changes.
+Changes are listed from the most recent to the oldest. Dates are
+formatted as mm/dd/yy.
+
+03/17/2010 version.h
+
+           Changed the version to 2.4l.
+
+03/17/2010 configure
+
+           Changed the default fortran compiler of the linux-i486-gcc
+           configuration option, to gfortran.
+
+03/17/2010 recio.c
+
+           Olaf Wucknitz reported that on a RAID array that he was
+           using, the stdio buffer size that glibc adopted, was 5MB.
+           Thus at each of the many fseek() calls that the recio
+           facility performs, the C library had to discard existing
+           buffered data and refill its buffers, by reading 5MB of new
+           data from disk. In cases where only a small fraction of
+           this data was subsequently read by the recio facility,
+           before the next fseek(), this made difmap run extremely
+           slowly.  Turning off stdio buffering in the recio facility
+           recovered the original speed.
+
+           I have thus turned off stdio buffering of files that are
+           managed by the record-I/O facility.  This facility is
+           usually used to either read large blocks of data per read,
+           or to read small sections of widely separated large
+           records. Neither of these use cases generally benefits from
+           stdio buffering. So this patch should not have any adverse
+           affects.
+
+02/27/2008 version.h fits_src/sysfits.h configure
+
+           Added support for Intel Macs. This is selected by specifying
+           the argument, intel-osx-gcc to the configure script. The
+           configuration has to differ from the apple-osx-gcc version,
+           because the byte order is different between the PPC and intel
+           Macs, and this effects how FITS datatypes are converted to the
+           native floating-point and integer formats.
+
+           Incremented the version number to 2.4k
+
+06/16/2007 version.h
+
+           Incremented the version number to 2.4j
+
+06/16/2007 telspec.c antenna_names.hlp
+
+           NRAO has started to use antenna names that have spaces in
+           them, and this conflicts with the use of spaces as antenna
+           name separators in difmap. To allow telescope names that have
+           spaces, or other special characters, to be specified, it is
+           now possible to escape such characters with a backslash. Since
+           the shell also interprets backslashes, it is necessary to use
+           two when specifying names on the command line.
+
+10/20/2006 version.h
+
+           Incremented the version number to 2.4i.
+
+10/20/2006 uvrange.c
+
+           On Intel processors, performing the same floating point
+           operation with identical operands, in two different
+           functions, often returns values that differ by a tiny
+           amount. Although the difference is always below the
+           advertized precision of a float, it can be enough to cause
+           a comparison between the two numbers to fail. Since difmap
+           selects visibilities by comparing their UV radii against
+           the specified UV range, this meant that some functions
+           selected different numbers of visibilities than others,
+           sometimes including and sometimes excluding visibilities
+           that lay right at the inner or outer edges of the UV
+           range. Comparing the difference between two UV radii, to a
+           specified precision, doesn't help if the radii of two
+           visibilities straddling the edge of the range, are
+           separated by this precision. However, this is unlikely in
+           practice, provided that the tiny theoretical machine
+           precision is used, and I can't think of any other solution.
+           So when computing UV ranges from the data, the maximum UV
+           radius is recorded after incrementing it by the theoretical
+           floating point precision that corresponds to its magnitude,
+           and similarly, the minimum UV radius is recorded
+           decremented by the floating point precision that
+           corresponds to the magnitude of the minimum.
+
+10/20/2006 spectra.c uvrange.c visflags.c uvinvert.c
+
+           In the above files, the comparison against the UV range and
+           actual UV radii, was being done by comparing the squares of
+           the radii, to avoid the overhead of a sqrt(). To ensure that
+           all procedures are consistent in this comparison, I have
+           modified all of the code to compare the actual radii.
+
+09/21/2006 version.h
+
+           Incremented the version number to 2.4h.
+
+09/21/2006 difmap.c visstats.c visstats.h help/uv_to_wav.hlp
+           help/wav_to_uv.hlp help/map_to_rad.hlp help/rad_to_map.hlp
+           help/mapsize.hlp
+
+           The statistics of the U and V coordinate magnitudes and UV
+           radii of visibilities can now be queried using the vis_stats()
+           function.
+
+           Image plane coordinates can now be converted between the
+           currently selected map units and radians, using the new
+           map_to_rad() and rad_to_map() functions.
+
+           UV plane coordinates can now be converted between the
+           currently selected UV-plane units and wavelengths, using
+           the new uv_to_wav() and wav_to_uv() functions.
+
+06/30/2005 logio_src/print.c
+
+           Difmap didn't work when compiled with gcc-3.3 and up, on
+           AMD64 machines. This is due to a bug in gcc on that system,
+           regarding the implementation of the va_list data-type.
+
+           Whether this is a bug or a valid feature in gcc, appears to
+           be contraversial among gcc developers, but the claim is
+           that regardless, it is unfixable, due to the way that
+           arguments are passed on the AMD64. The problem is that if
+           one has a function that takes an already initialized
+           va_list argument, and wants to delegate the processing of
+           individual arguments to lower level functions, there is now
+           no portable way to pass the va_list list to the lower level
+           functions, in a way that lets them advance the
+           list. According to Plauger's book, "The standard C
+           library", the portable way to do this is to pass a pointer
+           to the va_list argument, into the lower-level functions,
+           but this doesn't work under gcc-3.3 and up on AMD64
+           systems.
+
+           The recommended workaround when compiling with gcc seems to
+           be to make a copy of the va_list argument, using the
+           va_copy() macro, and pass a pointer to that copy, instead
+           of to the original va_list argument of the
+           function. However va_copy() isn't part of the C standard,
+           and thus isn't portable.
+
+           Thus, since gcc has now broken the only way to delegate the
+           processing of individual arguments of a variable argument
+           list to lower-level functions, my workaround was to move
+           the processing from those functions into the top-level
+           print_format() function.
+
+           Updated the version number to 2.4g.
+
+06/29/2005 libtecla_src/config.sub libtecla_src/config.guess version.h
+           README
+
+           The autoconf config.sub and config.guess scripts, used by
+           libtecla, were too old to know about amd64. I have thus
+           updated them to those of autoconf-2.58, by upgrading from
+           libtecla-1.5.1 to libtecla-1.6.1.
+
+           Updated the version number to 2.4f.
+
+02/13/2004 difmap.c version.h README
+
+           The imstat command now allows one to query the mapsize
+           in pixels, nx, ny, image-plane pixel cellsize dx, dy,
+           and UV-plane pixel cellsize du, dv.
+
+           Updated the version number to 2.4e.
+
+01/07/2004 version.h README
+ 
+           Updated the version number to 2.4d.
+
+01/07/2004 configure fits_src/sysfits.h libtecla_src/*
+           difmap_src/{maplot.c,minmax.c,plbeam.c,vlbmath.h,vplot.c}
+
+           Ported to Mac OS X. You will first need to install pgplot
+           and g77, and the configure script requires the argument
+           apple-osx-gcc.
+
+           Apple uses the same datatypes as big-endian machines like
+           sparc, so the corresponding type definitions are now
+           selected for Mac OS X in sysfits.h.
+
+           There was a symbol clash between difmap's internal fmin() and
+           fmax() functions, and identically named functions in a MacOS X
+           system header, so the changes to the above files in difmap_src
+           were all to change instances of these function names to
+           floatmin() and floatmax(), respectively.
+
+09/29/2003 uvf_read.c
+
+           Abort bin_uvdata() if no visibilities are found in the
+           file.
+
+06/24/2003 hms.c
+
+           The mark_ra command failed treated a number in which the
+           first component of the RA string was -00, as a positive
+           number.
+
+06/04/2003 chlist.c
+
+           The function which compares two channel selections was
+           unfortunately comparing the first of the selections to
+           itself, rather than to the second selection. As a result,
+           in multi-model mode, if multiple models of equal
+           polarization and number of channel ranges hashed to the
+           same hash-table bin, the second was interpretted as being
+           an update of the first, even though if its channel
+           selection didn't match.
+
+11/18/2002 fits_src/sysfits.h fits_src/fitkey.h fits_src/phdu.c
+           configure
+
+           Added configuration from CITA for compiling the fits
+           library on 64-bit IBM computers running AIX. Unfortunately
+           using this revealed a bug. At some point I had changed the
+           ival member of Fitkey structures from an int to a long,
+           worrying that int might be too small to record all possible
+           integer header-keyword values on computers with 16 bits.
+           However everything else continued to assume that this was
+           an int, including my architecture dependent type conversion
+           code. This didn't cause any problems on computers where int
+           and long were the same size, and so remained hidden for a
+           long time. I have changed the member back to an int, and
+           all is well again.
+
+08/01/2002 sphere_src/lex.c
+
+           Script file openings and closings are now recorded in the
+           log file.
+
+07/31/2002 pager_src/pager.c
+
+           If the user didn't have the PAGER shell variable set, the
+           default pager command was incorrectly set to the string
+           "PAGER", instead of to the value of the macro of this
+           name. As a result, users got an error complaining about
+           the non-existence of a command called PAGER. Now fixed.
+
+07/31/2002 func.c
+
+           Added an 'error' command. This prints an error message,
+           then returns -1 to abort the current script.
+
+07/31/2002 lex.c
+
+           Difmap preprocessor directives can now use .* to specify
+           the end of the range of arguments to be substituted should
+           correspond to the last argument. Thus %,3.* now substitutes
+           all arguments from argument 3 onwards, preceded by commas.
+           Also added a %n directive, which substitutes the number of
+           arguments available.
+
+05/28/2002 modfit.c
+
+           Modelfit now reports the number of degrees of freedom after
+           each chi-squared, instead of just in the modelfit descriptive
+           header. Tony needed this.
+
+05/07/2002 sphere_src/lex.c
+
+           I increased the number of pre-processor arguments allowed
+           by difmap from 6 to 40.
+
+05/02/2002 difmap.c mapmem.c maplot.c
+
+           Pat needed to be able to get the RA/Dec location of the
+           peak in her maps from a difmap script. The peak() function
+           now allows one to query this.
+
+03/02/2002 uvplot.c help/uvplot.hlp
+
+           Added an option to not display the conjugate reflected
+           visibilities. This is toggled with the '%' key.
+
+02/28/2001 sphere_src/{matrix_blocks.c matrix_blocks.h iolib.c
+                       makefile.distrib} help/read_table.hlp
+
+           I added the new read_table user command. This reads
+           tables of numbers from text files into 2D arrays, without
+           the user having to tell difmap how many rows or columns
+           there are.
+
+01/06/2001 obedit.c obedit.h difmap.c
+
+           Wrote edit_baselines() for use by the new flag and unflag
+           difmap commands.
+
+           Wrote flag and unflag difmap commands. These commands
+           provide for scripted editing, instead of all editing having
+           to be done graphically.
+
+01/06/2001 hms.c vlbutil.h difmap.c
+
+           Changed all functions to check for unexpected trailing
+           characters when passed endp==NULL. Also changed
+           read_sexagesimal() to return the read number via an
+           argument, so that an error can be returned via the
+           function return value. Updated all calls to
+           read_sexagesimal() and parse_mjd() in difmap.c to
+           take advantage of this.
+
+01/06/2001 difmap_src/telspec.c
+
+           When endp was passed as NULL, read_tspec() incorrectly
+           rejected the "*" specification, complaining that garbage
+           characters followed it. Now fixed.
+
+12/18/2001 difmap_src/markerlist.h
+
+           Whereas the sym argument of add_MarkerNode() was declared
+           as a MarkerSymbol enumerator in markerlist.c, it was declared
+           as an int in markerlist.c. Strangely, only Sun's cc compiler
+           complained about this. Gnu's C compiler didn't even warn about
+           it.
+
+09/28/2001 difmap_src/difmap.c difmap_src/uvinvert.c difmap_src/vlbinv.h
+           help/mapsize.hlp
+
+           If the pixel size argument of the mapsize command is omitted,
+           the maximum pixel size that can be accomodated without cutting
+           off any visibilities is now substituted.
+
+08/15/2001 difmap_src/uvf_read.c
+
+           Treat the epoch as FK4 if < 1984, and FK5 if >= 1984.
+
+07/09/2001 doc/makemanual
+
+           Jim Lovell brought my attention to the fact that recent
+           difmap command names that include underscores resulted in
+           the makemanual script producing bad tex files. I have
+           modified the script to escape these underscores, where
+           needed.
+
+07/09/2001 doc/makemanual, doc/model.tex, doc/smooth.tex,
+           doc/fits.tex
+
+           Changed \documenstyle to \documentclass to conform with
+           latex 2e.
+
+07/03/2001 configure difmap_src/makefile.distrib
+           sphere_src/makefile.distrib difmap_src/difmap.c
+           sphere_src/{iolib.c,plotlib.c,func.c,mathlib.c}
+
+           Instead of setting the HELP_DIR macro via the standard C
+           compiler -D flag, it is now placed in include/helpdir.h,
+           which is included by all .c files that use the macro.  This
+           file is only updated if configure finds that it needs
+           updating, so the files that depend on it in the makefiles
+           only get recompiled when the help directory actually
+           changes. The advantages of switching to the new scheme are
+           that the appropriate files get recompiled automatically if
+           the help directory changes, and on some systems the escaped
+           quotes used with -D caused problems when passed to
+           compilers that were actually scripts, since the quotes got
+           stripped too early.
+
+06/27/2001 difmap_src/moddif.c
+
+           Moddif now no longer objects when there are no visibilities
+           in the selected stream and UV range.  This allows scripts
+           to check if the number of is zero, before trying any
+           commands that require that there be at least one visibility
+           selected.
+
+07/01/2001 recio_src/recio.c
+
+           Greg Taylor reported problems using the select command on
+           data from a large UV FITS file. Although recio.c contained
+           special code to cope with files > 2GB, it didn't work. This
+           was showing up on a 3.5GB scratch file. This bug has now
+           been fixed.
+
+05/03/2001 sphere_src/plotlib.c help/pgcont.hlp help/pggray.hlp
+
+           I added user-commands to provide direct access to
+           the pgcont() and pggray() subroutines.
+
+02/09/2001 difmap_src/difmap.c  (Released difmap 2.4a)
+
+           Svetlana Jorstad reported that if he typed
+           "multi_model true" (before defining a map),
+           this crashed difmap. This is now fixed.
+
+02/08/2001 libtecla_src/
+
+           The version of the tecla library used by difmap was updated.
+
+02/05/2001 sphere_src/lex.c
+
+           In searching for the start of a symbol to be tab completed,
+           underscore wasn't being included in the list of characters
+           allowed in a symbol. This has now been corrected
+
+02/02/2001 libtecla_src/getline.c
+
+           Some of the default key bindings are taken from the stty
+           bindings set by the terminal. What I hadn't realized was
+           that stty uses ASCII NUL (ie. 0 or ^@) to specify that
+           a particular binding is unset. In a case where this
+           occured, the tecla library comlained that the binding key
+           was ambiguous, because this is also a string terminator,
+           and the resulting empty string was thus the ambiguous
+           prefix of all other bindings. Unset bindings are now
+           ignored, as they should be. Note that you can use ^@ in
+           textually specified binding sequences. It was just in the
+           case of a binary control character that this was a problem.
+
+02/02/2001 sphere_src/lex.c
+
+           When performing file-completion, the '@' in @filename
+           directives was being interpretted as part of the filename
+           and thus preventing completion. Also if the filename
+           was preceded by a comma separator, the comma and any
+           non-space characters immediately before it, were also
+           treated as part of the filename to be completed.
+           This is now remedied.
+
+02/02/2001 difmap_src/{uvradplt.c,corplt.c,vplot.c,uvplot.c,timplt.c}
+
+           Added polarization labels to the titles of uvplot, corplot,
+           vplot, uvplot and tplot.
+
+01/31/2001 difmap_src/vplot.c
+
+           Antonis noticed that when the model was displayed, the 'v'
+           command didn't toggle whether flagged data were included or
+           excluded from the autoscale range. While remedying this, I
+           then noticed that when the flagged data wasn't selected to
+           be displayed at all, the model for the flagged data was
+           still displayed, and included in the autoscaling. Both of
+           these problems have now been fixed.
+
+01/23/2001 ./configure (re-released difmap version 2.4)
+
+           Antonis Polatidis reported that under Suse Linux, -lcurses
+           has to be changed to -lncurses when compiling the tecla
+           library. I have thus moved the TECLA_LIB configuration
+           parameter into the user-modifiable section and documented
+           this.
+
+01/19/2001 Released difmap version 2.4
+
+01/06/2001 difmap_src/maplot.c
+
+           In addition to what it used to display, the 'v' key now
+           displays the Right Ascension and Declination of the
+           selected position.
+
+01/06/2001 difmap_src/uvf_write.c
+
+           Noticed and fixed error handling bug in primdata().  If an
+           I/O error were to occur while writing the random parameters
+           of a given visibility, the error cleanup code would have
+           free'd the group parameter buffer array twice.
+
+01/03/2001 configure makeall libtecla_src/ sphere_src/{lex.c,sphere.c}
+
+           Having been told by the free software foundation that I
+           couldn't use the readline library in difmap, I replaced its
+           previously optional support with optional support for my
+           tecla terminal input library.  In the process I customized
+           tab completion to complete words as difmap command or
+           variable names when attempting completion on the first word
+           of a logical line, reverting to filename completion later
+           in the line.
+
+11/09/2000 difmap_src/model.c
+
+           In modifying the model component insertion code to cope with
+           components with spectral indexes, I was setting the
+           optimization flag which says whether a model is all continuum
+           delta functions to the state of the last component inserted.
+           Thus if one inserted a continuum delta function after an
+           elliptical gaussian component, difmap wrongly thought that
+           the model was completely comprised of delta functions.
+
+10/08/2000 difmap_src/{chlist.c, subamphs.c, addamphs.c}
+
+           Compiling difmap on linux revealed a few new compiler warnings.
+           In chlist.c I was comparing the return value of ungetc() to
+           NULL instead of EOF, and in subamphs.c and addamphs.c I wasn't
+           including stdio.h (needed for a FILE * declaration in the
+           included vlbutil.h).
+
+10/01/2000 difmap_src/{modfit.c, moddif.c}
+
+           When searching for visibilities within the current UV
+           range, I was comparing the square of the UV radius of each
+           visibility against the square of the min,max UV radii
+           returned by uvrange(). Limited precision resulted in this
+           rejecting a few borderline visibilities that shouldn't have
+           been rejected. I have now changed the test to compare the
+           UV radius instead of its square. The path to computing this
+           thus matches that used in uvrange(), and so avoids the
+           precision problem.
+
+10/01/2000 difmap_src/{visstats.c, visstats.h, difmap.c} help/vis_stats.hlp
+
+           I added a new command/function. When used as command,
+           'vis_stats' displays the statistics of a specified
+           observable to the terminal and to the log file. When used
+           as a function, vis_stats() returns an array containing the
+           various statistics of the specified observables. The
+           choices of observables are the amplitude, phase, real and
+           imaginary parts of the visibilities within the current UV
+           range. The statistics computed are the mean, the error on
+           the mean, the scatter around the mean, and the range of
+           values.
+
+09/22/2000 difmap_src/difmap.c
+
+           The multi-model command switches models on enterring multi
+           model mode, but it was neglecting to mark the map as out
+           of date. I have remedied this.
+
+08/27/2000 difmap_src/{difmap.c markerlist.c markerlist.h mapplot.c
+                       mapplot.h}
+           help/{mark_xy.hlp mark_radec.hlp mapplot.hlp wmarkers.hlp
+                 clear_markers.hlp delmarker.hlp}
+
+           I added a marker/annotation facility to mapplot. Optionally
+           annotated markers to draw on maps at specified equatorial
+           or X,Y coordinates are specified via the new 'mark_radec'
+           and 'mark_xy' commands. These add markers to a list,
+           maintained by difmap.c, which is passed to subsequent
+           invocations of mapplot.  Markers can be deleted wholesale
+           with the 'clear_markers' command, or individually either
+           interactive in mapplot with the 'u' command, or
+           non-interactively with the delmarker command. Markers are
+           saved by the 'save' command via the parameter file, which
+           contains the commands needed to recreate the markers. The
+           same commands can also be listed either to standard output,
+           or a specified file via the 'wmarkers' command.
+
+08/27/2000 difmap_src/{termstr.c vlbutil.h}
+
+           I wrote write_string_arg(). This writes strings out in
+           a form suitable for string arguments of difmap commands.
+           This includes escaping special characters in the string,
+           and enclosing the string in quotes.
+
+08/27/2000 difmap_src/{hms.c vlbutil.h vlbhead.c mapplot.c difmap.c}
+
+           I added a 'colon' boolean argument to sraddms() and sradhms()
+           for specifying whether to separate sexagesimal components
+           with a colon or a space.
+
+08/27/2000 logio_src/logio.c
+
+           The lputs() function, which up until now I haven't used,
+           output a newline character after the specified text. This
+           meant that it didn't emulate fputs() as it was designed to,
+           so I removed the newline.
+
+07/31/2000 difmap_src/model.c
+
+           I updated model.c to use freelist.c for allocating both model
+           components and model containers. Previously only model components
+           were allocated in blocks, and this was done using code specific
+           to this module. Allocating model containers from a freelist,
+           makes it more efficient and safer to allocate lots of models.
+
+08/30/2000 difmap_src/{maplot.c difmap.c}
+           help/{mapplot.hlp polvec.hlp polarization.hlp}
+
+           The first argument of the mapplot command can now be 'pmap'
+           and 'pcln' (in addition to cln and map). Both result in
+           polarization vectors being plotted over the map of the
+           currently selected polarization, the first doing this for
+           the residual map and the second for the restored maps. To
+           take advantage of this the user must have previously used
+           the multi_model command to select multi-model mode, and
+           made maps of Q and U, in addition to the currently selected
+           polarization. Difmap then uses the models that were made
+           while mapping Q and U to remake these maps, store them
+           temporarily in the beam array, compute the polarized
+           intensity and angle maps, recording them in the unseen
+           margins before and after the image in the map array
+           (remember that the clean algorithm only correctly
+           deconvolves the inner quarter of a map, so mapplot only
+           displays this part). Mapplot then plots the inner quarter
+           of the array as usual with grey-scale and/or contours, then
+           overlays this with polarization vectors deduced from the
+           polarization angle/intensity maps squirreled away in the
+           hidden margins. Where to draw vectors and how long they
+           should be for a given polarized flux is configured with
+           the new 'polvec' command.
+
+08/30/2000 difmap_src/{difmap.c modeltab.c chlist.c obs.h chlist.h obutil.c
+                       obs.c modeltab.h model.h}
+           help/{multi_model.hlp read_models.hlp write_models.hlp
+                 clear_models.hlp}
+
+           I modified difmap to have the option of keeping separate
+           models for different selections of channel-range and
+           polarization. In this mode, requested with the new
+           'multi_model' command, the 'select' command saves and
+           recalls models for different selections. Thus when, for
+           instance, one makes a map of U, then selects Q, and makes a
+           map of Q, the model of U is reinstated when U is next
+           selected.  The models are stored in a hash-table
+           Observation::mtab, implemented in modeltab.c and indexed by
+           channel range and polarization. Models can be saved to file
+           using the new 'write_models' command, and restored from
+           such files using the new 'read_models' command. They can be
+           cleared using the new 'clear_models' command.
+
+07/28/2000 difmap_src/{model.c model.h}
+
+           I split out the model-component reader part of rmodel() into
+           a new function called read_Modcmp(). This can be called by
+           other functions when reading models embedded in other files.
+
+07/27/2000 difmap_src/{units.c units.h}
+
+           I wrote ordinal_suffix(), which returns the 2 character
+           suffix to display after ordinal integers.
+
+07/23/2000 difmap_src/difmap.c
+
+           The first argument of mapplot (and maplot) is now a literal
+           string, interpretted as an enumerator. Previously it was an
+           array name. The only visible difference to users is that 
+           they can now use the word 'clean' as well as the existing
+           'cln' to request display of the clean map.
+
+07/23/2000 difmap_src/{model.h model.c}
+
+           I wrote cpy_Model() for allocating copies of models.
+
+07/23/2000 difmap_src/{chlist.h chlist.c}
+
+           a. I wrote cpy_Chlist() for allocating a copies of channel
+              list objects.
+
+           b. While doing this I noticed that the range-array reallocation
+              in add_crange() was always allocating RANGE_INC elements
+              instead of nrange + RANGE_INC. This would potentially have
+              caused problems to people selecting more than 5 separate
+              channel ranges with the 'select' command.
+
+           c. I wrote eq_Chlist() for comparing channel-lists for
+              equivalence.
+
+07/21/2000 difmap_src/wmapbeam.c
+
+           I now record the theoretically estimated RMS noise in the
+           map FITS file, listed with a new NOISE keyword. Tim needed
+           this for mosaicing. Note that this noise is that estimated
+           from the weights, and will not be correct if these aren't
+           the reciprocal of the visibility amplitude variance.
+
+07/20/2000 difmap_src/{difmap.c,hms.c,obutil.c,vlbutil.h,obs.h} help/shiftto.hlp
+
+           I added shiftto command. This shifts the map center to
+           a given RA,Dec position. To facilitate the entry of RA,
+           Dec, I wrote hms.c::parse_sexagesimal_string(), and to
+           facilitate the conversion of an RA,Dec change to the
+           equivalent direction cosine shift, I wrote
+           obutil.c::{radec_to_l(),radec_to_m()}.
+
+07/12/2000 difmap_src/{vplot.c,vedit.c,vplot.h} help/vplot.hlp
+
+           The vplot command now also provides the option of displaying
+           GST along the X-axis of the plot. This is toggled with the
+           'G' key.
+
+07/10/2000 difmap_src/timplt.c help/tplot.hlp
+
+           The tplot command now provides the option, toggled with the
+           'G' key, of displaying greenwhich sidereal time along the
+           X-axis instead of UTC.
+
+06/20/2000 difmap_src/{model.c, model.h, modvis.c, addmod.c, modfit.c,
+                       maplot.c, difmap.c, mapclean.c, mapres.c, mapres.h,
+                       obs.h}
+           help_src/modelfit.hlp
+
+           I modified difmap to support model components with spectral
+           indexes, including the ability to fit for the spectral
+           index of each component. Frequency dependent fluxes are
+           computed per IF, at the mean frequency of any spectral line
+           channels within the IF.
+
+05/22/2000 difmap_src/{difmap.c, moddif.c, obs.h, slfcal.c}
+           help/{uvstat.hlp, selfcal.hlp, uvrange.hlp, modelfit.hlp}
+
+           The moddif() function and thus the user 'uvstat' function
+           now take note of the limits set by the 'uvrange' command.
+           I also improved the documentation of the uvrange command,
+           including documenting its effects in the modelfit, uvstat,
+           and selfcal commands.
+
+05/07/2000 difmap_src/{difmap.c, uvf_write.c, obs.h} help/wobs.c
+
+           The 'wobs' command now has an optional boolean argument
+           for requesting that any shifts applied by the 'shift'
+           command be frozen into the output file.
+
+05/07/2000 difmap_src/{difmap.c, obs.h, uvf_read.c, uvf_write.c, subarray.c,
+                       obs.c, visaver.h, visaver.c}
+
+           1. I have modified difmap to no longer discard unsampled
+              antennas when reading in UV-FITS files. This was
+              confusing to programs that operated on multiple files
+              from the same instrument.
+           2. Difmap now knows about the INTTIM random parameter (used
+              to associate integration times with visibilities), and
+              if found in the input file, writes them to the
+              output files generated by the wobs command.
+
+04/02/2000 difmap_src/uvradplt.c help/radplot.hlp
+
+  Details: I added the ability to compute vector based statistics
+           of the visibilities within a user selected region. The
+           'V' key is used to initiate the selection. Note that
+           there is also an equivalent scalar average based option
+           initiated with the upper-case 'S' key. The latter has
+           been in difmap for a few months, but I forgot to document
+           it here.
+
+03/21/2000 difmap_src/intrec.c
+
+  Details: In ini_Intrec was advancing the integration pointer of the
+           last subarray node one position too far while preparing for
+           the next (in this case non-existent) iteration of the
+           loop. As far as I know this hasn't ever caused any problems
+           in difmap. I encountered it while trying out the electric
+           fence memory debugging library.
+
+03/01/2000 difmap_src/timplt.c difmap_src/difmap.c help/tplot.hlp
+
+  Details: One can now toggle between small and large dot sizes.
+           I have also added a tflags user variable so that the
+           default plotting flags can be changed.
+
+03/01/2000 difmap_src/uvplot.c difmap_src/difmap.c help/uvplot.hlp
+
+  Details: I have also added a uflags user variable so that the
+           default plotting flags can be changed.
+
+03/01/2000 difmap_src/uvradplt.c
+
+  Details: I fixed two bugs in the autoscaling of the error graph.
+           When the amplitude graph was zoomed and the UV range
+           was zoomed, but the error graph wasn't zoomed, autoscaling
+           didn't occur in the error plot, resulting in pgplot error
+           messages about the Y axis range of this graph being zero.
+
+02/21/2000 sphere_src/lex.c
+
+  Details: I fixed a bug that I had introduced when adding support
+           for readline. Internal macros erroneously caused lexgets()
+           to try to read from a NULL stream.
+
+01/15/2000 difmap_src/maplot.c
+
+  Details: When interactively creating model components, mapplot was
+           using the absolute value of the map flux at the center of
+           the component. I have changed it to use this flux with
+           its original sign. This is necessary for SZ and CMB
+           observations. 
+
+01/13/2000 configure sphere_src/{lex.c,makefile.distrib,sphere.h}
+           difmap_src/makefile.distrib
+
+  Details: I added optional support for the gnu readline library.
+
+01/05/2000 difmap_src/newfft.c
+
+  Details: On the reverse real fourier transform, newfft() used the
+           wrong scale factor to renormalize the result. This
+           feature hasn't ever been used in difmap, so it won't have
+           caused any problems.
+
+01/05/2000 difmap_src/modelfit.c difmap_src/slfcal.c difmap_src/slfcal.h
+           help/modefit.hlp help/selfcal.hlp help/vplot.hlp uvrange.hlp
+
+  Details: In addition to the invert command, the modelfit and selfcal
+           commands now take account of the uv limits specified by the
+           uvrange command.
+
+01/05/2000 difmap_src/vplot.c difmap_src/vedit.c help/vplot.hlp
+
+  Details: In addition to the amplitude and phase of the observed
+           visibilities, vplot can now display the amplitude and
+           and phase of the vector difference between the observed
+           visibilities and the model visibilities. The two modes
+           are toggled with the new '-' key.
+
+01/05/2000 difmap_src/uvradplt.c difmap_src/uvrange.c
+           help/radplot.hlp help/projplot.hlp
+
+  Details: In addition to the amplitude and phase of the observed
+           visibilities, radplot and projplot can now display the
+           amplitude and and phase of the vector difference between
+           the observed visibilities and the model visibilities. The
+           two modes are toggled with the new '-' key.
+
+           Radplot and projplot can now also display the statistical
+           errors in a separate subplot below the amplitude and phase
+           plots. This is toggled with the new 'E' key.
+
+01/03/2000 difmap_src/addmod.c
+
+  Details: In obvarmod(), if a tentative continuum model existed it
+           wasn't converted to an established UV plane model. This
+           would confuse modelfit, because it thus wouldn't include
+           the continuum model in the fit. This will only have effected
+           observations in which continuum subtraction was elected by
+           the user.
+
+01/03/2000 difmap_src/modfit.c
+
+  Details: In getnext(), I was getting the next IF before processing the
+           final visibility of the previous IF. Since the visibility
+           containers are reused whenever a new IF is paged into difmap,
+           this resulted in the wrong visibility being used for the
+           last point of each IF, and when the reused visibility
+           container contained a flagged visibility, it would terminate
+           the latest fitting cycle before the remaining IFs had been
+           seen. This is now fixed.
+
+12/25/99 difmap_src/addmod.c
+
+  Details: I found that when mergemod() was asked to move the established
+           models to the associated tentative models, a typo meant that
+           it didn't do this to the continuum model. Fortunately the
+           following call to clrmod() in this function, ended up doing
+           this anyway, so no harm was done. I have fixed the typo, so
+           that it is done in the intended place.
+
+10/20/99 difmap_src/uvradplt.c
+
+  Details: I have added the capability to display the statistics of
+           the visibilities within a user-selected rectangular
+           region of the plot.
+
+06/04/99 difmap_src/stnstr.c
+
+  Details: I improved the way that difmap composes array-names for
+           use in mapplot plot titles. I now use the array name
+           given in some antenna tables, where present, unless the
+           array name is VLBI or VLBA. In the latter case I fall
+           back to using the customary list of antenna-name
+           abbreviations. In the case of observations with multiple
+           sub-arrays, when the names of neigboring sub-arrays are
+           identical, the array name is only written once. This caters
+           for sites like OVRO, where multiple configurations of the
+           same array are recorded in each FITS file. Previously, this
+           led to unaesthetic title strings like "mma mma mma mma".
+
+06/03/99 difmap_src/obs.c difmap_src/obs.h difmap_src/subarray.c
+         difmap_src/uvf_read.c difmap_src/uvf_write.c
+
+  Details: It turns out that difmap has been not been taking account
+           of the contents of the optional TIMSYS, DATUTC/IATUTC
+           keywords in binary antenna tables when interpretting times.
+           Instead it has been assuming that all times were IAT, as
+           was the case before binary AN tables were introduced.
+           Fortunately, given that absolute times are only used in
+           difmap for plotting, this won't have done any harm to
+           anybody's data. UV FITS files written by difmap contain
+           times recorded in the original time system.
+
+           Before fixing this problem I had a look through a lot of UV
+           FITS files generated by other programs and discovered that
+           in the vast majority of cases the DATUTC and IATUTC
+           keywords were set to zero, regardless of the value of
+           TIMSYS. In fact, in many files both DATUTC and IATUTC were
+           present and set to zero. This makes no sense at all. In one
+           file I even found DATUTC set to -26 when it should have
+           been +26. Clearly these keywords can't be trusted, so I
+           decided to do the following to find the correct value to
+           substitute for DATUTC.
+
+           If TIMSYS='IAT', or TIMSYS is unspecified and thus defaults
+           to IAT, then use DATUTC if DATUTC is > 0, otherwise use
+           IATUTC if IATUTC is > 0, otherwise compute the value of
+           IAT-UTC that was in force at the reference date of the
+           FITS file.
+
+           If TIMSYS='UTC', complain if DATUTC != 0, then reset it
+           to zero.
+
+           If TIMSYS is anything else, use DATUTC, but emit a warning
+           if DATUTC is zero or not present.
+
+06/03/99 slalib_src/dat.c
+
+  Details: I belatedly added an entry for the Jan 1 1999 leap second.
+
+08/09/98 difmap_src/telspec.c
+
+  Details: cpplot always displayed closure phases that were computed
+           by traversing the three telescopes of the triangle in
+           ascending order of telescope number. As a result if the
+           telescopes were named in the opposite order the displayed
+           closure phases had the wrong sign. The problem was in
+           telspec.c::endtri() which was incorrectly designed to
+           produce this behaviour. Thanks to
+           zshen@hotaka.mtk.nao.ac.jp for reporting this bug.
+
+03/22/98 version.h
+
+  Details: Changed version to 2.3c (21 Mar 1998) in preparation for
+           a general release.
+
+03/22/98 sphere_src/func.c help/print.hlp
+
+  Details: I have added a logical wrap_print_output variable to
+           allow one to prevent the print command from wrapping its
+           output when its output passes column 60. The default line
+           wrapping made it difficult for users to parse the output
+           of automatic mapping scripts that use the print command
+           to display status messages etc.. The default remains to
+           wrap lines, so wrap_print_output starts out set to true.
+
+03/16/98 uvinvert.c invert.hlp mapsize.hlp
+
+  Details: I have modified the invert command so that it no longer
+           refuses to continue when faced with map pixels that are too
+           large to Nyquist sample the currently selected UV
+           range. Instead it simply ignores visibilities that can't be
+           adequately sampled by the current map grid. It then tells
+           the user what percentage were ignored and how to avoid
+           ignoring any of them.
+
+02/02/98 mapmem.h
+
+  Details: I have changed the Bincell typedef from short to int. This
+           is the datatype that is used to count visibilities within
+           the uniform weighting grid. At present there are unlikely
+           to be enough visibilities per grid cell that this would
+           overflow, but as data-sets continue to get larger, it seemed
+           prudent to increase it now, just in case. Difmap isn't used
+           on any system where int < 32 bits, so there is no need to
+           switch to long.
+
+01/22/98 version.h
+
+  Details: Changed version to 2.3b (22 Jan 1998)
+
+01/22/98 difmap.c uvinvert.c
+
+  Details: The uniform weighting bin width was being rounded to the
+           integer before use. This meant that only integral bin
+           widths could be selected. I have removed this uneseccary
+           restriction. The only restriction now is that the minimum
+           uniform weighting bin width is 1.0. Numbers > 0 but < 1 are
+           rounded up to 1.0. A bin width of 0 selects natural
+           weighting as before.
+
+01/22/98 uvinvert.c
+
+  Details: The computation of Nyquist sampling limits based on the
+           chosen map pixel size wasn't taking the 2 pixel fuzz of the
+           convolution mask into account. This is extremely unlikely
+           to have caused any visible effects, but there is no reason
+           not to correct it.
+
+01/22/98 uvinvert.c
+
+  Details: Ouch. The algorithm used for uniform weighting has a
+           serious bug. I can't imagine how this escaped notice for so
+           long. To save space, I coded the uniform weighting array of
+           weights using just the positive U half of the full
+           half-conjugate-symmetric array. This would have been ok if
+           the correct method had been used to compute the conjugate
+           indexes of points in the negative U part of the UV plane.
+           Unfortunately, to do this, instead of negating both U and
+           V I only negated the U coordinate.
+
+           Note that this only effects the weighting step of uniformly
+           weighted maps. All other maps are completely unaffected.
+
+01/21/98 uvinvert.c
+
+  Details: Visibilities marked out of range via the uvrange command
+           weren't being rejected when computing uniform weights.
+
+10/20/97 logio_src/logio.c
+
+  Details: On error logio calls closelog() to close the log file.
+           Unfortunately this caused an infinite recursion, because
+           closelog() then tried to write a close-down message to the
+           log file. I have now fixed this by adding an error-flag
+           argument to the private closelog() function. When it is
+           set, closelog() uses fprintf() in place of lprintf().
+
+07/07/97 Released difmap version 2.3a (7 Jul 97)
+
+06/17/97 uvf_read.c
+
+  Details: Modified getanbin() to preserve both orbital (where
+           available) and ground-based parameters for recording in
+           output files, regardless of individual mount types. Also
+           added a warning message for unknown MNTSTA values.
+
+05/22/97 vlbhead.c obs.c wmapbeam.c uvf_write.c uvf_read.c obs.h
+
+  Details: I modified difmap to recognize the optional OBSRA and OBSDEC
+           keywords. If found, they are reproduced in any new UV, map
+           and beam FITS files that are derived from the observation.
+           The intention is to preserve information that is used
+           to do mosaicing in other packages.
+
+05/22/97 newfft.c uvinvert.c
+
+  Details: Difmap's FFT algorithm contained a bug whereby one column
+           of the half-conjugate-symmetric UV plane array was set to
+           half its correct value. Fortunately the offending column
+           was the column at which zero padding of the outer part of
+           the uv plane starts, which is why this went unnoticed until
+           the same FFT code was used in another program.
+           Unfortunately there was also a bug in 'invert' that meant
+           that the check for data that extended into the zero-padded
+           region was 4 pixels too lenient, so some maps may have been
+           slightly effected by this problem. To exhibit the bug
+           a dataset would have to have strong visibility amplitudes
+           right at the edge of the legal region of the UV plane
+           established by the mapsize command. This isn't a common
+           occurrence, so I am hopeful that no harm has been
+           caused. Of the tests that I have done, no differences were
+           encountered except in one case where I precisely tuned the
+           parameters of the mapsize command to cause a strong
+           visibility track to fall in the outermost column of the
+           allowed region of the UV plane array.  The result was a map
+           that looked identical, but had a peak flux that was
+           incorrect in its third decimal place.
+
+04/14/97 difmap_src/maplot.c difmap_src/color.c help/mapcolor.hlp
+
+  Details: The definitions of brightness and contrast were flawed.
+           I have re-implemented plcmap() to use more conventional
+           definitions. In particular the color ramp now saturates,
+           to the respective end of the color table at brightnesses
+           of 0.0 and 1.0.
+
+04/14/97 difmap_src/uvf_read.c
+
+  Details: A free malloc debugging library pointed out a malloc
+           problem in get_anrow(). 3 bytes too few were being
+           requested when allocating an->antrow, due to a missing
+           pair of parenthesis. Fortunately, this is unlikely to
+           have caused any problems (most malloc's allocate
+           in 8-byte blocks and all members of the offending array
+           are 4-byte aligned).
+
+03/31/97 difmap_src/{difmap.c,specplot.c}
+
+  Details: I changed a few lingering fprintf's to lprintf's.
+
+03/31/97 obs.h uvf_read.c uvf_write.c binan.c subarray.c vlbhead.c
+
+  Details: Up until now Difmap was coded to reject data-sets from
+           orbital antennas (Insufficient information). Now that
+           VSOP has been launched I have added support for such
+           stations. I added 'numorb' and 'orbpar[]' members to
+           obs.h::Binan, and an 'orbparm[]' member to obs.h::Bintel.
+           This required memory mangement changes to binan.c, and
+           the addition of a numorb argument to new_Binan(). uvf_read.c
+           and uvf_write.c had to be modified to read/write NUMORB
+           and ORBPARM parameters. vlbhead.c had to be modified to
+           output the details of orbital antennas. While doing this
+           I encountered a bug in binan.c::fix_calpar(). This function
+           isn't actually used by difmap, so no damage was done.
+
+02/25/97 wmapbeam.c
+
+  Details: LTESS in AIPS assumes that the third axis of an map
+           file is always FREQ, whereas Difmap writes the STOKES
+           axis as the third axis and the FREQ axis as the forth. The
+           bug is in LTESS, not Difmap, but for the convenience of
+           users of LTESS and possibly other broken AIPS tasks,
+           I have modified Difmap to comply with what LTESS expects.
+
+02/13/97 Packaged up difmap2.2d for Tony Readhead.
+
+01/22/97 sphere_src/plotlib.c
+
+  Details: pgslw was quietly limiting the line width to < 5. I increased
+           the limit to 200, as does PGPLOT.
+
+09/27/96 sphere_src/mathlib.c
+
+  Details: Erik noticed an error in rms_fn(). I fixed it. This user
+           function is not used by Difmap.
+
+09/20/96 fits_src/phdu.c
+
+  Details: There was a missing break statement in the case that
+           handled reading CTYPEn keywords from FITS primary headers.
+           This caused the following case to install the CTYPEn string
+           value as the double value of the corresponding CRPIXn
+           keyword. This resulted in garbled CRPIXn values in 
+           Hat Creek UV FITS files. Presumably other observatories
+           place CRPIX after CTYPE, or this would have shown up long
+           ago.
+
+           I also found the identical bug in the PTYPEn random parameter
+           keyword, which would have caused PSCALn to be corrupted.
+
+09/15/96 difmap_src/difmap.c difmap_src/vedit.c difmap_src/clplot.c
+         difmap_src/visplot.h help/cpplot.hlp help/vplot.hlp
+         difmap_src/specplot.h difmap_src/specplot.c help/specplot.hlp
+
+  Details: I added command-line arguments to allow the user to specify
+           the maximum number of pages to plot when plotting to a
+           non-interactive device.
+
+09/15/96 sphere_src/plotlib.c
+
+  Details: When I recently added a pgend command to Difmap I forgot
+           set plot_open to false. I have fixed this.
+
+09/14/96 difmap_src/difmap.c difmap_src/uvradplt.c difmap_src/visplot.h
+         help/projplot.hlp help/radplot.hlp
+
+  Details: I added command-line arguments to allow the user to specify
+           the min and max phases to be displayed.
+
+09/14/96 sphere_src/plotlib.c
+
+  Details: In a recent version of PGPLOT the interpretation of the
+           signs of the nx and ny arguments became significant. I
+           removed a sanity check that changed -ve nx and ny to 1.
+
+08/28/96 difmap_src/intrec.c
+
+  Details: If integrations from different sub-arrays were interleaved
+           Difmap would crash with a segmentation violation.
+           This was a bug in the sorted-list insertion code in
+           sub_insert(). Fixed.
+
+08/17/96 difmap_src/maplot.c
+
+  Details: Changed maplot to cater for maps with negative peaks.
+           Previously the reported peak was the maximum value in
+           the map. Now it is the minimum or the maximum value
+           depending upon which has the largest magnitude. This
+           effects both the reported peak and percentage contour
+           levels.
+
+06/01/96 doc/model.tex
+
+  Details: Added missing par_phi label.
+
+05/21/96 doc/makemanual
+
+  Details: makemanual didn't work on Alphas under OSF/1. This turned
+           out to be because the Alpha uses an archaic version of awk.
+           I re-wrote makemanual to only use the features of the
+           original release of awk. In the process I converted the
+           module listings into page-numbered indexes.
+
+-----------------------------------------------------------------------
+Difmap 2.2c released (05/19/96)
+-----------------------------------------------------------------------
+
+04/19/96 Packaged up difmap2.2c for Greg Taylor.
+
+04/18/96 difmap.c vlbutils.h hms.c vlbhead.c maplot.c
+
+  Details: Greg requested that I add two decimal places to the
+           seconds fields of the RA and DEC that is recorded in
+           model files. To do this I added a precision argument
+           to sradhms() and sraddms(), set the number of
+           decimal places requested in difmap.c::wmodel to 6.
+           while retaining the number of decimal places used by other
+           functions to the original value of 3.
+ 
+03/29/96 sphere_src/lex.c
+
+  Details: I added escape character handling for string arguments so
+           that Eric could use tabs in fprint lines.
+
+03/28/96 sphere_src/{userio.c,func.c} help/{prompt_user.hlp,general.idx}
+
+  Details: I added a prompt_user() user-function for use in prompting
+           a user for input.
+
+02/17/96 difmap_src/addmod.c
+
+  Details: gcc again warned about something that it hadn't before.
+           This time it was an & character where a && had been
+           intended. This was in clrmod(). Fortunately the & version
+           gives identical results to the && version in this case,
+           so it won't have caused any problems. I have fixed it
+           anyway.
+
+02/17/96 sphere_src/run.c
+
+  Details: The latest version of gcc voiced its suspicion over what
+           turned out to be a long-standing bug in the handling of
+           string selection indexes. I had used a bitwise | instead
+           of a logical ||. The impacted function is so obscure and
+           un-advertized that I doubt that the bug has ever been
+           invoked.
+
+02/15/96 help/polarization.hlp
+
+  Details: The listed equation for U was incorrect (the code is fine).
+
+02/13/96 difmap_src/uvf_read.c
+
+  Details: I modified get_date() such that if the date of the first
+           group is invalid (before 4701 BC), it searches forward
+           for the first group that does have a valid date and emits
+           a warning. This caters for the rare problem of UV fits files
+           that contain a corrupt (usually JD=0) initial date. Rachel
+           had such a file. get_date() records the resulting start group
+           index in fob->start_group. This is then used as the starting
+           point in bin_uvdata(), so the first fob->start_count visibilities
+           don't get read. This should really be extended to omit deleted
+           visibilies, but that would take a lot more work.
+
+02/08/96 Packaged up difmap2.2b for Nick Scoville.
+
+01/30/96 difmap_src/plotlib.c help/pgerry.hlp help/pgerrx.hlp help/pgscf.hlp
+
+  Details: Added pgscf() PGPLOT command.
+           Updated pgerry and pgerrx commands to be more like their
+           PGPLOT counterparts. Updated pgbox to not call pgpage().
+
+01/23/96 difmap_src/vplot.c
+
+  Details: The phase model did not take account of the phase
+           zoom parameters. The phase data was zoomed correctly
+           but not the model. Changed phase-model plot limits
+           from (-pi,pi) to (vp->phsmin, vp->phsmax) in v_plmodel().
+
+12/13/95 sphere_src/iolib.c
+
+  Details: Jim Lovell pointed out a bug in outfile_fn(). The
+           append and binary command-line flags were swapped.
+
+12/11/95 Packaged up difmap2.2a for Greg Taylor.
+
+12/08/95 configure fits_src/sysfits.h
+
+  Details: Changed illegal linux-i468-gcc macro to linux_i486_gcc.
+           The RS6000 C compiler was the first to notice this problem.
+
+11/09/95 difmap_src/{hms.c,vlbutil.h}
+
+  Details: Declination labels for negative declinations with
+           0 as the degree field were erroneously shown as
+           positive.
+
+11/02/95 sphere_src/{run.c,help.c,sphere.c,sphere.h,compile.c}
+
+  Details: Previously interface-language array dimensions were
+           store in short ints. I changed this to longs so that
+           larger arrays could be allocated.
+
+10/12/95 difmap_src/difmap.c help/mapvalue.hlp
+
+  Details: Added a new user-function which returns the value of
+           the pixel nearest to a given map position.
+
+10/12/95 mapmem.h mapmem.c
+
+  Details: Added conversion functions to convert between
+           center-relative map coordinates (radians) and map array
+           2D pixel indexes. Also added a MapArea container to
+           the MapBeam structure. In new_MapBeam this is initialized
+           with the pixel bounds of the map area within the map array.
+
+10/12/95 difmap.c
+
+  Details: The addcmp command hadn't been modified to accept SZ
+           components. Now fixed.
+
+09/25/95 difmap_src/makefile.distrib
+
+  Details: Corrected an obpol.o dependency list that cited obpol.c
+           as a target where obpol.o should have been used. The
+           effect of the makefile bug was a bus error in get_Obpol()
+           after I added a new member to the Observation structure
+           in obs.h.
+
+09/25/95 obs.h obs.c addmod.c difmap.c uvinvert.c vlbinv.h
+
+  Details: The uvzero command was poorly conceived and didn't even work
+           as originally intended. I have added a new Observation::uvzero
+           container which contains the user-specified zero-spacing flux,
+           associated visibility weight and the current model amplitude
+           at the origin of the UV plane. The functions in addmod.c now
+           know to update the zero-spacing model amplitude along with
+           other visibilities, and the uvzero command now takes a
+           new visibility-weight argument.
+           Previously a weight of 1 was assigned to the zero-spacing
+           flux, which was then messed up in uvgrid(). There was no
+           account taken for difference mapping at all.
+           What remains to be done is to make other commands such as
+           radplot, selfcal etc... use the zero-baseline flux. At
+           present only the 'invert' command uses it.
+
+08/29/95 difmap_src/obs.c
+
+  Details: Obs_alloc() wasn't initialize the Obvel struct, so
+           wobs tried to write ALTRVAL etc when it shouldn't have.
+           Fixed.
+
+08/24/95 difmap_src/difmap.c
+
+  Details: If the fourth (docursor) command-line argument was
+           provided, difmap dumped core. This was due to uvplt_fn()
+           accessing invals[4] instead of invals[3]. Fixed.
+
+07/15/95 fits_src/bhdu.c
+
+  Details: Memory allocation bug detected and fixed by Peter Teuben:
+           get_bdhu() neglected to allocate private copies of tform
+           strings. Instead it simply used the static pointer returned
+           by get_key(). This was later free()'d in del_bhdu(), which
+           resulted in heap corruption under Linux (and probably on
+           other systems). The fix was to change:
+
+            field->tform = KEYSTR(key);
+
+           To:
+
+            field->tform = fitsstr(KEYSTR(key));
+
+           With this fix Difmap now works under Linux. Unfortunately
+           the Sun /usr/lib/debug/malloc.o debugging version of malloc
+           failed to show up any problem. I now wonder how many other
+           such problems may still exist.
+
+07/13/95 configure fits/sysfits.h
+
+  Details: Peter Teuben started the ball rolling for a Linux port.
+           Linux port initiated by adding a linux-i486-gcc configuration
+           option to the configuration script and adding a FITS datatype
+           conversion case for linux in sysfits.h. Linux datatypes are
+           little-endian IEEE, so Linux has to use the byte-swapping
+           code from sysfits.c.
+
+06/02/95 sphere_src/lex.c
+
+  Details: Added the option to start a new interactive shell level.
+           This is triggered when the @ operator is cited without
+           a command-file name. The shell can be exit via the
+           local End-Of-File character. This feature is useful
+           for breaking out of a script temporarily.
+
+05/24/95 specplot.c
+
+  Details: sp_set_bgl() was returning NULL on a couple of error
+           conditions instead of 1. gcc on Sunos didn't notice this
+           but gcc on Solaris 2.4 did. The bug never manifested.
+
+05/05/95 spectral_line.hlp
+
+  Details: Added a clrmod statement to the example mapping loop.
+
+05/02/95 spectra.c specplot.c specplot.hlp specsmooth.hlp
+
+  Details: Added scalar averaging of phases (in addition to amplitudes).
+
+04/30/95 addamphs.c subamphs.c modvis.c specplot.c
+
+  Details: Minor change. My check for innapropriate arguments of
+           atan2() was too pessimistic in addamphs(), subamphs() and
+           s_getspec(). Now changed to check that both arguments are
+           non-zero, rather than greater than an arbitrarily tiny
+           absolute value. Similarly, modvis() checked whether the
+           amplitude was non-zero before calling atan2(). I changed
+           this to check the real and imaginary values directly.
+           I haven't noticed any problems relating to the above.
+
+04/30/95 obutil.c visaver.c
+
+  Details: Realized that vector averaging can produce zero amplitudes,
+           from non-zero visibilities. I have added checks to
+           ob_select() and av_endint() to mark such cases as deleted.
+           I haven't ever seen this case come up, but the potential is
+           clearly there.
+
+04/20/95 *
+
+ Rational: Until now, selected channel ranges have applied equally to
+           all IFs. This is useless for multi-IF spectral-line
+           mapping. Now for channel specification purposes the IFs
+           are treated as a contiguous set of channels so that
+           different channels can be selected from each IF. This also
+           means that one or more IFs can be completely omitted from
+           the selection. Most of the following changes cater for such
+           unsampled IFs. In order to do this I have had to stop
+           guaranteeing that there is always an IF in memory.
+           Functions that use IFs are now expected to request them,
+           rather than assuming that a pertinent IF is already in
+           memory. To further this I have discarded the getif command,
+           added IF index arguments to the plotting commands and added
+           key bindings to allow one to interactively flip between IFs
+           in the plot commands. I have also replaced the OB_STREAM
+           state with three states - OB_SELECT, OB_RAWIF and OB_GETIF
+           to allow one to distinguish between just having a selection
+           and having an IF of that selection in memory. OB_RAWIF is
+           set on entry to iniIF() and only upgraded to OB_GETIF when
+           all corrections have been applied.
+  Details:
+        addmod.c:
+           Added many ob_ready(OB_INDEX) calls. Uses new nextIF()
+           semantics. Now quietly ignores requests to modify model
+           visibilities when no selection is in effect, the only
+           exception being requests to clear the established model
+           with clrmod().
+        chlist.c:
+           Added sub_Chlist() constructor.
+        clplot.c:
+           Added call to ob_ready(OB_SELECT). Added cif argument and
+           initial getIF(). Added [] keys to step through IFs using
+           nextIF() and getIF(). Added a new title line, and displayed
+           the IF index along with the triangle specification. Bracket
+           clsplot() code with get_cif_state() and set_cif_state().
+           Changed default IF and channel editing modes to global.
+           Added IF index argument to all ed_integ() calls.
+        corplt.c:
+           Catered for the new cif argument to clr_Telcor and ed_Telcor.
+           Added call to ob_ready(OB_INDEX). Added cif argument to
+           corplot() and new_Corpar(). Added [] keys to step through
+           IFs using nextIF(). Added a new title line, and displayed
+           the IF index along with the station name.
+        difmap.c:
+           shift_fn(): Changed OB_STREAM to OB_INDEX.
+           unshift_fn(): Changed OB_STREAM to OB_INDEX.
+           uncal_fn(): Changed OB_STREAM to OB_INDEX.
+           winmod_fn(): Changed OB_STREAM to OB_INDEX.
+           uvstat_fn(): Removed doall=1 argument of moddif().
+           uvsel_fn(): Take account of new return value of ob_select().
+           timpl_fn(): Added IF index argument.
+           corpl_fn(): Added IF index argument. Now requires OB_INDEX.
+           timpl_fn(): Now checks for OB_SELECT. Added IF index argument.
+           vplot_fn(): Changed OB_STREAM to OB_SELECT. Added IF
+            command-line argument.
+           cpplt_fn(): Changed OB_STREAM to OB_SELECT. Added IF
+            command-line argument. Swapped triangle-spec and nplot
+            command-line args.
+           resof_fn(): Changed OB_STREAM to OB_SELECT. Now sends
+            doall=1 to resoff().
+           unoff_fn(): Changed OB_STREAM to OB_INDEX. Now sends
+            doall=1 to clroff(). Changed "uncal:" message prefix to "clroff:".
+           getif_fn(): Discarded.
+           specso_fn():\
+           specop_fn(): Changed return 0 to return no_error.
+           specsm_fn():/
+           specop_fn(): Removed nplot command-line argument.
+           specpl_fn(): Added initial nplot command-line argument.
+           wrtpars(): Checks for OB_SELECT instead of OB_STREAM before
+            writing select command.
+           Also changed OB_STREAM to OB_SELECT in all of: invert_fn
+           clean_fn wmap_fn wbeam_fn wdmap_fn gscal_fn startmod_fn
+           uvrad_fn self_fn uvplt_fn maplot_fn save_fn modfit_fn
+           uvstat_fn uvprj_fn.
+        dpage.c:
+           dp_cal(): Unity is now substituted for amplitude
+            corrections that are <= 0.0.
+           dp_shift(): Modified to use the new IF frequency members.
+        if.c:
+           new_If: Added default initialization of If::(coff,cl,df,bw).
+           del_IF: Added code to delete If::cl.
+        maplot.c:
+          Changed OB_STREAM to OB_SELECT. Modified to label with
+           getfreq(all IFs), instead of ob->stream.freq.
+        moddif.c:
+          Changed OB_STREAM to OB_SELECT. Uses new nextIF() semantics.
+           Removed doall argument. moddif() now always goes through
+           all IFs. Bracketed code with get_cif_state() and
+           set_cif_state().
+        modfit.c:
+          fituvmodel(): Changed OB_STREAM to OB_SELECT. Bracketed
+           code with get_cif_state() and set_cif_state() calls.
+          endfit(): Modified to restore the originally selected IF.
+          getnext(): Modified to use nextIF() and skip unsampled IFs.
+           Also corrected bug which was causing it to process the last
+           IF of multi-IF datasets twice, and the first IF not at all.
+           Ouch!
+          new_Modfit(): Modified to set mf->cif = -1 to tell getnext()
+           to start by reading the first IF!
+        nextif.c:
+          Rewritten. nextIF() no longer defers IF indexes, but it now
+           has a 'skip_empty' argument to optionally skip unsampled
+           IFs, and a 'step' argument to specify the iteration
+           direction.
+        obedit.c:
+          ed_integ(): Now requires at least OB_SELECT observation
+           state. Added IF index argument. This replaces the current
+           IF as the target of the selif flag. Now only apply edits to
+           the visibilities in memory if the edit applies to their
+           source IF. Added cache size limit to prevent edits from
+           eating up too much memory.
+          ed_flush(): Now requires OB_SELECT state if there are any edits
+           to be flushed.
+          ed_ifdata(): Changed to not edit unsampled IFs.
+          ed_range(): When the selchan flag is set, ed_range() will
+           now ignore the edit if there is no IF channel list, and
+           otherwise use the IF channel list instead of ob->stream.cl
+           to expand the channel range. Changed 'selif' check to
+           compare the IF being processed against the edit node 'cif'
+           index.
+          dp_edit(): Realized that this function has been ignoring the
+           selif flag and simply editing all IFs - Aaaarghh.
+           Fortunately the fact that ed_range() got this right, meant
+           that the problem was usually suppressed. It has taken me
+           ages just to find a way to invoke it. Modified to honor the
+           selif flag, and to ignore edits if the selchan flag is set
+           when no channels are selected within the given IF, and to
+           use the IF specific channel list instead of ob->stream.cl
+           otherwise. Modified to use the cif index of the edit node
+           with 'selif' instead of the current IF.
+          ip_edit(): This had the same bug as dp_edit(). It didn't
+           check selif, and could thus end up editing data that it
+           shouldn't. As with dp_edit() this was a hard bug to invoke.
+           Modified to use the cif index of the edit node with 'selif'
+           instead of the current IF.
+        obedit.h:
+          Added Edint::cif IF index member to go with selif, instead
+           of requiring the existence of a current IF.
+        obpol.c:
+          Now requires state >= OB_INDEX, instead of OB_DATA. When
+           substituting a default polarization, now use
+           ob_ready(OB_SELECT) instead of testing ob->state directly.
+        obs.c:
+          new_Observation(): Changed to take account of the new return
+           type of ob_select().
+          Obs_alloc(): Added initialization of Observation::nctotal
+           member. Removed initialization of discarded
+           ob->stream.(freq,bw). Removed initial assignment of a
+           default stream channel list.
+        obs.h:
+          Added If::coff and If::cl members. Replaced IF::(chan_bw,
+           sb, full_bw) with If::(df,bw), where df is the signed
+           increment between channels, and bw is identical to full_bw.
+           Added Observation::nctotal member (total number of selected
+           channels) Split Obstate::OB_STREAM into OB_SELECT, OB_RAWIF
+           and OB_GETIF. Removed UVstream::(freq,bw) - use getfreq()
+           and getbw(). Added get_cif_state, set_cif_state, app_Telcor
+           prototypes. Updated ob_select, resoff, clroff, ini_bcor,
+           nextIF, ed_Telcor, adj_Telcor, clr_Telcor, moddif and
+           ed_integ prototypes. Removed putIF, iniIF, recalib,
+           name_Sideband, Sideband_name prototypes.
+        obshift.c:
+          uvmodshift(): Quietly ignore call if ob->state < OB_SELECT.
+           Use new nextIF() semantics to avoid unsampled IFs.
+           Bracketed code with calls to get_cif_state() and
+           set_cif_state() calls.
+          uvshift.c(): Changed OB_STREAM to OB_RAWIF.
+          obshift(): Now checks for OB_INDEX. Now only shifts
+           visibilities in memory if ob->state >= OB_GETIF. Now only
+           shifts model visibilities if ob->state >= OB_SELECT.
+        obutil.c:
+          getIF(): Changed OB_STREAM to OB_SELECT. Susbstitute
+           ip_clear() for ip_read() for unsampled IFs. Set
+           ob->state=OB_SELECT to invalidate the previous IF. Removed
+           initialization for discarded ob->stream.(freq,bw).
+          iniIF(): Made static and removed israw argument. Set
+           ob->state=OB_RAWIF on entry and ob->state=OB_GETIF on
+           sucessful completion. Corrections not applied to unsampled
+           IFs. Modified to call app_Telcor() (used to be recalib).
+           Discarded name_Sideband() and Sideband_name().
+          putIF(): Discarded.
+          getmodel(): Changed OB_STREAM to OB_SELECT. Do nothing If
+           the model is already in memory. Sets ob->state=OB_SELECT
+           before the new model visibilities overwrite those of the
+           current IF.
+          ob_select(): Now returns integer status rather than deleting
+           the Observation. Changed to call new private
+           ob_get_select() function to check and install the new
+           channel list and polarization. Now reports the selected
+           channels by IF as they are read. Use ob->ifs[cif].cl for
+           constructing each IF. Removed call to putIF() and merged
+           this into ob_select().  Zero fill unsampled IFs. Set
+           ob->state=OB_SELECT on success without getting a start IF.
+           Call iniIF() for single IF data-sets.
+          ob_ready(): Added OB_SELECT case.
+          getfreq(): Re-written to return mean channel frequencies for
+           one or all IFs and to use the new If::df member. Now
+           requires OB_SELECT state.
+          getbw(): Re-written to return channel bandwidth sum for one
+           or all IFs and to use the new If::df member. Now requires
+           OB_SELECT state.
+          ob_get_select(): New private function of ob_select(), used
+           to check, and if OK, install the new channel and
+           polarization selections.
+          get_cif_state() \ New functions to be used to bracket code
+          set_cif_state() / that potentially change the current IF.
+        resoff.c:
+          resoff(): Now processes either the current IF, or all
+           sampled IFs. Previously it only processed the current IF.
+           Bracketed code with get_cif_state() and set_cif_state().
+           Fixed BUG? where 0 model amplitudes led to corrections of
+           0.0. Unity is now substituted for amplitude corrections
+           that are <= 0.0. Also added check for the lack of an
+           established model after the call to mergemod().
+          clroff(): Now processes either the current IF, or all IFs.
+           Previously it only processed the current IF. If the current
+           IF is sampled then its visibilities are modified
+           accordingly.
+          app_bcor(): Now requires ob->state == OB_RAWIF.
+          ini_bcor(): Now processes either the current IF, or all IFs.
+           Previously it processed all IFs. Fixed BUG - a missing
+           bptr++ meant that only the corrections of the first
+           baseline got cleared.
+        slfcal.c:
+          Changed OB_STREAM to OB_SELECT. Uses new nextIF()
+           semantics. Removed doall=1 argument of moddif(). Discarded
+           endslfcal(). Catered for the new cif argument in the call
+           to ed_Telcor(). Bracketed slfcal() code with
+           get_cif_state() and set_cif_state().
+        specplot.c:
+          Changed to use ob->ifs[*].coff instead of working out IF
+           channel offsets itself. Changed the default flags to
+           include the display of error bars. Modified to use the new
+           IF frequency description members.
+        spectra.c:
+          Added call to ed_flush(). Modified to use the new If::df
+           member.
+        stnstr.c:
+           Added ob_ready(OB_INDEX) call.
+        telcor.c:
+          uncalib(): Added ob_ready(OB_INDEX) requirement. Now only
+           uncalibrates the visibilities in memory if the observation
+           is at least in OB_GETIF state.
+          recalib(): Renamed to app_Telcor().
+          app_Telcor(): This now takes an IF index argument specifying
+           which IF's corrections to apply. Now requires observation
+           state of OB_RAWIF.
+          ed_Telcor(): Now takes an IF index argument and edits the
+           visibilities only if that IF is in memory.
+          adj_Telcor(): Now takes an IF index argument and adjusts the
+           visibilities only if that IF is in memory. Substitute 1 for
+           amplitude corrections that are <= 0.0.
+          clr_Telcor(): Now takes an IF index argument and adjusts the
+           visibilities only if that IF is in memory. Use 1 for
+           amplitude corrections that are <= 0.0.
+        telspec.c:
+          Added special error message for when an empty specification
+           yields no triangles.
+        timplt.c:
+          timplt(): Added cif argument and ob_ready(OB_SELECT).
+           Bracket code with calls to get_cif_state() and
+           set_cif_state().
+          new_Tpar(): Added cif argument and initial getIF() Added []
+           keys to step through IFs using nextIF() and getIF(). Added
+           a new title line, and display the IF index along with the
+           sub-array index. Changed default IF and channel editing
+           modes to global. Added IF index argument to ed_integ()
+           call.
+          t_pldata() - Changed declaration to static.
+        uvaver.c:
+          Changed OB_STREAM to OB_INDEX. Modified call to ob_select()
+           to account for its new return type. Modified to explicitly
+           reselect the original stream channel list and polarization
+           if one was previously selected. Added doall=1 to
+           ini_bcor(). Added call to ed_flush().
+        uvf_read.c:
+          Added If::coff initialization code. Modified If
+           intialization code to handle the new frequency description
+           members (df,bw instead of chan_bw, full_bw, sb). Expanded
+           the description of each IF.
+        uvf_write.c:
+          Added call to ed_flush().
+        uvinvert.c:
+          Changed OB_STREAM to OB_SELECT and moved the ob_ready() call
+           from the private uvbin() function into the public
+           uvinvert() function. Uses new nextIF() semantics. Bracketed
+           uvinvert() code with get_cif_state() and set_cif_state()
+           calls. Discarded binerr(). Modified to use the new IF
+           frequency descriptor members.
+        uvplot.c:
+          Changed OB_STREAM to OB_SELECT. Uses new nextIF() semantics.
+           Bracketed uvplot() code with get_cif_state() and
+           set_cif_state() calls. Label with getfreq(all IFs), instead
+           of ob->stream.freq. Removed pointless IF editing toggle.
+           Changed default channel editing mode to global. Added IF
+           index argument to ed_integ() call.
+        uvradplt.c:
+          Changed OB_STREAM to OB_SELECT. Uses new nextIF() semantics.
+           Bracketed uvradplt() code with get_cif_state() and
+           set_cif_state() calls. Label with getfreq(all IFs), instead
+           of ob->stream.freq. Changed default channel editing mode to
+           global. Added IF index argument to ed_integ() call.
+        uvrange.c:
+          Uses new nextIF() semantics. Added ob_ready() call.
+           Bracketed code with get_cif_state() and set_cif_state().
+        vedit.c:
+          Changed OB_STREAM to OB_SELECT. Added cif argument. Added []
+           keys to step through sampled IFs using nextIF() and
+           getIF(). Added paired get_cif_state() and set_cif_state()
+           in vedit().
+        visflags.c:
+          Added ob_ready(OB_GETIF).
+        visplot.h:
+          Added cif argument to prototypes of corplot,vedit,timplt,
+           clsplot.
+        vlbhead.c:
+          Extended the description of IFs as in uvf_read.c
+        vplot.c:
+          Added a new title line, and displayed the IF index along
+           with the baseline specification. Added initial nextIF() and
+           getIF() to new_Vedpar(). Changed default IF and channel
+           editing modes to global.
+        vplot.h:
+          Added cif argument to new_Vedpar() prototype.
+        wmapbeam.c:
+          Changed OB_STREAM to OB_SELECT. Modified to use getfreq(all
+           IFs) and getbw(all IFs) instead of ob->stream.freq and
+           ob->stream.bw.
+        uvrotate.c:
+          Added ob_ready() call and only apply rotation to
+           visibilities if an IF is in memory, ie. if
+           ob->state>=OB_RAWIF.
+
+04/18/95 vedit.c clplot.c uvradplt.c
+
+         vedit.c: Added allowance for 'i' and 'w' flags in the user
+                  'vflags' string.
+         clplot.c: Added allowance for 'i', 'w', and ' ' flags in the
+                   user 'vflags' string.
+         uvradplt.c: Added allowance for '.' flag in user 'rflags'
+                     string.
+
+04/13/95 modfit.c
+
+         While writing the new channel selection code, I discovered
+         that at the start of each iteration, instead of reading
+         the first available IF, modelfit continued to use the last IF
+         for a second time. Now fixed.
+
+04/11/95 specplot.c specplot.h spectra.h spectra.c baselist.c baselist.h
+         pollist.c pollist.h
+
+         New command called specplot, for plotting visibility spectra.
+         specplot.c and specplot.h contain the main specplot code.
+         spectra.c and spectra.h contain code to construct spectra
+         from the raw data in the uvdata scratch file.
+         baselist.c and baselist.h contain code to allow specification
+         manipulation and iteration on baseline group specifications.
+         pollist.c and pollist.h contain code to allow specification
+         and iteration on lists of polarizations.
+         
+-----------------------------------------------------------------------
+Difmap 2.1c released (04/10/95). This is the same as 2.1b, except that
+it contains the new version of mapres.c and the changes made to
+incorporate P_DIFFn and P_REFANT keywords. I am not ready to release the
+other changes yet.
+-----------------------------------------------------------------------
+04/10/95 mapres.c
+         Thomas Krichbaum noticed a bug in mapres.c that appeared
+         for rectangular map grids when the number of elements in
+         RA exceeded that in DEC. This was a bug in the code that
+         smooths residual before adding the model and was due to
+         ny being used in a place where nx was meant to be used.
+         The symptom was that a copy of the left half of the residual
+         map appeared duplicated in the right half of the restored map.
+
+03/21/95 symtab.c
+
+     Details: Moved the error message regarding non-alphanumeric
+              characters out of search_table() to add_symbol().
+              With this change get_symbol() no longer gives a crytic
+              error message when non-alphanumeric characters are
+              entered - it just reports such strings as though they
+              didn't match (which they don't). Also added support for
+              numeric digits past the first character of an
+              identifier - somehow this got omitted before.
+
+03/21/95 units.c
+
+     Details: Modified skyunits() to use Symtab code. The mapunits
+              command no longer requires exactly matching unit names.
+
+03/21/95 obutil.c
+
+     Details: I just noticed that selecting an unavailable polarization
+              causes ob_select() to delete the observation and abort.
+              I have changed it to revert to the default polarization
+              (as it used to) rather than aborting.
+
+03/21/95 symtab.h symtab.c enumpar.h enumpar.c difmap.c color.c specplot.c
+
+     Details: Added type name to symbol table descriptor and new_Symtab()
+              and new_Enumpar(). This is used to lend context to error
+              reports.
+
+03/20/95 obs.h obutil.c specplot.c difmap.c obpol.c makefile.distrib
+         enumpar.c
+
+     Details: Moved find_stokes() from obutil.c to be a static function
+              of obpol.c.
+              Removed Stokes_name() and name_Stokes() from obutil.c.
+              Created new file stokes.c containing a new Stokes_name()
+              and Stokes_id() functions. These use the enumpar symbol
+              table code so that polarization name lookup is now minmatch
+              and case insensitive. Renamed name_Stokes() to Stokes_id() in
+              obs.h difmap.c specplot.c. Added stokes.o to makefile.distrib.
+              Changed name_enum() to return original names rather than
+              their lower-case symbol table versions.
+
+03/20/95 vlbhead.c
+
+     Details: In two lprintf() statements, the (long) component of
+              the date was written with a %d instead of a %ld.
+              Also changed "Mean Epoch" time input to julday() to
+              a double from a long (this wasn't a bug).
+
+03/17/95 difmap.c
+
+     Details: Added del_MapBeam(vlbmap) to dmap_end().
+
+03/17/95 uvf_read.c uvf_write.c obs.h subarray.c
+
+     Details: Difmap now reads, records and writes P_REFANT and P_DIFFnn
+              header keywords to UV FITS antenna tables. These
+              keywords are not documented in Going AIPS, so I didn't
+              know about them until Scott Aaron pointed out that
+              Difmap appeared to discard them. Also fixed a bug in
+              some so far unused re-allocation code in subarray.c,
+              in functions new_Stations(), new_Baselines() the
+              initialized elements started at element 0 instead of the
+              first previously un-initialized element.
+
+-----------------------------------------------------------------------
+Difmap 2.1b released.
+-----------------------------------------------------------------------
+
+03/16/95 obedit.c
+
+     Details: A bug relating back to the change of telescope iterators
+              when I made the change over to telspec.c. When station
+              based editing was used, only the first baseline of that
+              station got edited in the data and IF scratch files, whereas
+              the editing appeared to be correct for the currently selected
+              stream. This calls for a new release, quick!
+
+03/15/95 obs.c
+
+     Details: Modified Obs_alloc() to initialize ob->stream.pol.type
+              to NO_POL. The Difmap 'select' command uses
+              ob->stream.pol.type as the default polarization to use
+              when no polarization is specified. This has been using
+              an un-initialized value.
+
+03/15/95 obpol.c obutil.c
+
+     Details: Changed get_Obpol() such that asking for NO_POL results in
+              a default polarization being substituted. Modified ob_select()
+              to use this, rather than have it do the same thing itself.
+
+03/10/95 fits_src/{sysfits.h,sysfits.c,fits.c}
+
+     Details: I have coded up a set of data-type representation conversion
+              functions in a new file called sysfits.c. In sysfits.h I now
+              use these functions to support Dec Alphas running OSF.
+
+03/10/95 maplot.c
+
+     Details: The code that flipped the grey-scale ramp to cater for
+              paper hardcopy printers, didn't account for changes in
+              the brightness or transfer function. The new code
+              negates the contrast as before, but also changes the
+              brightness to 1-brightness.
+
+03/08/95 uvradplt.c
+
+     Details: I was incorrectly using the minimum UV radius returned
+              by uvrange() as the minimum projected UV distance to
+              plot in projplot. Instead this should be zero, and I
+              have changed it to that.
+
+03/08/95 symtab.c
+
+     Details: What a time to find a bug! add_symbol() didn't terminate
+              its copies of symbol names. Given the min-match behavior
+              of the table, this only showed up when ambiguous matches
+              were listed. I have corrected the released version of
+              Difmap 2.1. The FTP log shows one person (unknown
+              user at wsrt00.nfra.nl) as having pulled over the new
+              version.
+
+-----------------------------------------------------------------------
+Difmap 2.1 released.
+-----------------------------------------------------------------------
+
+03/07/95 version.h configure README
+
+     Details: I released version 2.1 of Difmap. This was announced on
+              the NRAO vlbi exploder.
+
+03/06/95 wmapbeam.c
+
+     Details: primhdu() now rights RA and DEC with the appropriate
+              projection code. I also changed the RA and DEC axis
+              values to use lmtora() and lmtodec() to get the RA and
+              DEC of the map center, instead of assigning the east and
+              north direction cosine offsets as linear pixel
+              increments wrt the source RA and DEC.
+
+03/06/95 All plotting modules in difmap.
+
+     Details: As promised in the last release, I have removed support
+              for older versions of PGPLOT. It was getting too painful
+              to keep the ifdef's up to date and to test both modes.
+              The PGIMAG and PGBAND pre-processor variables are thus
+              now obsolete and have been removed from the
+              configuration options.
+
+03/06/95 difmap.c maplot.h maplot.c help/beampos.hlp
+
+     Details: Added a new command (beampos) to allow specification
+              of the disposition of the mapplot clean beam ellipse.
+
+03/05/95 obs.h obutil.c uvf_read.c uvf_write.c hms.c vlbutil.h
+
+     Details: I have added support for NCP projection in addition to
+              SIN projection. This entailed:
+              1. Modifying uvf_read.c to extract projection names from
+                 UU,VV,WW random parameter names.
+              2. Adding a Proj projection enumeration type to obs.h.
+              3. Adding name_Proj() and Proj_name() lookup functions to
+                 obutil.c (and prototypes in obs.h).
+              4. Moved xytora() and xytodec() from hms.c and vlbutil.h
+                 to obutil.c and obs.h. Also renamed to lmto..() to
+                 avoid name clash with xytorad().
+              4. Modifying lmtora() and lmtodec() to cater for
+                 projections other than SIN projection.
+              
+02/21/95 vlbhead.c
+
+     Details: Scan information used the default scan interval instead
+              of newer per sub-array scangaps set by the scangap
+              command. I have fixed this.
+
+02/20/95 obutil.c obpol.c obs.h
+
+     Details: Polarization combinations were written inline in
+              ob_select(). I also needed the same code for forming
+              visibility spectra, so I have come up with a more
+              general scheme in which a polarization-specific dispatch
+              function is called to combine polarizations for each
+              visibility. The new call get_Obpol() sets this up
+              beforehand, recording the dispatch function and its
+              parameters in an Obpol structure, now recorded in
+              ob->stream.pol.
+
+02/20/95 uvf_read.c
+
+     Details: I had not realized that it was possible for autocorrelation
+              visibilities to be interleaved with normal cross-correlation
+              visibilities in UV FITS files. The VLBA now does this.
+              Fortunately, the default behavior in AIPS SPLIT is to
+              discard them, so this has not been a problem. I have
+              modified loc_base() to trap for such visibilities and
+              quietly discard them.
+
+02/19/95 obshift.c obs.h
+
+     Details: I added an obunshift() function to undo all shifts applied
+              with obshift().
+
+02/17/95 dpage.c uvaver.c
+
+     Details: I have generalized the static dp_cal() function of uvaver.c
+              and moved it to dpage.c. I have also written a new function
+              dp_shift() to apply the current east and northward shifts to
+              the the integration in the record I/O buffer.
+
+02/17/95 obshift.c
+
+     Details: uvshift() objected if it didn't get a fully initialized
+              initialized stream. This caused ob_select() to fail
+              when selecting a new stream if a shift was in place.
+              I have changed it to accept the pre-stream indexed state.
+
+02/14/95 vedit.c
+
+     Details: At the command line, specifying zero for the number of
+              rows, requests the max appropriate number of plots per
+              page. The equivalent interactive option 's' didn't
+              accept zero at all. I have changed it such that both the
+              absence of any number or the number 0, mean the same as
+              the command line argument.
+
+02/13/95 difmap.c help/antenna_names.hlp
+
+     Details: Added an antenna_names help topic to describe the syntax
+              and interpretation of the new telescope specifications.
+
+02/13/95 difmap.c
+
+     Details: Incorporated the new telescope specification and
+              iteration functions. All plot functions now take
+              telescope specification arguments. resoff and selfant
+              also do, and use the new iterators to iterate through
+              the specifications. Previously resoff required at least
+              one argument and would only correct one baseline at a
+              time.
+
+02/13/95 timplt.c corplt.c vplot.c vedit.c clplot.c uvplot.c
+         uvradplt.c
+
+     Details: I have incorporated the new telescope specification and
+              iteration functions into all of the plotting commands.
+              In the process, non-interactive plotting has become
+              better supported, with wild-card specifications
+              (specifications with ommitted trailing components) being
+              interpretted correctly along with more information being
+              printed to the screen as pages are plotted.
+
+              vplot and cpplot now allow one to switch to a mode in
+              which baselines/triangles are seen just once, using a
+              new 'O' key. As before, vplot by default plots all
+              baselines to each reference antenna. The new option only
+              plots baselines in which the index of the second antenna
+              is greater than that of the reference.
+
+              I have also made it possible to specify cross-hair mode
+              (via the '+' character) in the cpplot and vplot flag
+              strings.
+
+              I have also added warning messages to the cursor
+              functions, so that when the cursor must be within a
+              plot and the user presses a cursor key when the cursor
+              is not within any plot, they are told why nothing
+              happened. (I got caught by this myself, and ended up
+              killing difmap because I thought that it was stuck in
+              cursor input mode :-).
+
+              clplot now defaults to showing all unique triangles to
+              the first antenna of the first sub-array. Previously it
+              was obligatory to tell it what to plot. It now also
+              allows one to step to the neighboring specification,
+              whereas before it obeyed the triangle specification
+              explicitly and stopped when no more triangles were
+              available that met the specification. This included
+              adding capital N and P as Next and Previous sub-array
+              keys.
+
+              The command-line argument of the tplot is now a literal
+              string sub-array specification, where before it was an
+              integer sub-array index. I have also added a 'T' key to
+              allow interactive keyboard selection of the next
+              sub-array to be displayed.
+
+              In uvplot, radplot and projplot, an empty specification
+              input in response to the 'T' key, (or from the command
+              line) now de-selects highlighting.
+
+              I have removed all the *_labinc() functions and calls
+              from all plot commands. They were originally there to
+              counter bugs in pgtbox(), but have been commented out
+              for a while, because the bugs appear to have been fixed.
+
+02/13/95 obutil.c obs.h
+
+     Details: I have removed the telescope specification functions
+              from obutil.c and obs.h, in deferrence to the new code
+              in telspec.c and telspec.h. I have also renamed
+              find_base() to loc_base(), since find_base() is now a
+              more general function in telspec.c.
+
+02/13/95 clstel.c clstel.h -> clphs.c clphs.h
+
+     Details: telspec.c now contains the triangle specification and
+              iteration routines that were in clstel.c, so I have
+              deleted clstel.c and clstel.h and replaced them with
+              clphs.c and clphs.h, which only contain closure phase
+              specific functions.
+
+02/13/95 telspec.h telspec.c
+
+     Details: I have created a general set of telescope specification
+              input, output and interation functions for use
+              throughout difmap. This replaces all the ad hoc
+              iterators in the plotting functions, and provides
+              a uniform interface to all commands that require
+              sub-array, telescope, baseline or closure triangle
+              specification arguments.
+
+02/10/95 corplt.c
+
+     Details: The title said Baselines to <telescope_name>! Changed
+              this to Calibration corrections for <telescope_name>.
+
+              Memory leak. del_Corpar() wasn't being called to release
+              memory allocated to the plot descriptor.
+
+              corplot() wasn't returning its potential error status (ierr).
+
+02/08/95 telspec.c
+
+     Details: Added a check for exact telescope name matches, to prevent
+              them from being treated as ambiguous in the event of there
+              being another telescope name with the same prefix.
+
+01/12/94 modfit.c
+
+     Details: Negative fluxes had been deemed unphysical so were not
+              allowed. This resulted in modelfit being unable to fit
+              absorption features. I have now corrected this.
+
+01/11/94 model.h model.c modfit.c modvis.c
+
+     Details: Added an SZ model component type.
+
+01/09/94 sphere_src/compile.c
+
+     Details: The contents of `` literal string expression delimiters
+              were not being checked to ensure that they were string
+              expressions.
+
+01/02/94 maplot.c
+
+     Details: mapplot now plots windows on hardcopy devices for residual
+              maps, but not restored maps. Previously CLEAN windows were
+              only displayed on interactive devices.
+
+12/31/94 wmapbeam.c
+
+     Details: Changed to prepend the polarization name to the AIPS IMCLASS
+              history entry. Previously 'I' was always prepended.
+
+12/31/94 obutil.c
+
+     Details: I still had the equation for U wrong!
+              Now corrected and compared against AIPS MX.
+
+12/17/94 obutil.c
+
+     Details: Clearly nobody had tried mapping derived versions of
+              either U or V polarizations. The equations used to
+              combine the source polarizations were wrong.
+
+11/06/94 mapres.c
+
+     Details: res_smooth() was placing the smoothed the residuals 1 pixel
+              too low along both X and Y. This was only particularly apparent
+              if not much cleaning had been done, since the convolved model
+              was placed in the correct position. Steve Unwin noticed that
+              the first row of pixels extending across the top of the plot
+              in maplot appeared to be shifted left by one pixel wrt the next
+              row of pixels.
+
+11/06/94 timplt.c
+
+     Details: t_edbox() presented a bogus informational message, telling
+              the user to press 'H' for help on selecting a new UT range.
+              I must have accidently copied this from t_newut().
+
+10/31/94 Implemented selfcal-correction flags.
+
+   editing.hlp selfcal.hlp selfflag.hlp vplot.hlp cpplot.hlp tplot.hlp
+   uncalib.hlp corplot.hlp
+
+     Wrote new 'editing' help topic, and updated other help files to
+     include details specific to correction flagging.
+
+   obs.h
+
+     Added 'bad' flag to Telcor correction containers.
+
+     Splitted off Bascor typedef from Telcor, since Telcor now has one
+     more member than Bascor.
+
+     Added 'bad' flag bitmask to Visibility container.
+
+     Added prototype for new ed_Telcor() function.
+     Added prototype for new adj_Telcor() function.
+     Added prototype for new clr_Telcor() function.
+
+   telcor.c
+
+     Added ob_ready() clause.
+
+     Added 'doflag' arguments and unflagging and flagging code to
+     uncalib() and recalib().
+
+     Removed the fabs(gcor) code from uncalib() and recalib(), since
+     null amplitude corrections are no longer encoded as -1.
+
+     Wrote new ed_Telcor() function which records and applies changes to
+     telescope correction flags.
+
+     Wrote new adj_Telcor() function which makes incremental changes to
+     a single telescope correction.
+
+     Wrote new clr_Telcor() function which removes the correction of one
+     telescope.
+
+   slfcal.c
+
+     Modified count_tel() so that it no longer does editing, or counts
+     dropped visibilities.
+
+     Modified get_usable() to apply correction flags and count corrections
+     that are dropped due to insufficient sampling. Dropped corrections for
+     telescopes whose gains are marked as fixed are not counted or flagged.
+     (Previously counts of dropped visibilities were kept, rather than
+      dropped telescope corrections).
+
+     (Now calls modified visflags() function, so the new flagging is
+      now fully supported by slfcal.c).
+
+   visflags.c
+
+     Changed check for flag status to use !vis->bad instead of vis->wt>0.
+
+   subarray.c
+
+     Changed tcor->amp_cor initialization to 1.0f from -1.0f.
+
+     Added tcor->bad = 0; initialization to new_Telcor().
+
+     Added vis->bad = FLAG_DEL; initialization to new_Visibilities().
+
+   obutil.c
+
+     Changed getIF() to translate from file weight encoded flags to vis->bad
+     type flags.
+
+     Changed getIF() to translate from vis->bad type flags to file weight
+     encoded flags.
+
+     Removed code in ob_select that converted sum of weights to -ve if flagged.
+
+     Added code to record vis->bad flag information in ob_select().
+
+     Added doflag=1 argument to call to recalib().
+
+   uvf_write.c
+
+     Added code in primdata() to apply correction flags to the output data.
+
+   uvaver.c
+
+     Removed fabs(amp_cor) since null amplitude corrections are no longer
+     encoded as -1.0f.
+
+     Added code to dp_cal() to freeze correction flags into the data,
+     and added doflag=1 argument to call to uncalib() so that the
+     correction flags are discarded after being frozen.
+
+   corplt.c
+
+     Decided upon different editing modes:
+
+      Left mouse button:   Flag correction (instead of flag + reset).
+      Middle mouse button: Reset correction (as before).
+
+      Renamed c_zaptel() to c_edit_cor() and added mode argument.
+
+      Rewrote c_edit_cor() to use ed_Telcor() and clr_Telcor().
+
+     Modified c_pldata() to use tcor->bad flagging info.
+
+     Changed 'badsym' symbol to an 'x'.
+
+   vplot.c
+
+     Modified to use vis->bad bitmask to determine flag state.
+
+     Modified to plot visibilities that are only correction flagged, with
+     a different symbol and color.
+
+   vedit.c
+
+     Modified to use vis->bad bitmask to determine flag status.
+
+   clstel.h
+
+     Declared Clflag closure-phase flag status enumeration.
+
+     Added 'int bad' member to Clphs closure-phase container. This is to
+     be used as a bitmask union of Clflag enumerators.
+
+   clstel.c
+
+     Changed flagging to use vis->bad and cp->bad flag mask code in
+     get_clphs().
+
+   clplot.c
+
+     Changed flagging to use cp->bad flag mask.
+
+     Changed c_pldata() to use correction-flags color and plot symbols where
+     approriate.
+
+   timplt.c
+
+     Changed t_sampling() to record correction flags as well as normal
+     flags.
+
+     Changed t_pldata() to plot correction flag colors where appropriate.
+
+     Changed t_edbox() to take account of correction flags when deciding
+     whether to toggle flag status.
+
+   obedit.c
+
+     Modified to apply in-core edits to vis->bad, instead of through the sign
+     of vis->wt.
+
+   difmap.c
+
+     Gave the uncalib command a third argument, to be used to request that
+     calibration corrections be removed.
+
+   addmod.c moddif.c modfit.c resoff.c uvinvert.c uvplot.c uvradplt.c uvrange.c
+   wtscal.c
+
+     Modified test for flagged/deleted visibilities to test against vis->bad.
+
+10/29/94 uvaver.c uvf_write.c
+
+     Details: Telcor and Bascor have always been just different names for
+              the same type. This hid the fact that I had twice accidently
+              declared a variable of type Telcor where a Bascor type was
+              required.
+
+10/26/94 uvaver.c
+
+     Details: uvaver refused to do anything because I had forgotten
+              to update the observation state after obs_Alloc().
+              Now fixed.
+
+10/26/94 uvaver.c
+
+     Details: Changed amp_cor to fabs(amp_cor) to ensure that the corrections
+              that are frozen into the data are always +ve, regardless of
+              the convention to denote null amplitude calibrations as -1.
+              This was a bug - found while working on new correction flag
+              version. This will have caused 180 degrees of phase shift.
+              Since the visibilities that went with these uncorrected
+              visibilities were probably flagged, the harm done is
+              probably not as disastrous as it might have been.
+
+10/25/94 telcor.c
+
+     Details: Noticed that neither uncalib() nor recalib() checked
+              ob->state. No harm done since higher level routines
+              were already doing the required check. I have added
+              a call to ob_ready() to handle this correctly. I have
+              also updated some of the code, to remove redundant
+              intermediate variables.
+
+10/23/94 sphere_src/help.c sphere_src/func.c help/apropos.hlp
+         help/help.hlp help/difmap.hlp help/makeindex.hlp
+
+     Details: Another overhaul of the help system. The technique of
+              reading the intro line from each help file to display
+              an index of help topics in a given module, or for apropos,
+              was getting too slow with the number of commands now in
+              difmap. Instead, I have now written a 'makeindex' command
+              which compiles help indexes for each module and places
+              them in files with the module name postfixed with an '.idx'
+              extension. This need only be called by the administrator
+              (ie. me) whenever help files are added/removed or their
+              intro lines changed. I have created new functions in
+              help.c to open/read/close such index files, and modified
+              help_module(), and apropos() to use them. I have also
+              updated apropos to show general help topics as well as
+              commands/functions, and to indicate which modules the
+              matches occur in. Also changed help_module() to precede
+              the topic index with the contents of a module .hlp file
+              if present, and I changed the order of the indexes, such
+              that the general help topic list, appears before the
+              list of command/function topics.
+
+10/23/94 pager_src/pager.c
+
+     Details: page_file() was closing the input file, even when it hadn't
+              been responsible for opening it. It now only closes the file
+              if it opened it itself.
+
+10/22/94 sphere_src/help.c difmap.c
+
+     Details: Moved help topics to appear before the list of commands
+              and functions. Also added a new models.hlp general help
+              topic.
+
+10/21/94 uvf_read.c obs.c intrec.c obutil.c addmod.c
+
+     Details: Moved ini_Intrec() from get_uvdata() to new_Observation().
+              Added ob->state = OB_DATA; to new_Observation().
+              Added clrmod() call to new_Observation().
+              Added clause to only do select in new_Observation() if the
+              choice of selection is unambiguous.
+              Added ob->state=OB_DATA and ob->state=OB_INDEX statements
+              to ini_Intrec(), bracketing the body of the function.
+              Added ob->state=OB_INDEX and ob->state=OB_STREAM statements
+              to ob_select() bracketing the body of the function.
+              fixmod() now returns an error if no stream has been selected.
+              For this reason obremcmp() and obaddcmp() now also return NULL
+              if an attempt to modify the established model is made before
+              a stream has been selected. Changed maplot::zapcmp() to handle
+              such a possibility.
+              The 'save' command now doesn't emit a 'select' command unless
+              a selection has been made.
+              
+10/21/94 uvaver.c
+
+     Details: Modified uvaver to only call ob_select if a stream had been
+              selected before uvaver was called.
+
+10/21/94 obs.h obs.c obutil.c addmod.c clplot.c clstel.c difmap.c if.c maplot.c
+         moddif.c modfit.c nextif.c obedit.c obhead.c obshift.c resoff.c
+         scans.c slfcal.c uvaver.c uvf_write.c uvinvert.c uvplot.c uvradplt.c
+         vlbhead.c vlbhist.c wmapbeam.c wtscal.c vedit.c
+
+     Details: Added a 'state' member to the Observation descriptor to
+              encode its state of initialization. Renamed ob_bad() to
+              ob_ready() and added a state argument to it so that it
+              can check whether the descriptor is in a state requested
+              by the caller.
+
+10/21/94 addmod.c maplot.c resoff.c vlbhist.c
+
+     Details: Changed limgering ob==NULL checks to ob_bad() calls, in
+              clrmod(), new_Maplot(), clroff(), showhist()
+
+10/20/94 difmap.c spectral_line.hlp
+
+     Details: Added a new informational help topic on spectral-line
+              mapping.
+
+10/13/94 difmap.c
+
+     Details: The 'save' command now records the current inter-scan gaps.
+
+10/13/94 difmap.c uvweight.hlp selflims.hlp selfflag.hlp
+
+     Details: I have changed the following setup commands to not overwrite
+              existing parameter values with defaults, where trailing
+              arguments are omitted. This makes these commands more
+              consistent with other commands of a similar nature.
+                uvweight, selflims, selfflag
+
+10/13/94 difmap.c uvtaper.hlp uvrange.hlp scangap.hlp uvzero.hlp shift.hlp
+         selftaper.hlp uvweight.hlp selflims.hlp mapsize.hlp
+
+     Details: I have changed the following setup commands to show their
+              current state if not supplied with any arguments:
+                uvtaper, uvrange, scangap, uvzero, shift, selftaper,
+                uvweight, selflims, mapsize.
+
+10/13/94 difmap.c
+
+     Details: Added a 'showpar' command to display the current parameter
+              settings by displaying the command file that the 'save'
+              command would normally write, but to stdout.
+
+10/09/94 wmapbeam.c
+
+     Details: Difmap now adds an AIPS IMCLASS history line to output
+              image FITS files, as well as to UV-FITS files. Residual
+              and dirty maps are annotated as IMAP, clean maps by ICLN
+              and dirty beam images by IBEAM.
+
+10/09/94 corplot.c maplot.c uvradplt.c timplt.c uvplot.c vplot.c vedit.c
+         vplot.h
+
+     Details: Having added new cross-hair rubber-band cursor modes to
+              xwdriv, I have now modified all the difmap plot commands
+              to exploit them. All commands now understand the '+' key
+              to mean toggle the cross-hair cursor on or off if the
+              device supports it. Those that allow selection of X-axis
+              ranges now initially display a single vertical line that
+              follows the cursor, used to select the start position of
+              the range, then display two lines, one fixed at the
+              selected start of the range and a second that follows
+              the cursor, and is used to select the end of the range.
+              The equivalent for Y-axis ranges is also supported in
+              those commands that allow Y-axis range selections.
+
+10/09/94 xwdriv.c pgxwin_server.c
+
+     Details: I have again re-written the /xwindow driver. Given that
+              the first re-write required an external process, it
+              seemed silly not to take that further and write a full
+              blown PGPLOT window server, to provide the option of
+              having windows stay around between uses. The new driver
+              can be accessed through two names, /xwindow to open
+              windows that go away when not in use, and /xserve to
+              open windows that persist after use.
+
+09/28/94 wmapbeam.c
+
+     Details: The X-axis coordinates of clean components in FITS map
+              files generated by difmap were written with the wrong
+              sign in the CC table. Dhiraj noticed this when plotting
+              the model against visibility data in AIPS. AIPS VBLPLT
+              now shows the same quality of fit as difmap.
+
+09/24/94 maplot.c uvradplt.c
+
+     Details: The main cursor loops of mapplot,radplot and projplot were
+              not checking for cursor read errors.
+
+09/16/94 fits_src/fits.c
+
+     Details: If the last HDU in a FITS file had no associated data
+              new_Fits() moaned that the FITS file was shorter than
+              expected, even if the header specified that there was
+              not supposed to be any data. I have fixed this.
+
+09/12/94 maplot.c color.c color.h
+
+     Details: Random stipple is no longer handled as a special class
+              of colormap. Mapplot now handles random stipple itself
+              via PGGRAY. Before, if a device had too few colors, the
+              current colormap would be replaced by a special stipple
+              colormap. Since difmap now remembers the last selected
+              colormap, if the user then opened a new device and tried
+              to use mapplot, PGGRAY would be called upon to do random
+              stipple, even if there were sufficient colors to plot
+              a normal colormap.
+
+09/12/94 maplot.c
+
+     Details: When plotting grey-scale, PGGRAY reverses the
+              grey-levels on hard-copy devices. PGIMAG doesn't, so I
+              changed maplot to do this when plotting grey-scale.
+              Otherwise plots appear mostly black, which looks
+              horrible on a white sheet of paper and wastes ink.
+
+09/12/94 difmap.c telcor.c obs.hcorplot.hlp gscale.hlp selfant.hlp
+         selfcal.hlp selftaper.hlp uncalib.hlp
+
+     Details: Amplitude corrections were sometimes incorrectly refered
+              to as gain corrections. I have changed this.
+
+09/11/94 uvf_read.c uvf_write.c obs.h subarray.c binan.c vlbhist.c
+
+     Details: Difmap was arbitrarily assigning the row number in
+              output AN tables as the antenna number. I had assumed
+              that the antenna number was only relevant within a
+              single file, whereas AIPS allows one to share tables
+              containing antenna numbers. Difmap would also moan if
+              presented with an AN tables in which antenna numbers
+              differed from their row number in AN tables. Difmap now
+              preserves antenna numbers. Since difmap discards unused
+              AN table entries this results in AN tables in which the
+              row number and antenna number will frequently disagree.
+              Phil Diamond says that he believes that AIPS can cope
+              with this, and won't complain about antennas that have
+              been removed as long as no visibility cites them.
+
+09/08/94 xwdriv.c
+
+     Details: Complete re-write of PGPLOT /xwin driver completed.
+              Among other things, the new version implements the
+              new PGBAND and PGQCR opcodes and buffered the
+              colormap updates required for the new colormap code.
+
+09/08/94 recolor.c color.c color.h symtab.h mapplot.c
+
+     Details: Re-wrote all of the mapplot colormap code. Deleted
+              recolor.c. color.c and color.h now allow support
+              for any number of color tables, with control over
+              brightness and contrast etc.. Mapplot now allows
+              interative colortable manipulation.
+
+09/08/94 symtab.h symtab.c enumpar.c difmap.c
+
+     Details: Wrote generalized min-match symbol table routines and
+              re-implemented enumeration arguments with them.
+
+09/08/94 sphere_src/lex.c
+
+     Details: Changed literal string termination condition such that
+              it doesn't terminate on a comma if the comma is within
+              unclosed parentheses, also so that it terminates at the
+              first unmatched close parenthesis rather than the final
+              matching close parenthesis.
+
+09/06/94 obutil.c
+
+     Details: When combining two polarizations to a derived polarization
+              I added the weights incorrectly. The result was weights that
+              were 16 times too small - ouch.
+
+09/04/94 maplot.c
+
+     Details: Added PGPLOT buffering to plwins() and replot().
+
+09/03/94 clplot.c
+
+     Details: The world coordinate phases were degrees, whereas the
+              functions that used cursor positions assumed that they
+              were radians. Now changed to use radians throughout.
+
+08/29/94 vplot.c cpplot.c
+
+     Details: Upgraded cursor routines to use plot-descriptor dependant
+              cursor descriptors, and added pgband features.
+
+08/29/94 corplt.c
+
+     Details: Upgraded cursor routines to use a cursor descriptor instead
+              of lots of arguments to the cursor function. Also, although
+              a band cursor is not required at the moment, in corplot,
+              I have added the necessary features to use it in the future
+              if ever required.
+
+08/28/94 maplot.c uvplot.c uvradplot.c timplt.c
+
+     Details: Added code to take advantage of pgband(). This is option
+              is selected only if a pre-processor variable called PGBAND
+              is defined.
+
+08/28/94 maplot.c mapplot.hlp
+
+     Details: Added 'L' key for simple re-display, since all other
+              plotting commands have this.
+
+08/28/94 pgc/pgc*.sh
+
+     Details: Added the new pgband() PGPLOT library call.
+
+08/28/94 uvradplot.c radplot.hlp projplot.hlp
+
+     Details: Removed the confusing multi-IF editing option. Given that
+              all IFs are displayed, there is no real need for this
+              option.
+
+08/10/94 model.c
+
+     Details: Changed rmodel() to force components with major==0.0
+              to be delta functions.
+
+08/10/94 sphere_src/run.h
+
+     Details: Changed MAXSTACK to 2000 since Steve was hitting the
+              1000 limit.
+
+08/05/94 modfit.c
+
+     Details: modelfit was displaying the unshifted model. It now
+              displays the shifted model.
+
+08/01/94 addmod.c clrmod.c obs.c obshift.c slfcal.c
+
+     Details: Moved clrmod code into addmod. Added continuum subtraction
+              facilities. (I am writing this as of 09/09/94 so I don't
+              remember the details - somehow I forgot to enter this at
+              the time). I do remember that it involved re-writing most
+              of the the code involving models.
+ 
+07/31/94 uvf_read.c uvf_write.c obutil.c
+
+     Details: The way that the sign of the spectral-line channel
+              increment was being propagated was inconsistent and
+              the result was that it was possible to loose it in the output
+              UV file. The convention now is to follow that of FQ tables,
+              where the unsigned channel bandwidth is kept along with a
+              sideband name to encode the sign. I was using this when
+              the frequency info came from FQ tables, but if the
+              frequency info came from the primary header I used the
+              alternate convention of making the channel bandwidth
+              signed. The output functions were equally dislexic.
+
+07/30/94 obs.h obs.c uvf_read.c uvf_write.c
+
+     Details: I hadn't realised that AIPS ALTDEF info could be stored
+              in UV FITS files. I now read and record these values
+              in the observation structure and write them back to
+              the output UV FITS file.
+
+07/28/94 fits_src/bhdu.c
+
+     Details: The NOST standard says that strings denoted by the 'rA' format
+              specifier may be prematurely terminated with '\0'. It also says
+              that a string in which the first character is '\0' is undefined.
+              AIPS writes a single character code using format '1A' to
+              encode the polarization type of a feed and in one file
+              this code was '\0', obviously because it *was*
+              undefined. bcol_val() read this OK, but when uvf_write
+              came to writing an output FITS file bcol_set()
+              interpretted this as a zero length string and returned 
+              saying that no characters had been written. This is the
+              error return of bcol_set() so the writer aborted. I have
+              changed bcol_set() to explicitly write the '\0' byte if
+              present before the ndata limit of the field (it should
+              have done this anyway, but the fact that the HDU was
+              already padded with '\0's hid the problem), and include
+              the '\0' byte in the count of bytes written and returned.
+
+07/28/94 binan.c
+
+     Details: new_calpar() knew that the number of polarization calibration
+              parameters could be 0, but new_Binan() took the
+              resulting NULL return value of new_calpar() to mean that
+              a memory allocation error had occured. I have changed
+              this such that when new_calpar() returns NULL,
+              new_Binan() now checks to see if nopcal is 0 before
+              assuming that an error occured.
+
+07/26/94 uvradplot.c
+
+     Details: Fixed bug that meant that radplot only displayed the
+              model of the last plotted sub-array.
+
+07/26/94 slfcal.c
+
+     Details: Fixed a bug where NaNs were produced if the (model-observed)
+              visibility phase of a baseline of a poorely sampled telescope
+              was exactly 90 degrees.
+
+
+07/25/94 clplot.c
+
+     Details: Added a clause to stop c_plot() from reseting the displayed
+              UT range unless the displayed sub-array is changed.
+
+07/25/94 vplot.c vplot.h
+
+     Details: Added a clause to stop v_plot() from reseting the displayed
+              UT range unless the displayed sub-array is changed.
+
+07/25/94 uvplot.c help/uvplot.hlp difmap.c
+
+     Details: Revamped cursor code added editing facilities and added
+              the 'S' option of radplot for showing where a given point
+              comes from. Also revamped autoranging code to allow for
+              range changes due to editing. Changed difmap.c to account
+              for editing in radplot.
+
+07/22/94 hms.c maplot.c vlbutil.h
+
+     Details: I had neglected to divide the eastward position offset
+              by cos(dec) when calculating the map-center RA in maplot.
+              In correcting this I have now gone further and implemented
+              the formulae in AIPS memo 27 to do the full conversion
+              from SIN-projection direction-cosine offsets to offset R.A.
+              and Dec. [functions xytora() and xytodec()].
+
+07/21/94 difmap.c
+
+     Details: Added rflags and pflags to the variables saved by the
+              save command. While doing this I noticed and fixed a
+              bug that was preventing vflags from being saved correctly.
+              Fix involved replacing a STRPTR() with a *STRPTR().
+
+07/21/94 timplt.c difmap.c obs.h
+
+     Details: I re-vamped the cursor entry code and added editing
+              facilities to the tplot command.
+
+07/20/94 uvradplt.c difmap.c obs.h
+
+     Details: The code used for the radplot command now doubles as the
+              code used for the new projplot command, used to plot
+              data versus projected UV distance. In the process I
+              changed the code to be able to plot phases as well as
+              amplitudes and added keys to toggle model plotting,
+              amplitude and phase plotting etc. Also implemented vplot style
+              flag options, and added rflags and pflags option variables
+              for radplot and projplot.
+
+07/19/94 difmap.c addmod.c obs.h help/edmodel.hlp
+
+     Details: Changed the default behavior of edmodel to be to present
+              the whole model for editing. Also added an optional argument
+              through which one can request that only the variable part of
+              model be presented.
+
+07/18/94 obutil.c
+
+     Details: next_telbase() was not starting its search where it should
+              have been. This prevented edits being applied properly to
+              the scratch files. Now fixed.
+
+07/11/94 vlbconst.h hms.c
+
+     Details: Increased the precision of constants, since the reported
+              Declination was out by a few mas after conversion to
+              and from radians. Also changed the implementation of
+              raddms() and radhms() functions to use the modf() ANSI
+              C function, but without any differences noticeable
+              in the results.
+
+07/10/94 difmap.c wtscal.c wtscale.hlp
+
+     Details: Changed wtscal to set the scale factor using an absolute
+              scale rather than an incremental scale. Also changed
+              the wtscale command into a function that returns the
+              current wtscale value, and can also be used as a command.
+
+07/10/94 sphere_src/help.c sphere_src/compile.c sphere_src/run.c
+
+     Details: Add support for function that can be called as commands.
+
+07/09/94 difmap.c maplot.c
+
+     Details: Added header lines to the output of the wmodel command,
+              specifying the phase-center RA and DEC and epoch, and
+              distinguishing between the established and tentative
+              models. I also made it not call the wmodel() function
+              for models with < 1 component. I also added the epoch
+              to the maplot center RA,DEC label.
+
+07/08/94 difmap.c imstat.hlp
+
+     Details: Added a new imstat() function. This returns one of
+              a selection of map statistics. This supersedes the
+              maprms() function, whch has been removed.
+
+07/07/94 difmap.c uvinvert.c mapmem.c mapmem.h
+
+     Details: Invert now calculates the theoretical noise from the weights,
+              displays it to the user and records it in mb->noise.
+              The wtscale command now marks the map and beam as out of
+              date. This is because the new mb->noise parameter
+              depends upon the absolute scale of the weights.
+
+07/07/94 difmap.c uvstat.hlp
+
+     Details: Added a new user function called uvstat(). This currently
+              returns the RMS error between model and data,
+              the reduced-chi-squared fit between model and data, or the
+              number of unflagged visibilities.
+
+07/07/94 difmap.c modfit.c modelfit.hlp
+
+     Details: Previously "modelfit n", performed iterations 0 -> n-1.
+              Now "modelfit n" performs iterations 0 -> n, and
+              "modelfit 0" performs just iteration 0.
+
+07/06/94 moddif.c slfcal.c selfcal.hlp startmod.hlp
+
+     Details: Added option to moddif() to return either the overall
+              goodness of fit, or just that of the current IF.
+              Also made selfcal display the overall goodness of fit
+              instead of one goodness of fit per IF.
+
+07/06/94 slfcal.c
+
+     Details: Added an explicit ed_flush() call to selfcal.
+
+07/05/94 difmap.c addcmp.hlp
+
+     Details: Added a new command to be used by scripts to add new model
+              components to the tentative model.
+
+07/05/94 difmap.c mapwin.c wwins.hlp wmodel.hlp
+
+     Details: If the file-name argument is given as "", or omitted
+              then wwins and wmodel now display their respective files
+              on the standard output and in the log file.
+
+07/03/94 obutil.c difmap.c obedit.c chlist.c chlist.h obs.h obs.c
+
+     Details: The 'select' command now accepts mulitiple discontiguous
+              channel ranges (although overlapping ranges may be
+              specified). To support this the Observation 'stream'
+              container now contains a list of channel ranges instead
+              of a single range. ob_select() and obedit.c had to be
+              modified to handle multiple channel ranges.
+ 
+07/03/94 obutil.c difmap.c obedit.c
+
+     Details: The 'select' command no longer has the side effect of
+              discarding models. I have also removed the 'select'
+              'preserve' argument used to over-ride the side effect.
+
+06/27/94 obutil.c
+
+     Details: name_Stokes() didn't complain if text followed a valid
+              polarization name. Thus when a user typed: select I.1,1
+              difmap didn't complain and the user didn't notice that
+              they had selected a different range than expected.
+              name_Stokes() now requires polarization strings to be
+              '\0' terminated after the last character of the
+              polarization name. While changing this I also
+              noticed that some of the switch cases lacked break;
+              statements. This bug only manifested if extra characters
+              were typed. Thus the lack of sanity checking and this
+              bug combined such that while select RR correctly
+              selected RR, select RRR selected LR. I have now added
+              the appropriate break statements.
+
+06/26/94 obutil.c
+
+     Details: I realized that ob_select()s use of weighted means, and
+              its habit of discarding flagged visibilities while
+              averaging spectral line channels together could
+              potentially produced closure errors. After much
+              agonizing and discussion, I have changed ob_select() to
+              use an unweighted mean and to flag averages that include
+              one or more flagged visibilities, and delete those that
+              include one or more deleted visibilities.
+
+06/26/94 clplot.c difmap.c
+
+     Details: Added station editing to cplot, and changed the default
+              editing mode to edit the selected reference station,
+              baseline or triangle.
+
+06/22/94 uvradplt.c radplot.hlp
+
+     Details: Radplot didn't have control over the range of spectral
+              line channels and IFs edited. I have added this feature.
+
+06/21/94 clplot.c clstel.h difmap.c cpplot.hlp
+
+     Details: Greg asked me to add interactive editing of closure
+              phases in the cpplot command. I have done this.
+
+06/21/94 difmap.c
+
+     Details: Greg noticed that the 'save' command failed to write a
+              'shift' command unless both east and north shifts were
+              non-zero. Fixed.
+
+06/19/94 model.c
+
+     Details: If the were no components to be written, wmodel() would
+              not write the column headings. This was ok for writing to
+              normal model files, but writing the headings is a useful
+              thing to do for edmodel users who want to describe a new
+              model. wmodel() now always writes column headings.
+
+06/18/94 makefile* units.c units.h difmap.c uvradplt.c uvinvert.c
+         maplot.c uvplot.c modfit.c model.c mapres.c timplt.c corplt.c
+         vplot.c clplot.c vlbconst.h  
+
+     Details: The units of map-plane and UV plane coordinates that the
+              user sees and uses can now be changed with the mapunits
+              command. This is arbitrated through functions in
+              units.c, which include internal vs. user coordinate
+              conversion functions and unit labels. I also changed the
+              static const variables in vlbconst.h to #define's so
+              that they could be used as constant expressions in
+              initializers.
+
+06/18/94 uvradplt.c
+
+     Details: Obviously I forgot to test the recent radplot changes on
+              data-sets with multiple sub-arrays. Radplot was failing
+              to display more than the first sub-array due to
+              overriding the sub-array descriptor argument of
+              r_basepl(). Also, r_findpt() was failing to increment
+              its sub-array descriptor. Now fixed.
+
+06/16/94 obs.h obs.c scans.c scans.h difmap.c vplot.c clplot.c corplot.c
+         timplt.c scangap.hlp
+
+     Details: Up until now, the gap taken to separate scans during
+              plotting has been fixed at 1 hour. I have changed this
+              by adding a scangap member to each sub-array descriptor
+              of the observation, and by writing a scangap() function
+              to install new values globally to all sub-arrays or to
+              individual sub-arrays. The new 'scangap' user command
+              can be used to interactively effect such changes.
+
+06/15/94 mapmem.c mapmem.h mapclean.c difmap.c mapres.c uvinvert.c maprms.hlp
+
+     Details: Added a user maprms() function to difmap. This returns
+              the RMS deviation of pixel fluxes from the mean flux in
+              the map. This should be useful for automatic mapping
+              scripts. To implement this I decided to add maprms and
+              mapmean members to the MapBeam class. I then changed the
+              maprange() function to also calculate these quantities,
+              and changed the name of maprange() to mapstats().
+
+06/14/94 logio.c
+
+     Details: Added a setvbuf call to enforce line-buffering of output
+              to the log file. This ensures that the file will always
+              be up to date, even if difmap crashes. Without this fix
+              the log file is useless as an aid to debugging.
+
+06/12/94 uvradplt.c radplot.hlp
+
+     Details: Revamped the selection of plotted UV-radius and
+              amplitude ranges and added a zoom option to allow
+              interactive amplitude range selection.
+
+06/10/94 uvradplt.c
+
+     Details: radplot now displays and allows editing of visibilities
+              from all IFs instead of just from the current default
+              IF.
+
+06/10/94 uvplot.c uvradplt.c
+
+     Details: uvplot and radplot both start by not highlighting any
+              station. Previously once you had highlighted a station
+              it was not possible to go back to having no station
+              highlighted. Now, if 'p' is pressed when at the start of
+              the first sub-array, highlighting is removed.
+
+06/10/94 clstel.c
+
+     Details: Fixed bug where the sign of baseline phase contributions
+              was incorrectly defined.
+
+06/10/94 mapwin.c mapwin.h difmap.c
+
+     Details: Changed peakwin to default to search for the largest
+              flux instead of the largest absolute flux. Supplemented
+              this with a second optional argument to the peakwin command
+              to revert to the old behavior, since this is useful for
+              spectral-line absorption mapping.
+
+06/09/94 uvplot.c uvplot.hlp
+
+     Details: uvplot now displays the sampling for all IFs, instead of
+              just the current default IF. I have also added a zoom option,
+              bound to the 'Z' key.
+
+06/08/94 uvrange.c
+
+     Details: Added the option of having uvrange() return the range for
+              all IFs, instead of just that of the current IF.
+
+06/06/94 obs.c obs.h obutil.c
+
+     Details: Added a new command called 'addhist' to be used to add
+              user specified history to the recorded history of an
+              observation.
+              Also added a new command called 'clrhist' to be used to
+              delete FITS history information.
+
+06/06/94 model.c
+
+     Details: Edmod used tmpnam() to provide unique names for its temporary
+              files. This placed the files in /usr/tmp/. Unfortunately
+              emacs writes backup files (unless the file is in /tmp) so
+              people who had been using edmod had many backup relics of
+              temporary model files lying in /usr/tmp. I have now modified
+              edmod to use my scrname() function to create a versioned
+              edmod.scr file, so that while emacs will still write its
+              backup file, there will only be one of them.
+
+06/05/94 vplot.c vplot.h vedit.c vplot.hlp
+
+     Details: I have added an amplitude/phase zoom option to vplot.
+              While doing so I also re-vamped the cursor selection code
+              to return a cursor descriptor rather than individual attributes.
+              Also modified help output.
+
+06/04/94 vplot.c clplot.c
+
+     Details: I have further modified the way that model lines are drawn
+              such that even when not in scan mode, where there is no data
+              within one scan separation interval, no connecting line is
+              drawn.
+
+06/03/94 vplot.c
+
+     Details: Improved the way that model lines wrap about the -pi and pi
+              axes. Model lines that fall off the bottom now re-appear at
+              the top without a vertical connecting line.
+
+06/03/94 difmap.c
+
+     Details: Removed an incorrect sanity check from restore_fn
+              which prevented single component models from being restored.
+              This will have been introduced when I moved the
+              tentative model into the observation structure a week
+              and a half ago.
+
+06/03/94 vedit.c
+
+     Details: In order to change Z to mean Zoom in all plotting commands
+              I rebound the zap-pane option to key 'K' (kill-pane).
+
+06/03/94 difmap.c clsplot.hlp -> cpplot.hlp radplt.hlp -> radplot.hlp
+
+     Details: Changed the name of clsplot to cpplot and expanded radplt
+              to radplot.
+
+06/03/94 difmap.c
+
+     Details: The save command was reporting an error after writing the
+              select command because I had interpretted the return value
+              of printf incorrectly. Now fixed.
+
+06/03/94 visaver.c
+
+     Details: When the scatter option was enabled, I was calculating the
+              variance of the data within the averaging interval instead
+              of the variance of the mean. Now fixed.
+
+06/03/94 clstel.c clstel.h clplot.c difmap.c help/clsplot.hlp 
+
+     Details: Added a new command (clsplot) to plot closure phases.
+
+06/02/94 uvf_read.c
+
+     Details: Greg encountered a UV FITS file with yet another variation
+              in the name of the UU,VV,WW axes. Difmap now recognises the
+              new name 'UU  -SIN' etc..
+
+06/01/94 lmfit.c
+
+     Details: Somehow I failed to remove the tentative lm->inc_par member
+              from the Lmfit descriptor. It isn't used by anything and
+              should have been removed long ago. The only place that it
+              is referenced is in del_Lmfit(), which tries to free if it
+              is non-NULL, causing a seg fault. I have no idea how it has
+              never produced problems before now. Anyway I have removed
+              the member and fixed del_Lmfit() to suit.
+
+05/27/94 uvf_read.c obs.c obutil.c
+
+     Details: I moved the select call from uvf_read.c into
+              new_Observation() and added stream specification
+              arguments to new_Observation, such that the default
+              stream can be overriden at read time. I haven't added
+              this to the observe command, but the possibility is
+              there. I moved job of defaulting the polarization, where
+              not given, to ob_select(), for which I wrote a new
+              function comb_stokes() to do the job of searching out
+              recorded and derived polarizations. Also ob_select() now
+              returns the Observation descriptor so that it can be
+              deleted on error, and made ob_select() more tolerant to
+              user error by limiting stream selection arguments to
+              legal values rather than aborting if out of range.
+
+05/27/94 obs.h obs.c obutil.c addmod.c uvf_read.c uvaver.c difmap.c
+
+     Details: The changes to uvaver that I made to accomodate last
+              weeks move of the tentative model into the observation
+              structure were incorrect. The model was deleted whenever
+              uvaver was called. I have added an argument to ob_select()
+              to tell it whether to completely delete all models or
+              whether to preserve the established model in the tentative
+              model. I have also added this argument to the difmap
+              'select' command and finally fixed the 'save' command so
+              that the 'select' command that it writes doesn't delete
+              the model read by the preceding 'get' command.
+
+05/25/94 uvradplt.c radplot.hlp
+
+     Details: I finally gave in and added the option to allow one to
+              specify rectangular areas whithin which to flag data.
+
+05/24/94 modfit.c modelfit.hlp
+
+     Details: The modelfit command has been unnoficially been in use
+              for a few weeks. Now that the support facilities (edmod
+              and component fiddling in maplot) are complete, I have
+              finally gotten around to writing its help file and will
+              announce its release.
+
+05/24/94 maplot.c ellips.c modplot.c addmod.c modvis.c etc...
+
+     Details: Mapplot can now be used to interactively add and remove
+              model components. Fixed positive flux components are now
+              displayed in green as before and variable ones in
+              yellow. Elliptical components now also have the major
+              and minor axes drawn so that the user can locate the
+              center when selecting components to remove. It is also
+              now possible to toggle plotting of the current models
+              symbolically (including just displaying the variable
+              part of the model). Previously if the model plot was
+              required one had to specify it on the command line.
+              Given that the tentative model now resides in the
+              observation object it is also no longer necessary to
+              establish the tentative model, as was required before.
+              When new components are added they are temporarily
+              placed in a scratch model, so that even if the rest of
+              the model is not plotted, the new displayed components
+              can be selected. The new components are then moved to
+              the tentative model when the plot is re-displayed or
+              mapplot is exited.
+              I also removed the dolog option. This was an ill
+              conceived option and never worked as intended.
+
+05/24/94 A lot of changes to many files.
+
+     Details: Obstensibly so to allow maplot, access to the tentative
+              model but also because it seems sensible, I moved the
+              tentative model into the observation object. This
+              simplifies many things, especially in difmap.c and has
+              allowed the writing of a number of useful utility
+              functions (especially in addmod.c).
+
+05/19/94 difmap.c
+
+         Bug: Both selfcal and gscale should mark the beam as invalid
+              if doing amplitude selfcal when error weighting in invert
+              is enabled. I noticed that instead of checking for error
+              weighting they checked for radial weighting.
+
+05/17/94 addmod.c difmap.c edmodel.hlp
+
+     Details: Wrote obedmod() function to edit the variable parts
+              of the established and tentative models of an
+              observation.
+
+ New command: edmodel - Allows the user to edit the variable
+              components of their model in an external editor.
+
+05/17/94 model.c
+
+     Details: Wrote edmod to edit models with an external editor.
+              Changed the return value of rmodel to an error indicator
+              instead of the number of components read.
+              Changed wmodel to have it write column headings for each
+              parameter. Also tidied up the format and made it only
+              write 6 significant digits per parameter since 32 bit
+              floats only have this much precision.
+
+05/16/94 scrfil_src/*
+
+     Details: Separated misc file functions into a separate library.
+              Wrote new ed_file() function to allow editing of files
+              with an external editor.
+
+05/11/94 model.c
+
+     Details: wmodel now uses lprintf() instead of fprintf to write to
+              the given stream. This means that when the model is written
+              to stdout it is appropriately logged.
+
+05/11/94 model.c
+
+     Details: Model files that contain syntax errors now cause rmodel
+              to terminate at the error rather than giving a warning,
+              skipping the errant line and continuing. I did this after
+              I realised what would happen if somebody accidentally gave
+              it the name of a UV FITS file - ie. thousands of error messages.
+
+05/10/94 model.c
+
+     Details: Fixed a bug that sent rmodel into an infinite loop on lines
+              having more than 7 fields. Also improved the sanity checking
+              applied to input from model files. Comments (including inline
+              comments) started with '!' are now explicitly recognised as
+              such. Invalid input now evokes an error message and
+              rejection of the offending line, instead of being quietly
+              ignored.
+
+05/09/94 vlbutil.h plbeam.c ellips.c ellips.h modplot.c mapplot.c mapwin.c
+         help/mapplot.hlp
+
+      Reason: Model components can be displayed symbolically in maplot.
+              Up until now deltas were represented by + symbols and all
+              other types by a small circular symbol. Greg suggested that
+              the other components could be displayed by the outline of
+              their elliptical aspects. I already had code to draw the
+              elliptical clean beam, so I decided to generalize this to
+              a set of generic ellipse manipulation functions.
+
+     Details: Replaced ellips.c with a new more complete module, and added
+              a new header file for it called ellips.h.
+              Removed the BeamAspect descriptor and beam_aspect function
+              from plbeam.c and vlbutil.h, and modified plbeam.c to use the
+              new ellipse functions. Changed peakwin in mapwin.c to use
+              the new ellipse functions rather than beam_aspect().
+              Modified modplot.c to plot ellipses for elliptical components. 
+              Modified maplot.c to use the modified version of plbeam().
+
+05/07/94 besj.c
+
+     Details: c_besj0 and c_besj1 both had a > where a < was required.
+              This means that both uniform-disk and ring type model
+              component have never been calculated properly. I doubt
+              that anybody has ever used these types since difmap can't
+              restore them, and the fact that they were wrong would have
+              been obvious to anybody who tried them. My new c_besj2
+              function also had a major bug in it, but this is only
+              used in the modelfit code which has not officially been
+              installed yet.
+
+05/04/94 maplot.c wmapbeam.c
+
+     Details: In calculating the map center RA and DEC I had entered
+              the contributions from the east and northward shifts
+              with the wrong sign. Now corrected.
+
+05/04/94 maplot.c stnstr.c
+
+     Details: The array description displayed in the title of maplot
+              was written for VLBI in which each telescope is represented
+              by a one or two letter abbreviation. With arrays such as
+              the VLA maplot thus displayed 27 Ys, one for each telescope.
+              Maplot calls stnstr() to get this description. I changed
+              stnstr to first compose the description (per sub-array)
+              using the abbreviation letters, and then to replace these
+              with a recognised array name if all the stations were the
+              same. Also changed the title to say "Array:" instead of
+              "Stations ".
+
+05/04/94 vlbhead.c
+
+     Details: Under the poor assumption that the observation epoch was
+              a Besselian epoch, I had prefixed the letter 'B' to the
+              epoch year. I have removed this.
+
+05/04/94 maplot.c hms.c
+
+     Details: Steve Myers asked me to add the (possibly shifted) RA and
+              DEC of the center of the map anotated in maplot. I have done
+              this. While doing it I changed the sraddms() and sradhms()
+              padding character, used to make the integral part of the
+              seconds text up to 2 characters, to 0 instead of space.
+
+05/03/94 uvradplt.c difmap.c
+
+     Details: I have added two arguments to the radplt command to
+              allow the specification of a fixed amplitude display
+              range.
+
+05/02/94 wmapbeam.c
+
+     Details: I had assumed that BUNIT in the input UV FITS file
+              would be changed during AIPS calibration to sensible
+              units. I thus used the value of the BUNIT keyword
+              in constructing the map FITS file BUNIT keyword. This
+              turned out to be a bad assumption, and since AIPS MX
+              and UVMAP both ignore BUNIT and simply hard-wire
+              JY/BEAM in their output files, I have modified difmap
+              to do the same.
+
+05/02/94 wmapbeam.c
+
+     Details: The map center was described in terms of the apparent
+              RA, with no allowance for the effects of the shift
+              command. It now writes out the map reference coordinates
+              as the mean epoch RA,DEC and represents any shift in
+              via the reference pixel.
+
+04/26/94 mapres.c
+
+     Details: When restoring guassians the convolved gaussians all
+              appeared to have major axis position angles of 0.0
+              degrees. This turned out to be due to an optimistic
+              sanity check that said that if either of the arguments
+              to antan2 were < 1.0e-10 then subsitute angle=0.0 for
+              the atan2. I have changed this to only subsitute 0.0 if
+              either of the arguments is exactly 0.0.
+
+04/26/94 model.h model.c difmap.c mapclean.c
+
+     Details: For model fitting a non-interactive method of specifying
+              a model containing free parameters is needed. I have
+              changed the model reader and writer to understand that
+              parameters that are post-fixed with a 'v' or 'V' in a
+              model file, are variable parameters. To record this info
+              with each component I introduced an enumerated bitmap
+              to specify which, if any, parameters of a component are
+              variable.
+
+04/23/94 startmod command in difmap.c, help/startmod.hlp help/selfcal.hlp
+
+     Details: Steve Myers wanted to be able to supply a solution interval
+              to startmod. Startmod is implemented in terms of selfcal
+              so this was straight forward. Documented the new facility
+              in startmod.hlp. Also noticed that selfcal.hlp incorrectly
+              said that the solution interval only applied to amplitude
+              corrections - now fixed.
+
+04/21/94 uvaver.c
+
+         Bug: Uvaver was calling select before preserving the established
+              model. The select was then deleting the established model.
+              Uvaver now preserves the model before the select call.
+
+04/20/94 uvf_read.c
+
+     Details: uvf_read.c would say that it was binning into 0 second
+              integrations if no binning was requested. This would be
+              bound to confuse people. It now only reports the bin
+              size if non-zero.
+
+04/20/94 uvradplt.c uvplot.c
+
+     Details: Nick asked for the option of using larger graph markers.
+              Both uvplot and radplot now provide the '.' key to toggle
+              between the smallest possible marker and the next biggest.
+              The former is still the default.
+
+04/14/94 uvf_read.c intlist.h intlist.c visaver.h visaver.c
+
+     Details: Completed uvf_read implementation of binning
+              visibilities into integrations via vector averaging.
+              uvf_read now collects groups into a dynamic list of
+              integration bins for each sub-array. These groups are
+              then vector averaged into their output integrations.
+
+04/13/94 difmap_src/{obs.h uvf_write.c corplt.c maplot.c timplt.c uvaver.c
+         uvf_read.c uvplot.c uvradplt.c visaver.c vplot.c vlbhead.c}
+
+     Details: Decided to collect all observation reference-date related
+              info into a structure called Obdate. The instance of this
+              in the Observation structure is called ob->date. Thus what
+              used to be ob->ut is now ob->date.ut.
+
+04/12/94 difmap_src/{uvaver.c,visaver.c,visaver.h}
+
+     Details: In preparation for changing uvf_read to bin data via
+              vector averaging, I decoupled the averaging code from
+              uvaver.c into a visaver object based set of method
+              functions. Also made use of the new definition of ob->ut
+              (see above) for the origin of the time grid.
+
+04/12/94 difmap_src/uvf_read.c
+
+     Details: Decided to change the reference UT to the start of the
+              first day of the observation, rather than the exact time
+              of the first integration. This can then be used as a
+              reference time for solution bin time grids.
+
+04/12/94 fits_src/fits.c
+
+     Details: Channels above channel 33 of a spectral-line file
+              appeared to be corrupt.
+
+         Bug: Both get_data and put_data were using the size of the
+              FITS data-type to increment the callers array pointer,
+              instead of the size of an element of the caller's array.
+              The problem came into play when the data being
+              read/written consituted more than 200 elements (the size
+              of the type-conversion buffer). In this case the
+              caller's array was (double) and the FITS type was
+              (float) so the array was incremented by half as much as
+              it should have been (100 elements). 33 * (re,im,wt) == 99.
+
+       Fixed: Added bsize variable to both effected functions,
+              assigned with the user array element size and used this
+              instead.
+
+04/06/94 uvaver.c
+
+     Details: New command to the UVF version of difmap, used to perform
+              a weighted vector average of all data into time bins of
+              given dimensions. It also optionally deduces new weights
+              from the data scatter. This involves averaging the data
+              into a new uvdata.scr file, and re-sizing the ob
+              structure. Since U,V,W are shared between all
+              visibilities on a given baseline within a given
+              integration, the weighted mean U,V,W is deduced from
+              weighting the mean by all visibilities using them.
+              Time-stamps are not averaged since this would require
+              two passes through the data to determine time-stamps and
+              sort them before averaging visibilities.
+
+04/06/94 obs.c
+
+     Details: uvaver implementation requires Obs_alloc to allow
+              re-allocation.
+
+     Changes: Changed to make it only complain about re-allocation if
+              the dimensions of ob->dp do not match the new
+              dimensions. Also modified it to delete ob->uvp and
+              ob->ifp if their dimensions do not match the new
+              dimensions. Following this it now creates ob->uvp and/or
+              ob->ifp, if NULL, with the new dimensions.
+
+04/06/94 uvf_read.c wtscal.c
+
+     Details: Discovered that it was legal to have AIPS WTSCAL < 0.
+              Difmap substituted 1 if wtscal<=0, so good data with
+              wtscal < 0 looked flagged and bad data looked good.
+              To avoid many complications I have modified uvf_read.c
+              to scale the data weights by the sign of wtscal on read
+              in. The absolute magnitude of wtscal is defered for
+              application by iniIF() as before. The sanity check for
+              wtscal==0 is still performed and 1 substituted if true.
+
+          NB: This problem turned up in relation to OVRO data in which
+              weights are written with the opposite sign convention
+              to AIPS, and then fixed up by making wtscal -ve.
+              Nick's version of difmap needs to have this patch applied.
+
+03/31/94 obs.h intrec.c uvf_read.c
+
+     Details: Added intrec record number member to the Integration
+              class. uvf_read now initializes this member for each
+              integration and ini_Intrec sorts by it instead of by
+              time-stamp. 
+
+         Bug: Noticed that the existing implementation of ini_Intrec
+              was not updating its record of the time-stamps for the
+              sub-array nodes when an integration was transferred to
+              ob->intrec. The effect (never observed by me, due to
+              lack of appropriate test data) would be that ini_Intrec
+              would fail if any sub-array overlapped any other
+              sub-array in time. This would have produced no error
+              messages but would have crashed difmap with a
+              segmentation fault.
+
+          NB: Nick's version of difmap needs to have this patch applied.
+

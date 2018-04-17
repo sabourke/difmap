@@ -1,0 +1,3 @@
+x-array, y-array, <don't_plot_points>
+Flag data points with the cursor - return an array of flags
+

@@ -1,0 +1,7 @@
+line_width
+Change the line width of subsequent PGPLOT graphics.
+
+PARAMETERS
+----------
+
+line_width  -   The line width in multiples of the default width.

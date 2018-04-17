@@ -1,0 +1,2 @@
+file_number, format_string, <variable-names....>
+Perform formatted reads from file or terminal

@@ -1,0 +1,87 @@
+observable
+Compute the statistics of a given observable.
+
+EXAMPLES
+--------
+
+ When used as a command, the 'vis_stats' command prints the statistics
+ of the specified observable to the terminal and the log file.
+
+  0>vis_stats amplitude
+   N=261 Mean=3.56569 +/- 0.177582 Scatter=2.86893 Min=0.0365752 Max=17.9686
+
+ When used as a function, vis_stats() returns an array containing the
+ statistics of the specified observable.
+
+  0>print vis_stats(amplitude)
+  261 3.56569 0.177582 2.86893 0.0365752 17.9686 
+
+ If you just want one of the statistics, you can index the returned array
+ directly as follows.
+
+  0>print vis_stats(amplitude)(2)
+  3.56569
+
+ Otherwise if you want all of the values, rather than repeating the
+ above for each statistic, it is more efficient to assign the results
+ to a local array, and index the array.
+
+  0>float stats(6)
+  0>stats = vis_stats(amplitude)
+  0>fprint 0, "Amplitude range = %g -> %g\n", stats(5), stats(6)
+  Amplitude range = 0.0365752 -> 17.9686
+
+PARAMETERS
+----------
+observable  -  The name of the observable who's statistics are wanted.
+               The recognized names are the following:
+
+                amplitude  -  The amplitude of each visibility.
+                phase      -  The phase of each visibility.
+                real       -  The real part of each visibility.
+                imaginary  -  The imaginary part of each visibility.
+                umag       -  The magnitude of the U coordinate of each
+                              visibility.
+                vmag       -  The magnitude of the V coordinate of each
+                              visibility.
+                uvrad      -  The radial distance of each visibility
+                              from the center of the UV plane.
+
+CONTEXT
+-------
+The 'vis_stats' procedure can be used either as a command or as a
+function. As a command it prints the statistics of the specified
+observable to the screen. As a function it returns an array containing
+the statistics. In each case the statistics are computed using just
+the visibilities that are within the current uvrange (see
+uvrange.hlp).
+
+When used as a function, 'vis_stats' returns a one dimensional array
+of floating point numbers. The elements of this array record the following
+statistics, in the following order:
+
+ nvis     -  The number of visibilities used to compute the statistics.
+ mean     -  The mean value of the observable.
+ sigma    -  The standard deviation of the mean.
+ scatter  -  The root-mean-square scatter of the observable about the mean.
+ min      -  The minimum value of the observable.
+ max      -  The maximum value of the observable.
+
+Note that strictly speaking the 'sigma' and 'scatter' values aren't
+very meaningful when looking at amplitudes or phases, since neither
+amplitude nor phase comes from a Gaussian distribution. They are
+however meaningful for the real and imaginary parts.
+
+Also note that when asking for the statistics of visibility phases,
+the returned values are expressed in degrees.
+
+The visibility plane is conjugate symmetric. This means that a
+visibility with value a+ib at U,V is equivalent to a visibilty of a-ib
+at -U,V. Thus when computing the statistics of phases and imaginary
+parts, there is an ambiguity. In 'vis_stats' the ambiguity is resolved
+by placing all visibilities in the positive U part of the plane.
+
+RELATED COMMANDS
+----------------
+radplot  -   Display visibility amplitude, phase, error vs. UV radius.
+uvrange  -   Limit the UV range used by vis_stats and other commands.

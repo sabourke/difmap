@@ -1,0 +1,49 @@
+ra, dec
+Move the phase-center, CLEAN window and model positions to a given RA,Dec.
+EXAMPLES
+--------
+
+1. The following example results in the apparent phase center
+   of the observation, and the corresponding positions of the
+   models and windows, being shifted to a Right Ascension of
+   12 hours, 58 minutes and 14 seconds, and a Declination of
+   -6 degrees, 12 arc-minutes and 32 arc-seconds.
+
+   0>shiftto 12:58:14, -6:12:32
+   Shifting UV data, models and windows by: -30.5279 (arcmin) East
+   Shifting UV data, models and windows by: 25.1883 (arcmin) North
+   Total accumulated eastward shift  = -30.5279 (arcmin).
+   Total accumulated northward shift = 25.1883 (arcmin).
+   0>
+
+PARAMETERS
+----------
+ra    - The target Right Ascension expressed in hours, minutes and
+        seconds of time.
+dec   - The target Declination expressed in degrees, minutes and seconds
+        of arc.
+
+CONTEXT
+-------
+This command is useful when creating maps that are to be mosaiced in
+another package (eg. AIPS). In such cases it is usually necessary to
+produce a grid of maps which all have the same center coordinate. This
+command can thus be used to shift each map individually to the desired
+mosaic center.
+
+The Right Ascension and Declination should be specified for the same
+epoch as the data were recorded for. This can be seen by running the
+'header' command and looking at the number in parentheses which
+follows the RA listed under "Source parameters:".
+
+SIDE EFFECTS
+------------
+The modifications to the UV data invalidate the current residual map.
+This will be re-calculated on the next 'invert'. Thus shifting the
+data incurs the overhead of an extra 'invert'.
+
+ASSOCIATED COMMANDS
+-------------------
+shift   - This allows a relative shift to be specified.
+unshift - Undo accumulated position shifts from the data, windows and models.
+

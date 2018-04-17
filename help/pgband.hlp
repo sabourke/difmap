@@ -1,0 +1,91 @@
+mode, posn, xref, yref, x, y, ch
+Display the cursor and read a user-selected position.
+
+EXAMPLES
+--------
+
+ 1. Using pgband as a command:
+
+    0>float x,y
+    0>string ch
+    0>pgband 2, 0, 0.5, 0.5, x, y, ch
+    0>print x,y,ch
+    0.245595 0.793777 A 
+    0>
+    0>dev /null
+    0>pgband 2, 0, 0.5, 0.5, x, y, ch
+    %PGPLOT, output device has no cursor: NULL
+    cpgband: PGPLOT cpgband() returned an error.
+    Error occured in command: pgband
+    0>
+   
+ 2. Using pgband as a function:
+
+    0>float x,y
+    0>string ch
+    0>if(pgband(2, 0, 0.5, 0.5, x, y, ch) != 1)
+    1>  print "The current PGPLOT device has no cursor."
+    1>else
+    1>  print x,y,ch
+    1>end if
+    0.242566 0.678689 A 
+    0>
+    0>dev /null
+    0>if(pgband(2, 0, 0.5, 0.5, x, y, ch) != 1)
+    1>  print "Substitting default values."
+    1>  x = 0.5; y=0.5; ch="A"
+    1>end if
+    %PGPLOT, output device has no cursor: NULL
+    Substitting default values. 
+    0>print x,y,ch
+    0.5 0.5 A
+    0>
+    
+PARAMETERS
+----------
+
+mode      -   The type of cursor to display. Note that currently
+              only the X window devices (eg. /xs,/xw, /xm etc..)
+              implement rubber-band cursors. On other devices all
+              modes will behave like mode 0.
+
+               0 - The cursor is displayed un-augmented.
+               1 - A straight line will join xref,yref and the cursor.
+               2 - A retangular outline will join xref,yref and the
+                   cursor.
+               3 - Two horizontal lines will span the width of the
+                   display. One will have a Y coordinate of yref
+                   while the other will track the Y coordinate of
+                   the cursor.
+               4 - Two vertical lines will span the width of the
+                   display. One will have a X coordinate of xref
+                   while the other will track the X coordinate of
+                   the cursor.
+               5 - A horizontal line drawn through the cursor
+                   across the width of the display.
+               6 - A vertical line drawn through the cursor
+                   spanning the height of the display.
+               7 - A cross-hair centered on the cursor.
+
+posn      -   On devices that can position the cursor, setting this
+              to 1 causes the cursor to be initially displayed at
+              the input values of x,y.
+
+xref,yref -   For those modes that require a reference position,
+              xref and yref specify the X and Y coordinates of
+              that position. These arguments are ignored for modes
+              0, 5, 6 and 7.
+
+x,y       -   The input and returned cursor position. If posn=1
+              then the input values will specify where to first
+              display the cursor. Otherwise the input values are
+              ignored.
+
+ch        -   On output this will contain the character of the key
+              that the user typed, as a one-character string.
+
+RETURN VALUE
+------------
+When used as a function, pgband will return 1 if the call succeded or
+0 if it failed. When used as a command, pgband will abort script
+execution if pgband() would have returned 0.

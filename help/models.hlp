@@ -1,0 +1,219 @@
+
+An overview of how models are used in difmap.
+
+DIFMAP MODELS
+-------------
+The term 'model' refers to a mixed list of delta, gaussian and other
+simple components, which when superposed in the image plane, form a
+facsimile of the source being mapped. In Difmap this model is split
+into three parts, an established model, a tentative model and a
+continuum model.
+
+1. The established model.
+
+   The established model is an incrementally built up model of
+   the source. Not only is it represented by a component list, but its
+   representation in the UV plane is also calculated at the UV
+   coordinate of each observed visibility in the selected processing
+   stream, to form model visibilities.
+
+2. The tentative model.
+
+   The tentative model is a separate component list that represents
+   the latest attempt at modelling the difference between the observed
+   visibilities and the established model visibilities. Since it is
+   expensive to calculate model visibilities, the tentative model is
+   maintained only as a component list. This list is separate from the
+   established model, and it can be discarded at any time via the
+   'clrmod' command without affecting the established model.
+   Alternatively, when the tentative model is deemed acceptable, it
+   can be installed as part of the established model, via the 'keep'
+   command, which transfers the tentative model to the end of the
+   established model. Note that the 'keep' command is automatically
+   called whenever a command is invoked that requires model
+   visibilities, but it can also be called explicitly by the user to
+   force an earlier transfer.
+
+   The tentative model has its origin in a number of commands:
+
+   The 'clean' command incrementally builds up the tentative model, by
+   clean deconvolution of the latest residual map (formed by inverting
+   the difference between the observed and established model
+   visibilities).
+
+   The 'modelfit' command also uses the tentative model, placing all
+   the variable model components there (after establishing any
+   non-variable components of any existing tentative model.).
+
+   When the 'rmodel' command reads a model from an external file, it
+   places it directly in the tentative model.
+
+   When the 'select' or 'uvaver' commands are called, the UV
+   representation of the established model is no longer valid, so the
+   established model is temporarily demoted by pre-pending it to the
+   tentative model, so that it will be re-established when the 'keep'
+   command is next invoked.
+
+3. The continuum model.
+
+   Spectral-line observations are often corrupted by unwanted
+   continuum radiation. The function of the continuum model is to
+   model this continuum emission such that it can dynamically be
+   subtracted from the observed visibilities and then not included in
+   clean maps of spectral-line channels. It is created via the
+   'setcont' command. In practice, it can be viewed as being part of
+   the established model, in that the model visibilities used to form
+   (observed-model) visibility residuals are actually formed from the
+   superposition of the established and continuum models. The main
+   difference is that the 'restore' command ignores the continuum
+   model when it forms clean maps. A second difference is that since
+   the continuum model is recorded as a separate model component list,
+   the established and/or tentative models for a given spectral-line
+   channel can be discarded without touching the continuum model.
+
+
+EXAMPLES OF HOW MODELS INTERACT WITH DIFMAP COMMANDS.
+----------------------------------------------------
+The following example shows a typical sequence of commands and how
+they affect the three difmap models.
+
+First we read in a new observation with the 'observe' command. This
+clears any existing established, tentative and continuum models.
+
+  observe file.uvf
+
+After setting the map-size and other weighting options, we display the
+dirty map by typing:
+
+  mapplot
+
+This invokes the 'invert' command to Fourier-invert the observed data
+and create a dirty map of the source, which is then displayed, allowing us
+to set up clean windows etc.. At this point there is no model, so all
+model visibilities have amplitudes and phases of 0, and the map of the
+residual between the observed and model visibilities is identical to a
+direct map of the observed data.
+
+Next we decide to clean the map and so type:
+
+  clean
+
+This partially cleans the area inside any windows that we set in
+mapplot, or cleans the whole dirty map if no windows were set. The
+delta-function model components that this generates are appended to
+the currently empty tentative-model component list.
+
+Again we display the modified residual map by typing:
+
+  mapplot
+
+but this time we are presented with a map formed from the difference
+between the new tentative model and the observed data. In this case,
+since 'clean' itself subtracted these components from the dirty map,
+there is no need to re-invert the data, so the residual map is
+displayed directly.
+
+Next, having looked at the residual map, we decide that there are some
+clear problems with the data, and decide to look at the observed
+visibilities by typing:
+
+  vplot
+
+But the 'vplot' command also allows one to display model visibilities
+alongside the observed visibilities. Thus the 'vplot' command needs
+the UV representation of the current tentative model. To get this, it
+automatically calls the 'keep' command, which removes the components
+of the tentative model, and appends them to the currently empty
+established model list - at the same time it also calculates their UV
+representation as model visibilities.
+
+Having finished with the 'vplot' command, probably having editted bad
+sections of the data, we decide to again look at the residual map by
+typing:
+
+  mapplot
+
+but since the model visibilities have been changed by adding in the
+tentative model, the old residual map is no longer in step with the
+data, so first the mapplot command calls the 'invert' command to form
+a new residual map by inverting the residual between the observed and
+the new established model visibilities. It then displays the new
+residual map, so that we can set windows etc..
+
+Next we decide to clean the map further by typing:
+
+  clean 1000
+
+This again adds to the newly emptied tentative model, by performing up
+to 1000 iterations of clean. Each iteration creates a new
+delta-function model component, which is entered into the tentative
+model. This may not however lead to there being 1000 components listed
+in the tentative model, because any delta-components that share the
+same position are combined into a single component.
+
+To see the effect of the latest clean we type:
+
+  mapplot
+
+Since the clean command didn't change either the established model
+visibilities or the observed visibilities, mapplot directly displays
+the residual map as the 'clean' command left it. The 'invert' command
+is not invoked.
+
+At this point from looking at the map we decide that 1000 iterations
+of clean was far too many, and decide to discard the tentative model
+that clean generated, by typing:
+
+  clrmod
+
+This doesn't touch the established model, but again, the residual map
+that clean produced is no longer in step with the data, so the next
+command that requires the residual map will automatically re-invert the
+data, as before. Thus when we decide to repeat the clean with fewer
+iterations, the 'clean' command re-inverts the data for us first.
+
+  clean 100
+
+At this point we look at the residual map again with the mapplot
+command and notice that our choice of clean windows has allowed
+'clean' to place components where they don't make sense. So in mapplot
+we tighten the windows to only include the areas where we want
+components and then type:
+
+  winmod
+
+This command deletes all model components that lie outside the current
+set of clean windows. Again this invalidates the current residual map,
+which will automatically be re-inverted when the next command that
+requires the residual map is required. In the process, the current
+tentative model will be appended to the end of the current established
+model and its representation in the UV plane added to the exiting
+established model visibilities.
+
+There are many other commands that involve the three models, but the
+above example demonstrates the main idea, that in general the user
+does not have to worry about what is in which model, since each Difmap
+command knows what it needs and how to get it, without being told.
+
+Other important commands that directly effect the models include:
+
+The 'rmodel' command, used to read in previously generated models from
+external disk files. This deletes all existing models before reading
+in the new one.
+
+The 'wmodel' command, used to save models in external disk files.
+
+The 'modelfit' command, used to fit the free parameters of a model to
+the observed visibilities.
+
+The 'edmodel' command, used to display the current model in your
+choice of external editor, so that you can edit it directly by hand.
+This is mainly used when model-fitting to change the set of free
+parameters.
+
+The 'maplot' command, used as above, but it can also be used to
+display model components, delete individual model components, and
+create new model components using the cursor.
+
+The 'setcont' command, used to specify that the current combined model
+should be moved into the continuum model.

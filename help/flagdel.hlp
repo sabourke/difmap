@@ -1,0 +1,2 @@
+flag-array, axis, data-array, <axis, data-array,.....>
+Given a flag array, delete elements from given axes of array(s)

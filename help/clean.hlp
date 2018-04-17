@@ -1,0 +1,121 @@
+niter, gain, cutoff
+Clean a residual dirty map with the dirty beam.
+EXAMPLE - (there is a more general example later in this help topic)
+-------
+
+0>clean 100,0.05,0.0
+Inverting map and beam 
+Estimated beam: bmin=1.8350 mas, bmaj=6.1080 mas, bpa=27.4 degrees
+Clean: niter=100  gain=0.05  cutoff=0
+Component: 050  -  total flux cleaned = 3.218951 Jy
+Component: 100  -  total flux cleaned = 4.508268 Jy
+Total flux subtracted in 100 components = 4.508268 Jy
+Clean residual min=-0.184183 max=0.394841 Jy/beam
+Clean residual mean=0.024779 rms=0.092559 Jy/beam
+0>
+
+All but the first line are responses from 'invert' and 'clean'.
+
+PARAMETERS
+----------
+niter  -  The Maximum number of CLEAN iterations to be attempted.
+          If this is -ve then CLEANing will stop on the component
+          before the first negative component.
+
+gain   -  The CLEAN loop gain (normally 0 -> 1). This sets the fraction
+          of the peak (absolute) residual that is subtracted on each
+          CLEAN iteration. The choice of a gain is a trade-off between
+          the ideal (as small as possible) and the speed at which the
+          map is reduced to the noise. It is common to start with a few
+          iterations at high clean gain - say 0.1 - to clean away any
+          bright point-like features such as a Galaxy core, and then
+          to reduce it to clean the lower surface brightness extended
+          structures. 
+
+cutoff -  Cleaning will stop if the maximum absolute residual falls
+          to this value or lower (Jy). This may be used to prevent
+          CLEAN from cleaning below the flux level at which (due to
+          artifacts or noise) structures in the residuals can be
+          believed.
+
+'clean' remembers the parameters that were given to it the previous time
+it was invoked. Any omitted arguments will retain these values.
+
+WINDOWS
+-------
+In addition to the above explicit command line parameters, CLEAN can
+be supplied with a list of rectangular windows, such that CLEAN
+components are only taken from within these windows. If no windows are
+supplied then CLEAN will use the whole map. Clean windows can be set
+directly via the 'mapwin' command or set with the cursor in the
+'mapplot' command. The latter is the easiest to use.
+
+The registration between map pixels and clean window edges is such
+that all pixels who's centers lie inside the windows are used. Where
+the window is so thin as to not enclose any pixel centers, the pixels
+with the nearest centers are used. Windows may be set interactively
+with the cursor (see help on the 'mapplot' command).
+
+CONTEXT
+-------
+Clean takes the residual dirty map from the previous clean and
+iteratively subtracts the dirty beam pattern convolved with the
+loop-gain times the brightest residual pixel. The end result is a
+new residual dirty map and a set of delta-function model components
+representing the flux subtracted from the selected pixels.
+
+Errors in the gains and phases at individual telescopes set the level
+down to which it is safe to CLEAN. To enable further CLEANing it is
+necessary to follow CLEAN by self-calibration, which compares the
+observed visibilities to the CLEAN model to determines self-consistent
+solutions to the telescope based gain and phase errors. Having done
+this it should be possible to CLEAN to a lower residual flux than
+before. 
+
+A typical mapping sequence is:
+
+0> observe myfile.uvf  (Read the FITS UV-data file)
+0> vplot               (edit the visibilities to remove bad points)
+0> mapsize 256,0.5     (set the map grid and cell-size)
+0> mapplot             (Display the dirty map and set CLEAN windows)
+0> clean -100,0.1,0.2  (Clean up to 100 components at a gain of 0.2,
+                        stopping before the first negative component or
+                        when the peak residual is less than 0.1 Jy)
+0> selfcal             (Apply phase-only self-cal)
+0> mapplot             (Display corrected residuals and change the
+                        clean windows if necessary)
+0> clean 100,0.05,0.05 (Use a lower clean gain and allow negatives,
+                        while cleaning down to a lower residual flux)
+0> selfcal true,true,900  (Amplitude+phase self-cal)
+0> vplot               (Edit discrepant points - compare with model)
+0> mapplot
+0> clean
+
+etc.. until the residual flux won't further decrease or the self-cal
+fit starts to diverge.
+
+0> mapplot cln         (Look at the clean map)
+0> save mynewfile      (Save the UV data, the map, the model, the
+                        clean windows and the difmap parameters)
+0> exit                (Finished)
+
+SIDE EFFECTS
+------------
+If the beam and/or residual map need to be re-calculated following
+data editing, re-weighting etc.. then 'clean' will call 'invert'.
+
+LIMITATIONS
+-----------
+Clean only cleans the inner half of the actual map array that is
+allocated. (mapplot only displays this area when plotting the map).
+Thus 'mapsize 256,0.5' will result in a map area 128x128 pixels wide.
+
+RELATED COMMANDS
+----------------
+selfcal - Uses the clean model in self-calibration.
+gscal   - Uses the clean model and self-calibration to find overall gain
+          corrections for each telescope.
+invert  - Converts residual UV data to the residual dirty map.
+restore - Generate the clean map.
+vplot   - Interactive display and editing of visibilities.
+mapplot - Display residual or clean map, or dirty beam.

@@ -1,0 +1,135 @@
+
+Add the current model to the continuum model.
+EXAMPLE
+-------
+
+0>setcont
+Added 20 components to the continuum model.
+0>
+
+CONTEXT
+-------
+In observations of spectral-line sources, background continuum is
+often present. If the spectral-line features of the source are of
+primary interest then the constant contribution from the continuum
+part of the source should be removed before mapping individual
+spectral-line channels.
+
+The usual way that this is done is to map channels that do not contain
+any spectral line features. This results in a clean-component model of
+the continuum. This model is then subtracted from the channels that do
+have spectral-line emission, leaving only the spectral-line features
+to be mapped.
+
+While, in theory the subtraction of the continuum model could be done
+either in the map plane, or in the UV plane, in general it is more
+accurate to do it in the UV plane, and this is what difmap allows you
+to do.
+
+Difmap differs from other packages in the way that it does this, in
+that it employs residual mapping techniques to make continuum
+subtraction more flexible. In difmap the continuum model is never
+subtracted directly from the observed visibilities. Instead difmap
+maintains the continuum model as a part of the established model,
+(which is subtracted on-the-fly during gridding). When the residual
+map is restored to display the clean map, the continuum portion of the
+established model is not added into the map along with the rest of the
+model, thus leaving just the spectral-line portion of the map.
+
+The advantages of this approach are:
+
+1. The continuum model can be adjusted or deleted at any time without
+   affecting the observed UV data.
+
+2. Since the model visibilities and the observed visibilities are kept
+   apart, it is still possible to use self-calibration after a
+   continuum model has been installed.
+
+3. It may be quicker given that the subtraction is only performed on
+   channels that are actually mapped.
+
+The disadvatages are:
+
+1. It is not possible to take continuum-subtracted visibilities into
+   another package, since the model is saved as a model file separate
+   from the UV FITS file.
+
+Another feature that may be seen as an advatage by some, and a
+disadvantage by others, is that radplot and other visibility plotting
+commands, display un-subtracted visibilities.
+
+USAGE
+-----
+The 'setcont' command adds the current tentative and established
+models to any existing continuum model.
+
+For example, say one had a source with spectral-line emission only in
+channels 21-29 of a 40 channel observation:
+
+1. To determine a continuum model one would use the select command to
+   select channels 1..20 and channels 30..40, since these channels
+   only contain continuum. 
+
+2. Make the best possible map from these channels, using clean or
+   modelfit, combined with selfcal if the continuum is strong enough.
+   All the selfcal corrections are applied across all channels, so in
+   correcting the continuum channels you also correct the
+   spectral-line channels.
+
+3. Use the setcont command to add the model made in (2) to the
+   continuum model.
+
+4. To check the continuum subtraction, select a single one of the
+   continuum only channels, and display the residual map with mapplot.
+   If this reveals any structure then the continuum model is not
+   correct, and further cleaning etc.. should be applied. Go back to
+   step 1, and perhaps try selecting a better set of continuum
+   channels. If you do any further cleaning, then use the setcont
+   command to update the continuum model with the new components.
+
+5. If the continuum was too weak for self-calibration to be feasible,
+   but one or more of the spectral-line features is strong enough,
+   select the strong channel, make a map of it and perform self-cal as
+   necessary. If significant corrections were made then, go back to
+   step 1, to improve on the continuum model.
+
+6. Map each channel containing spectral-line features. Use the
+
+    mapl cln
+
+   command to see the clean map, uncontaminated by the continuum.
+
+OTHER COMMANDS THAT AFFECT THE CONTINUUM MODEL
+----------------------------------------------
+
+wmodel:
+
+ With the addition of the continuum model, difmap now has three models
+ that can be addressed by the user. For instance the clrmod command
+ allows you to specifically select which of these get cleared.
+
+ After using the select command, you are advised to type:
+
+  0>clrmod true
+
+ This clears both the established and tentative models that were built
+ up during the previous channel selection, but preserves the continuum
+ model for the new channel selection.
+
+ If you want to clear the continuum model, the optional 3rd argument
+ of clrmod must be given as 'true'.
+
+wmodel and rmodel:
+
+ The wmodel and rmodel commands default to writing/reading the
+ non-continuum parts of the established and tentative models. The
+ optional second agument is required to ask it to separately handle the
+ continuum part. See help wmodel and help rmodel, for details.
+
+save and get:
+
+ The 'save' command saves continuum models separately from the normal
+ models, in a file with suffix ".cmod". The 'get' command looks for a
+ file with this extension and if found, reads the file, placing the
+ model directly in the continuum model.
+

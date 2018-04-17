@@ -1,0 +1,114 @@
+doflag, n_phase, n_amp
+Control the identification and fate of un-correctable visibilities.
+EXAMPLES
+--------
+
+1. To specify that a minimum of 3 telescopes for phase, and 4 telescopes
+   for amplitude selfcal must exist in a closed loop of a given solution
+   bin, or the solution bin will be flagged, type:
+
+   0>selfflag true,3,4
+   - In phase-only self-cal, good data on baselines that are not in closed
+     arrays of at least 3 telescopes will be flagged.
+   - In amplitude self-cal, good data on baselines that are not in closed
+     arrays of at least 4 telescopes will be flagged.
+   0>
+
+2. To specify the same as two, but instead of flagging the bad solution
+   bins, just don't correct them, type:
+
+   0>selfflag false,3,4
+   - In phase-only self-cal, good data on baselines that are not in closed
+     arrays of at least 3 telescopes will not be used.
+   - In amplitude self-cal, good data on baselines that are not in closed
+     arrays of at least 4 telescopes will not be used.
+   0>
+
+3. To specify that all un-flagged data shoud be used in selfcal, type:
+
+   0>selfflag false,0,0
+   - In phase-only self-cal, all un-flagged data will be used
+   - In amplitude self-cal, all un-flagged data will be used
+   0>    
+
+All but the first line of each example are responses from 'selfflag'.
+
+
+PARAMETERS
+----------
+doflag  - Flag un-correctable visibilities?
+          This controls what happens to visibilities that are found
+          to be uncorrectable in subsequent invocations of selfcal.
+          If this argument is false, the visibilities are left
+          un-corrected. If true they are flagged.
+
+n_phase - The minimum number of telescopes required for a phase
+          solution. In theory the minimum number of connected
+          telescopes required to form a constrained phase self-cal
+          solution is 3. See below for further discussion.
+
+n_amp   - The minimum number of telescopes required for an amplitude
+          solution. In theory the minimum number of connected
+          telescopes required to form a constrained amplitude phase
+          self-cal solution is 4. See below for further discussion.
+
+If no arguments are provided, the current settings are displayed.
+
+Whenever the observe command is used, all the above values are reset,
+to the values that would be set by typing:
+
+  selfflag true ,3 , 4
+
+CONTEXT
+-------
+This command determines the behavior of subsequent invocations of the
+selfcal and gscale self-calibration commands when they encounter
+un-constrained visibilities.
+
+Self-calibration implicitly relies on the existence of closure phases
+for phase solutions, and closure amplitudes for amplitude solutions.
+To form a closure phase requires at least 3 connected telescopes in a
+closed loop, and to form a closure amplitude requires at least four.
+
+Before attempting to ascertain corrections for a given integration,
+the current self-calibration algorithms attempt to determine if there
+are sufficient un-flagged visibilities to constrain solutions for each
+telescope. They do this in the following manner.
+
+First they identify which telescopes lie on closed baseline
+paths. Only visibilities from these telescopes can be used in
+self-calibration. If a prior call to selfflag set dogain to true, then
+the rest of the un-flagged visibilities are flagged at this point,
+since they are totally un-correctable by self-calibration and will
+come to dominate the goodness of fit and prevent the fit from
+converging.
+
+The number of correctable telescopes is then counted and compared
+against n_phase if performing phase-only selfcal, or against n_amp if
+amplitudes are being corrected. If there are insufficient telescopes
+to attempt a solution and 'doflag' is set to true, then the correction
+is flagged, and when the corrections are applied to the data, such
+correction flags are propagated to all affected the visibilities.
+These flags can be globally removed with the 'uncalib' command, or
+individually applied or removed with the 'corplot' command.
+
+Since it is impossible to have fewer than 3 telescopes forming a
+closed array, if the p_mintel (a_mintel for phase selfcal) is set to
+less than or equal to 2 then the above checks will be turned off, no
+flagging will be done and all visibilities will be used in selfcal.
+
+Note that if n_phase and/or n_amp are lowered below their defaults
+(3,4) then because there are too few constraints in integrations that
+benefit from this, the resulting visibilities will fit too well to the
+model. Needless to say, this is not recommended.
+
+RELATED COMMANDS
+----------------
+selfcal   - Self-calibrate data with the current model.
+selftaper - Used to down-weight short baselines during selfcal.
+selflims  - Used to set limits to amp and phase corrections in selfcal.
+selfant   - Set antenna based constraints in selfcal.
+gscale    - Finds overall amplitude corrections for telescopes.
+startmod  - Phase selfcal to a starting model then discard the model.
+corplot   - Display and allow editing of corrections.
+uncalib   - Remove selected parts of corrections.

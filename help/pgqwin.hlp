@@ -1,0 +1,2 @@
+xmin, xmax, ymin, ymax
+Return the world-coordinate boundaries of the current plot.

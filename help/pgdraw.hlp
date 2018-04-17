@@ -1,0 +1,11 @@
+x, y
+Draw a line from the current pen position to x,y.
+
+PARAMETERS
+----------
+
+x,y     -     The coordinate of the end of the line.
+
+RELATED COMMANDS
+----------------
+pgmove  -   Move the PGPLOT pen position to x,y.

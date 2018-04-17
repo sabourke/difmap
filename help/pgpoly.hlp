@@ -1,0 +1,9 @@
+x-array, y-array
+Plot a filled polygon.
+
+PARAMETERS
+----------
+
+x-array    -    The array of X coordinates of the polygonal vertexes.
+
+y-array    -    The array of Y coordinates of the polygonal vertexes.

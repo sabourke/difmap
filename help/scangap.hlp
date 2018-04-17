@@ -1,0 +1,75 @@
+gap, sub_array
+Change the time gap used to delimit neighboring scans.
+EXAMPLES
+--------
+
+1. To assign a 30 minute scan separator to all sub-arrays:
+
+   0>scangap 30*60
+   Delimiting interscan gap changed to 1800 seconds in all sub-arrays.
+   0>
+
+2. To re-instate the default (1 hour) separator:
+
+   0>scangap 0     
+   Delimiting interscan gap changed to 3600 seconds in all sub-arrays.
+   0>
+
+3. To assign a 20 minute scan separator only to sub-array 2:
+
+   0>scangap 20*60, 2
+   Delimiting interscan gap changed to 1200 seconds in sub-array 2.
+   0>
+
+4. To see what the current gaps are set to, omit all arguments:
+
+   0>scangap
+   The delimiting interscan gap is 3600 seconds in sub-array 1.
+   The delimiting interscan gap is 1200 seconds in sub-array 2.
+   0>
+
+PARAMETERS
+----------
+
+gap        -   The new interscan gap to assume. This is the minimum
+               time separation between neighboring integrations at which
+               integrations are taken to occupy different scans.
+               When an observation is first read into difmap, all
+               sub-arrays are assigned a scan delimiter of 3600
+               seconds (1 hour). This default may be re-selected by
+               giving 'gap' as 0, as in the second example above.
+
+sub_array  -   Optional: Default=0
+               If this argument is not provided, or is given as 0,
+               then the new scan delimiter is assigned to all
+               sub-arrays. Otherwise, the number given specifies the
+               sub-array to which the scan separator should be
+               assigned.
+
+CONTEXT
+-------
+All difmap plotting commands that plot anything versus time, offer
+the option of resolving the data into multiple isolated scans. These
+scans are then plotted side by side with the intervening gaps removed.
+The plotting commands also know not to extend model lines between
+scans, even when scan mode is not in effect.
+
+In order to decide what constitutes a scan, difmap simply says that
+any two integrations that are separated by more than a given amount of
+time mark the end of one scan and the start of a new scan. By default
+this time interval is one hour, and is a good choice for most
+observations. Somethines the default is not the correct choice, and
+the 'scangap' command gives you the opportunity to change the default,
+either on a sub-array by sub-array basis, or globally for all
+sub-arrays.
+
+Note that no more than 20 scans per sub-array are allowed. This means
+that if too short an interval is requested, the command will emit an
+error message ignore the requested interval.
+
+RELATED COMMANDS
+----------------
+vplot    -   Display observed and model visibilities from the current IF.
+tplot    -   Display the time-sampling of each telescope of the current IF.
+corplot  -   Display the self-cal corrections of the current IF.
+cpplot   -   Display observed and model closure phases interactively.

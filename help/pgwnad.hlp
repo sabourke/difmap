@@ -1,0 +1,19 @@
+left, right, bottom, top
+Set plot coordinates and adjust the viewport to the same aspect.
+
+PARAMETERS
+----------
+left    -    The world coordinate of the left edge of the current
+             viewport.
+right   -    The world coordinate of the right edge of the current
+             viewport.
+bottom  -    The world coordinate of the bottom edge of the current
+             viewport.
+top     -    The world coordinate of the top edge of the current
+             viewport.
+
+RELATED COMMANDS
+----------------
+pgsvp  -  Set the viewport for a new plot.
+pgbox  -  Draw the world-coordinate axes of a plot.
+pgenv  -  Set the viewport, the world coordinates and draw axes.

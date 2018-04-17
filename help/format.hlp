@@ -1,0 +1,8 @@
+
+tvflag(x-pts,y-pts,do_plot)
+       A non-elemental function returning a 1D logical array.
+       Implements flagging of array elements with the cursor.
+Args:
+       1D float_value,
+       1D float_value,
+     < logical_value >

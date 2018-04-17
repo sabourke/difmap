@@ -1,0 +1,130 @@
+mode, baseline_group1, baseline_group2, ...
+Select baselines to be displayed by specplot.
+
+EXAMPLE
+-------
+
+1. To see what baselines are currently selected, omit all arguments.
+
+   0>specbase
+   Specplot will plot baselines of *
+   0>    
+
+2. To request that all baselines be plotted separately.
+
+   0>specbase split,*
+   Specplot will plot baselines of *
+   0>
+
+3. To request that all baselines be combined to construct a single
+   spectrum:
+
+   0>specbase group,*
+   Specplot will plot baseline groups:
+    *
+   0>
+
+3. Specify multiple groups of baselines to plot, each consisting of
+   all baselines of a different telescope from sub-array 2.
+
+   0>specbase group, 2:br, 2:fd, 2:hn, 2:kp
+   Specplot baseline selections:
+    2:BR
+    2:FD
+    2:HN
+    2:KP
+   0>
+
+4. To request two spectra, one from all baselines of the BONN telescope
+   except those of the OVRO telescope, and a second comprised from all
+   baselines of the OVRO telescope except those of the BONN telescope:
+
+   0>specbase group, bonn ! ovro, ovro !bonn
+   Specplot will plot baseline groups:
+    1:BONN ! 1:OVRO
+    1:OVRO ! 1:BONN
+   0>
+
+5. To display one spectrum for each baseline of antenna AN2 from
+   sub-array 2:
+
+   0>specbase split, 2:an2
+   Specplot will plot baselines of 2:AN2
+   0>
+   
+ARGUMENTS
+---------
+mode                -   This tells specplot how to interpret the
+                        baseline group arguments. It takes two values:
+
+                         split  -  Split the first group into its
+                                   component baselines and plot one
+                                   spectrum per baseline.
+
+                         group  -  Plot one spectrum per group of
+                                   baselines.
+
+baseline-group,...  -   One or more groups of baseline specifications.
+                        Type 'help antenna_names' for legal baseline
+                        specifications, and see below to determine how
+                        to combine them.
+
+To see the current selection, type the specbase command with no
+arguments.
+
+CONTEXT
+-------
+The specplot command plots scalar and vector averaged visibility
+spectra. Visibilities are selected by polarization, time range, UV
+radius range, and baseline selections. The specbase command is
+responsible for supplying baseline selections, either as groups of
+baselines or as single baselines taken from a single group.
+
+Where more than one baseline selection is given, spectra can be
+plotted for each of them separately. The 'specorder' command can be
+used to direct when to change from one baseline selection to the
+next while plotting spectra.
+
+BASELINE GROUPS
+--------------
+Each argument of the 'specbase' command is a group of baseline
+specifications, each specification describing one or more baselines to
+be included or excluded. Each specification is preceded by either '+'
+or '!'. Those preceded by '+' add to the group of baselines to be
+averaged, whereas those preceded by '!' subtract from the group of
+baselines established by earlier specifications. For example a group
+consisting of:
+
+ "ovro + bonn ! ovro-bonn"
+
+means include all baselines of OVRO and all baselines of BONN except
+baseline OVRO-BONN. Note that the order in which specifications are
+listed is important. If the above were re-ordered to:
+
+ "ovro ! ovro-bonn + bonn"
+
+The !ovro-bonn component would have no effect because the +bonn
+component would re-introduce the baseline that was just removed.
+
+The first specification is implicitly preceded by '+' to make it
+additive, however if the first specification is explicitly preceded by
+'!' then this is interpretted as being equivalent to "* !". For
+example:
+
+ "!2"
+
+means included all baselines of all sub-arrays except those of
+sub-array 2.
+
+Other examples are given in the EXAMPLE section at the beginning of
+this help file.
+
+RELATED COMMANDS
+----------------
+specplot   -  Plot time-averaged visibility spectra.
+specopt    -  Preset specplot display options.
+specsmooth -  Preset the spectral resolution displayed by specplot.
+specorder  -  Set the order in which spectra are to be displayed.
+specpol    -  Select the list of polarizations to be displayed by specplot.
+spectime   -  Select the time ranges to be displayed by specplot.
+specuvr    -  Select the UV radius ranges to be displayed by specplot.

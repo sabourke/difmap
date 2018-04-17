@@ -1,0 +1,156 @@
+
+The syntax of the Difmap interface language.
+
+LOOPING CONSTRUCTS
+------------------
+
+ The DO loop
+ -----------
+
+ do VARIABLE = START, END, INCREMENT
+   STATEMENTS
+ end do
+
+ Where VARIABLE must name an integer or float variable. START, END and
+ INCREMENT are scalar arithmetic expressions. If INCREMENT is omitted,
+ 1 is substituted. The loop performs N iterations, where:
+
+  N = MAX(0, INT((START-END+INCREMENT)/INCREMENT))
+
+ At the start of the n'th iteration, where n=0..N-1, VARIABLE is
+ assigned the value:
+
+  VARIABLE = START + n * INCREMENT
+
+ After the final iteration, VARIABLE has the value:
+
+  VARIABLE = END + INCREMENT
+
+ You may use the "break" statement to abort the loop before the final
+ iteration, or use the "continue" statement to start the next
+ iteration before all statements in the loop have been executed.
+
+ DO loop example.
+ ----------------
+
+  0>float angle
+  0>do angle=0,360,45
+  1>  print "sin(", angle, ") =", sin(angle*pi/180)
+  1>end do
+  sin( 0 ) = 0 
+  sin( 45 ) = 0.707107 
+  sin( 90 ) = 1 
+  sin( 135 ) = 0.707107 
+  sin( 180 ) = -8.74228e-08 
+  sin( 225 ) = -0.707107 
+  sin( 270 ) = -1 
+  sin( 315 ) = -0.707107 
+  sin( 360 ) = 1.74846e-07 
+
+  WHILE loops.
+  -----------
+ 
+
+DECLARATIONS.
+------------
+ Variables can be declared at any time. An existing variable can be
+ re-declared as long as the new declaration doesn't change its type.
+ All variables are global. There is no way to declare a local variable.
+
+ Variable declarations take the form:
+
+  Type Variable_Name
+  Type Variable_Name(dim_1, dim_2...)
+
+ Where type is one of:
+
+  integer
+  float
+  string
+
+ and where Variable_Name may be any unique combination of underscore
+ and alphanumeric characters. However, the first character must be
+ alphabetic.
+
+ and where dim_n is the dimension of the variable along axis n. There
+ may be between 0 and 3 dimensions.
+
+ For example:
+
+  integer i
+  float f
+  float grid(4,5)
+
+ The varlist command allows you to see how existing variables are
+ currently declared.
+
+ The dimensions of existing array variables may be changed by
+ re-declaration.
+
+ For example in,
+
+  float image_data(400)
+  float image_data(2)
+
+ The second line changes the image_data() variable from having 400
+ elements to having just 2 elements.
+
+ The dimensions of array variables can also be changed by assignment,
+ as shown below.
+
+ASSIGNMENT
+----------
+ Assigning the value of an expression to a variable is done with the
+ '=' operator.
+
+ For example:
+
+  x = sin(pi/2) + cos(sqrt(2.5))
+
+ If the expression on the right hand side of the assignment is an
+ array expression, then the variable being assigned must have the same
+ number of dimensions as that expression. However the variable on the
+ left hand side of the expression will be re-declared if possible to
+ have the same number of elements on each dimension as the expression
+ that is being assigned to it.
+
+ For example:
+
+  0>float my_array(10)
+  0>print my_array
+  0 0 0 0 0 0 0 0 0 0
+  0>my_array = 1,2,3,4,5
+  0>print my_array
+  1 2 3 4 5
+
+ However, if the variable expression on the left hand side of the
+ assignment cites an explicit sub-range of indexes, the number of
+ elements in the expression on the right hand side must match the
+ number of elements in the sub-range:
+
+ For example:
+
+  0>float my_array(10)
+  0>my_array(3:5) = 1,2
+  Illegal assignment due to differing array bounds.
+  0>my_array(3:5) = 1,2,3
+  print my_array
+  0 0 1 2 3 0 0 0 0 0 
+  0>
+
+DO LOOPS
+--------
+
+DO variable=start,end,increment
+  statements
+END DO
+
+do i=1,10
+  print i
+end do
+
+x=2.3
+while(x < 100)
+  print f
+end while
+

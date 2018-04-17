@@ -1,0 +1,86 @@
+aver_time, doscatter
+Time average a UV data set.
+EXAMPLE
+-------
+
+0>uvaver 240
+Averaging into 240 second bins.
+Selecting channels: 1 -> 1, polarization: RR.
+0>
+
+All but the first line above are informational messages from the
+'uvaver' command.
+
+PARAMETERS
+----------
+aver_time - The duration of the new integrations in seconds.
+
+doscatter - Default: FALSE
+            If doscatter=FALSE then the new visibility weights will be
+            the sum of the old visibility weights. This is
+            statistically correct under the assumption that the input
+            weights equal or are proportional to the reciprocal of the
+            amplitude variance. This assumption is based on the rules
+            described in AIPS documentation for UV FITS files.
+
+            If doscatter=TRUE then the new visibilities will be
+            given weights derived from the data by using the scatter
+            within a solution interval to derive an estimate of the
+            reciprocal amplitude variance. Effective use of this
+            option requires that each output bin encompass many input
+            integrations. In particular, if only one visibility exists
+            in a given bin, uvaver will leave this visibility in place
+            with its original weight, but make it flagged.
+
+CONTEXT
+-------
+
+There are two main things that people commonly use uvaver for. The
+obvious one is to reduce redundantly high time sampling. This speeds
+up subsequent processing. The less obvious use is to re-bin the
+data. This is useful if the data that were read in from a FITS file
+had different time-stamps on different baselines within the same
+logical integration. In this case when difmap reads such a file 
+the end result is that each baseline is assigned its own integration!
+Not only does this waste large amounts of memory and subsequent CPU
+time, but it also means that station-based editing in vplot actually
+does baseline-based editing, and selfcal, when run without a solution
+time will not make any corrections due to the lack data within each
+integration. The solution is to re-bin the data into integrations with
+selfcal.
+
+You should be careful to choose an averaging time, that will not
+smooth over real variations in the UV data. If you choose too large a
+time scale, large scale structures will disappear from your map.
+
+CAUTION: *** If uvaver fails you may loose your data ***
+--------------------------------------------------------
+When difmap reads a UV FITS file, it places the raw visibilities in
+a scratch file. This file is then read whenever the 'select' command
+is invoked, or when edits need to be applied. The uvaver command
+averages data in this file and writes the averaged integrations to a
+new scratch file before deleting the original. If it fails to write
+the new scratch file - perhaps because of insufficient disk space,
+then difmap will discard the current data. Thus you should check that
+you have sufficient disk space for the new file (look at the existing
+file called uvdata.scr to get an idea of the required disk space)
+before running uvaver. If you have done anything significant to the
+data, then it would also be prudent to save the merge file before
+running uvaver.
+
+DETAILS
+-------
+The uvaver command reads raw integration records from its existing
+uvdata scratch file and writes binned averaged integrations to a new
+uvdata file. When all integrations have been averaged, the old uvdata
+scratch file is deleted to be replaced by the new one.
+
+For each new integration read within a given solution bin, uvaver adds
+to a weighted vector running mean of the data versus time and a
+weighted running mean of baseline U,V,W coordinates versus time.
+As each solution bin is completed the averaged integration record is
+written to the output uvdata scratch file. The new U,V,W coordinates
+and time-stamps are recorded in memory as before.
+
+Solution bins are regularly spaced on a grid of width equal to the
+averaging time. Input integrations are binned onto this grid.

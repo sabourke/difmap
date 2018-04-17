@@ -1,0 +1,2 @@
+id
+Return the ID of the current pgplot device.

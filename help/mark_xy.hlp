@@ -1,0 +1,139 @@
+x, y, symbol, color, size, text, just, x_offset, y_offset
+Add an optionally annotated map marker to be drawn at a given X,Y offset.
+EXAMPLES
+--------
+
+1. The following example labels a feature at 10 arcminutes east, and
+   5 arcminutes north of the map center, placing the text
+   3 characters to the right of, and 4 characters above the marked
+   position, and drawing an arrow from this point to the marked
+   position. The arrow and the text are drawn with pgplot color 10,
+   which matches the green color of the mapplot axes.
+
+   0>mapunits arcmin
+   ....
+   0>mark_xy 10.0, 5.0, arrow, 10, 1.0, "Interesting huh?", 0.0, 3, 4
+
+2. The following command just draws a red asterix at 2 arcseconds
+   east and 4 arcseconds north of the map center. No annotation is
+   drawn.
+
+   0>mapunits arcmin
+   ....
+   0>mark_xy 2.0, 4.0, asterix, 2
+
+PARAMETERS
+----------
+x        - The eastward offset of the position to be marked, specified
+           in the units that were last selected with the 'mapunits'
+           command.
+
+y        - The northward offset of the position to be marked, specified
+           in the units that were last selected with the 'mapunits'
+           command.
+
+symbol   - (Default = dot)
+           The symbol to draw. If this is the word
+
+             arrow
+
+           then an arrow is drawn between the annotation text and the
+           specified source. Otherwise it must be one of the following
+           names of symbols to draw at the source position.
+
+             filled_diamond  - An opaque diamond.
+             filled_triangle - An opaque triangle.
+             open_square     - A square outline.
+             dot             - A small dot.
+             plus            - A + symbol.
+             asterisk        - An * symbol.
+             cross           - An x symbol.
+             open_triangle   - Triangular outline.
+             circle_plus     - A plus symbol inside a circle.
+             circle_dot      - A dot inside a circle.
+             knotted_hanky   - The PGPLOT symbol that looks like a
+                                handkerchief with knots in its
+                                corners!
+             open_diamond    - The outline of a diamond shape.
+             open_star       - A line drawing of a star.
+             maltese_cross   - A line drawing of a maltese cross.
+             star_of_david   - A line drawing of a star of david
+             filled_square   - An opaque square drawn.
+             filled_circle   - An opaque circle.
+             filled_star     - An opaque star shape.
+             circle1         - A small circle.
+             circle2         - A slightly larger circle.
+             circle3         - Another slightly larger circle.
+             circle4         - Yet another slightly larger circle.
+
+color    - (Default = 11)
+           The PGPLOT color index with which to draw the marker and
+           its annotation text. The standard pgplot colors are:
+
+             0  - Black
+             1  - White
+             2  - Red
+             3  - Green
+             4  - Blue
+             5  - Cyan
+             6  - Magenta
+             7  - Yellow
+             8  - Orange
+             9  - Green + Yellow
+             10 - Green + Cyan
+             11 - Blue + Cyan
+             12 - Blue + Magenta
+             13 - Red + Magenta
+             14 - Dark Grey
+             15 - Light Grey
+
+size     - (Default = 1.0)
+           The size of characters and plot symbols, relative to the
+           normal character size.
+
+text     - (Default = "")
+           The annotation string.
+
+just     - (Default = 0.0)
+           The justification string, where 0.0 means left justify,
+           0.5 means center, and 1.0 means right justify.
+
+x_offset - (Default = 1.0)
+           The horizontal offset of the justification point of the
+           annotation string relative to the source location. The
+           offset is specified in character widths, with positive
+           values moving the string to the right, and negative to the
+           left.
+
+y_offset - (Default = 0.5)
+           The vertical offset of the center of the annotation string
+           relative to the source location. The offset is specified
+           in character heights, with positive values moving the
+           string towards the top of the plot, and negative values
+           towards the bottom of the plot.
+
+CONTEXT
+-------
+
+This command allows one to label visible features in a map. Note that
+to interactively determine the location of such a feature, invoke
+'mapplot', and hit the 'v' key while the mouse cursor is centered over
+the feature. The returned numbers can then be used in your call to the
+'mark_xy' command. Internally the marked position is recorded as the
+corresponding Right Ascension and Declination. As a result, if you
+shift the map, the marker will move with any features therein.
+
+Markers added using this command are added to the list of markers
+which are passed to subsequent invocations of the mapplot command.
+
+The 'save' command writes 'mark_radec' commands to the output
+parameter file, so that the list can be preserved between difmap
+sessions.
+
+ASSOCIATED COMMANDS
+-------------------
+mapplot       - Draw a map.
+mark_radec    - Specify a map marker to be drawn at a given RA,Dec.
+clear_markers - Delete the current list of markers.
+wmarkers      - List map marker commands to stdout or a file.
+delmarker     - Delete a given map marker.

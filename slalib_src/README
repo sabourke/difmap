@@ -1,0 +1,21 @@
+Included in this directory is a sub-set of the C version of the
+Starlink slalib library, used for positional astronomy.
+
+All *.c files in this directory are copyright of the author of slalib,
+Patrick Wallace, and are included here with his permission. Please
+note that the library is provided as-is, with no implication or
+assurance of suitability for any purpose.
+
+You can pick up the source code for the whole library (C or FORTRAN),
+by anonymous ftp from:
+
+   starlink-ftp.rl.ac.uk
+
+If you would like general information about Starlink software, please
+e-mail ussc@star.rl.ac.uk.
+
+Also note that in order to take leap seconds completely into account,
+the file, dat.c should be updated every time that a new leap-second is
+announced. This may be accomplished by copying the updated version of
+this file from the above anonymous FTP site, or it may be edited by hand.
+

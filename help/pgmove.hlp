@@ -1,0 +1,11 @@
+x, y
+Move the PGPLOT pen position to x,y.
+
+PARAMETERS
+----------
+
+x,y     -     The coordinate at which to place the pen.
+
+RELATED COMMANDS
+----------------
+pgdraw  -   Draw a line from the current pen position to x,y.

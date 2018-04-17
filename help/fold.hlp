@@ -1,0 +1,2 @@
+period, fold_axis, x-array, <data-arrays...>
+Fold one array into a given period and arrange other arrays to same order

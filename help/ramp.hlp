@@ -1,0 +1,2 @@
+start_val, end_val, increment
+Returns a 1-D ramp of values

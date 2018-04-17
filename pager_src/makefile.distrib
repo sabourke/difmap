@@ -1,0 +1,48 @@
+#-----------------------------------------------------------------------
+# This is the (hopefully) site independant part of the libpager.a makefile.
+# The site-specific part should be appended to this makefile and named
+# Makefile by the configure script. You should not have to modify this
+# file - changes should only be made to the configure script.
+# The configure script must define CC, CFLAGS, INCDIR, LIBDIR, HELPDIR,
+# RANLIB.
+#-----------------------------------------------------------------------
+# Description: Makefile for the pager interface library.
+#
+# Martin Shepherd  (mcs@phobos.caltech.edu)
+#-----------------------------------------------------------------------
+
+# Compile time C compiler flags.
+
+CFLAGC = -c $(CFLAGS) -I$(INCDIR)
+
+# This tells make how to compile a C file - don't touch.
+
+.c.o:
+	$(CC) $(CFLAGC) -DPAGER=\"$(PAGER)\" $<
+
+# List pager object files.
+
+PAGER_OBS = pager.o
+
+# The library name.
+
+LIBPAGER = $(LIBDIR)/libpager.a
+
+#-----------------------------------------------------------------------
+
+default: $(LIBPAGER) install-header
+
+$(LIBPAGER): $(PAGER_OBS)
+	ar ru $(LIBPAGER) $(PAGER_OBS)
+	$(RANLIB) $(LIBPAGER)
+
+install-header:	$(INCDIR)/pager.h
+
+$(INCDIR)/pager.h: pager.h
+	cp pager.h $(INCDIR)/pager.h
+	chmod ugo+r $(INCDIR)/pager.h
+
+#-----------------------------------------------------------------------
+# list object file dependancies
+
+pager.o: pager.h

@@ -1,0 +1,183 @@
+Update this file with the 'makeindex' command. Do not edit directly.
+
+General help topics:
+-------------------
+
+Functions and commands:
+----------------------
+ advance
+   Advance to the next plot area on the display device
+ bbuf
+   Start buffering pgplot output.
+ box
+   Define and draw axes for the next plot
+ colour
+   Non-standard alias for pgsci. See help pgsci.
+ contour
+   Plot a contour map of a 2-D array
+ cursor
+   Select a position in the current plot with the cursor.
+ cursor_range
+   Delimit channel ranges with the cursor
+ device
+   Open a new display device
+ draw
+   Non-standard alias for the 'pgdraw' command.
+ ebuf
+   Finish pgplot buffering after a bbuf instruction
+ grey
+   Plot a grey-scale of an image within the current plot axes
+ histogram
+   Non-standard alias for the pghist command.
+ label
+   Non-standard alias for the pglab command.
+ line
+   Non-standard alias for the pgline command.
+ lplot
+   Plots the axes and line graph for the points given
+ move
+   Non-standard alias for the 'pgmove' command.
+ paper
+   Non-standard alias for the pgpap command.
+ pgarro
+   Draw a line with an arrow-head at one end.
+ pgask
+   Toggle whether you will be prompted before each plot.
+ pgband
+   Display the cursor and read a user-selected position.
+ pgbbuf
+   Buffer PGPLOT output until the 'pgebuf' command is called.
+ pgbox
+   Draw plot axes using the current axis limits
+ pgcirc
+   Draw a circle with a given radius and position.
+ pgcont
+   Plot a contour plot using pgplot.
+ pgcurs
+   Display the cursor and read a user-selected position.
+ pgdraw
+   Draw a line from the current pen position to x,y.
+ pgebuf
+   Stop buffering PGPLOT output after a PGBBUF command.
+ pgend
+   Close all PGPLOT devices.
+ pgenv
+   Set up the axes for a new graph.
+ pgeras
+   Erase all graphics from the current PGPLOT device.
+ pgerrb
+   Plot an array of error bars in a given direction.
+ pgerrx
+   Plot an array of horizontal error bars.
+ pgerry
+   Plot an array of vertical error bars.
+ pggray
+   Make a gray-scale plot of a 2D array using pgplot.
+ pghist
+   Plot a histogram of data values in an array.
+ pglab
+   Annotate a plot with a title and axis labels
+ pgline
+   Draw line through a set of coordinates.
+ pgmove
+   Move the PGPLOT pen position to x,y.
+ pgmtext
+   Non-standard alias for the pgmtxt command.
+ pgmtxt
+   Write text relative to the axes of a plot.
+ pgpage
+   Start a new page on the current PGPLOT device.
+ pgpap
+   Set the physical size of the device area for plotting.
+ pgpoly
+   Plot a filled polygon.
+ pgpt
+   Draw points at each x,y pair in the arrays given.
+ pgptext
+   Non-standard alias for pgptxt.
+ pgptxt
+   Plot text at a given position and angle in a graph.
+ pgqah
+   Return the current pgplot arrow-head drawing attributes.
+ pgqcf
+   Return the current pgplot font.
+ pgqch
+   Return the current pgplot character height.
+ pgqci
+   Return the current pgplot color index.
+ pgqcir
+   Return the range of pgplot color indexes assigned to drawing images.
+ pgqcol
+   Return the range of available pgplot color indexes.
+ pgqcr
+   Return the current RGB components of a given pgplot color index.
+ pgqcs
+   Return the current PGPLOT character height in specified units.
+ pgqfs
+   Return the current pgplot fill-area style.
+ pgqhs
+   Return the current pgplot hatching style.
+ pgqid
+   Return the ID of the current pgplot device.
+ pgqitf
+   Return the current pgplot image transfer function.
+ pgqls
+   Return the current pgplot line-style.
+ pgqlw
+   Return the current line width.
+ pgqpos
+   Return the position of the pen in world coordinates.
+ pgqvp
+   Return the dimensions of the view-port in specified units.
+ pgqvsz
+   Return the dimensions of the view-surface in specified units.
+ pgqwin
+   Return the world-coordinate boundaries of the current plot.
+ pgrect
+   Draw a rectangle using the current fill attributes
+ pgsave
+   Save the current PGPLOT attributes for later retrieval via 'pgunsa'.
+ pgscf
+   Set the character font to be used in subsequent PGPLOT text rendering.
+ pgsch
+   Sets the character height in pgplot
+ pgsci
+   Change the graphics pen colour.
+ pgscir
+   Set the range of color indexes to be used in pggray and pgimag.
+ pgscr
+   Change the color of a PGPLOT color index (RGB version).
+ pgscrn
+   Set the color of a given PGPLOT color index by name.
+ pgsfs
+   Set the fill-area style for subsequent graphics.
+ pgshls
+   Change the color of a PGPLOT color index (HLS version).
+ pgshs
+   Set the cross-hatching style to be used with fill-area style 3.
+ pgsls
+   Set the line style attribute in PGPLOT
+ pgslw
+   Change the line width of subsequent PGPLOT graphics.
+ pgsvp
+   Set the viewport for a new plot on the current plot surface.
+ pgswin
+   Set the current world-coordinates of a plot.
+ pgtext
+   Plot horizontal text on a graph at a given position
+ pgunsa
+   Restore PGPLOT attributes previously saved via 'pgsave'.
+ pgvstd
+   Set a viewport that will efficiently use the plot surface.
+ pgwindow
+   Defines the axis limits of a graph without drawing the axes
+ pgwnad
+   Set plot coordinates and adjust the viewport to the same aspect.
+ point
+   Non-standard alias for the pgpt command.
+ pplot
+   Plots the axes and a graph of points for the x,y arrays given
+ tvflag
+   Flag data points with the cursor - return an array of flags
+ xyz_plot
+   Displays and rotates a set of points in 3-D

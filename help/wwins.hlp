@@ -1,0 +1,39 @@
+winfile, do_old
+Save CLEAN windows to a text file.
+EXAMPLE
+-------
+
+0>wwins "myfile.win"
+wwins: Wrote 9 windows to myfile.win
+0>
+
+PARAMETERS
+----------
+winfile  -  (Default=standard output)
+            The name to call the new window file. If this argument is
+            omitted or "" is specified, then the windows will be
+            displayed on the standard output and also in the log file.
+
+do_old   -  (Default=FALSE)
+            If TRUE then write the windows in the format required
+            by the Caltech Package 'clean' program, ie.
+            LRTB = n,n,n,n,....
+
+CONTEXT
+-------
+CLEAN windows are set interactively in mapplot and/or directly via
+the addwin command. The resulting list of windows may be saved to
+a file using the 'wwins' command and retrieved later using the 'rwins'
+command. This makes it possible to use the same windows for data at
+a different epoch or to continue cleaning a data-set at a later date
+using the same windows.
+
+Please see help on rwins for a description of the default format used.
+
+If do_old is specified as TRUE then the alternate format used by the
+'clean' program in the Caltech VLBI Package is written. This format
+can NOT be read back into difmap.
+
+RELATED COMMANDS
+----------------
+rwins - Read previously saved CLEAN windows from a text file.

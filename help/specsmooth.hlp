@@ -1,0 +1,127 @@
+units, window, fwhm
+Preset the spectral resolution displayed by specplot.
+EXAMPLES
+--------
+
+1. To examine the current settings, invoke the specsmooth command with
+   no arguments:
+
+   0>specsmooth
+   Specplot smoothing:  units=channels  window=none  fwhm=0
+   0>
+
+2. To have specplot plot smooth spectra versus frequency (GHz) using
+   a Hanning window of width 10 KHz (1e-5 GHz):
+
+   0>specsmooth frequency, hanning, 1e-5
+   Specplot smoothing:  units=channels  window=hanning  fwhm=1e-05
+   0>
+
+ARGUMENTS
+---------
+units       -   Default=channels
+                The units of the smoothing width, chosen from:
+                  channels  -  Spectral-line channels.
+                  frequency -  Spectral-line channel frequencies.
+                Unambiguous abbreviations are recognized.
+
+window      -   Default=none
+                The window function used to smooth spectra to a given
+                spectral resolution, from:
+                  none      -  No smoothing.
+                  hanning   -  Hanning smoothing window.
+                  gaussian  -  Gaussian smoothing window.
+                  boxcar    -  Boxcar smoothing window.
+                  sinc      -  Sinc smoothing window
+                Unambiguous abbreviations are recognized.
+                Details of the smoothing functions are described
+                below.
+
+fwhm         -  Default=0.0 (no smoothing)
+                The full width at half maximum of the smoothing
+                function, in terms of the 'units' argument described
+                above.
+
+CONTEXT
+-------
+The specplot command plots time-averaged visibility spectra. By
+default it plots amplitude and phase versus channel number. The
+specsmooth command allows one to smooth spectra to reduce the apparent
+spectral resolution. This potentially reduces noise, so the optionally
+plotted error bars are modified to reflect this.
+
+While it is often most convenient to specify the width of one's
+smoothing in terms of spectral-line channels, different IFs can have
+different frequency increments per channel, so specsmooth allows one
+to specify the units in which to interpret the width. This choice is
+independent of the choice of the displayed X-axis units. The latter
+can be changed with the 'specopt' command.
+
+As with the other specplot setup commands, 'specsmooth' arguments can
+be changed interactively while plotting, via the capitalized 'S' key.
+This option prompts for the same arguments as taken by 'specsmooth'.
+
+Smoothing is performed on-the-fly every time that as each spectrum
+is displayed. The unsmoothed spectra are retained unchanged, so that
+future changes to the smoothing are independent of previous smoothing
+choices.
+
+Smoothing functions
+-------------------
+Smoothing is accomplished by convolving the data with the chosen
+smoothing function. Smoothing is performed on the real and imaginary
+parts of vector averaged spectra, and to the amplitudes and phases of
+scalar averaged spectra.
+
+In order to describe the details of each smoothing function, let the
+value plotted along the X-axis be denoted by x, and let:
+
+  v = x / (0.5*fwhm).
+
+With this tranformation each smoothing function, s(v) has
+
+  s(1) = 0.5 * s(0)
+
+The area-normalized smoothing functions are then given by
+
+  none     s(v) = 1.0 (No smoothing, so fwhm is ignored)
+
+                    sin(pi.v)
+  hanning  s(v) = --------------
+                  2.pi.v.(1-v^2)
+
+  gaussian s(v) = sqrt[ln(2)/pi] * exp[-ln(2)*v^2]
+
+  boxcar   s(v) = 0.5 for |v| <= 1, and 0 elsewhere
+
+                  c    sin(c*v)
+  sinc     s(v) = -- * --------, with c=1.8954942670340
+                  pi    (c*v)
+
+If one denotes convolution by the operator (*), the smoothing function
+by s, the data by f, and the data weights by, w, then the final
+smoothed spectrum and associated weights are given by:
+
+          f.w (*) s
+   <f>  = ---------
+           w (*) s
+
+
+          [w (*) s]^2
+   <w>  = -----------
+           w (*) s^2
+
+Note that data weights are interpretted as being related to error
+bars (e) by:
+
+   w = 1/e^2
+
+Related commands
+----------------
+specplot   -  Plot time-averaged visibility spectra.
+specopt    -  Preset specplot display options.
+specsmooth -  Preset the spectral resolution displayed by specplot.
+specbase   -  Select the baselines to be displayed by specplot.
+specpol    -  Select the list of polarizations to be displayed by specplot.
+spectime   -  Select the time ranges to be displayed by specplot.
+specuvr    -  Select the UV radius ranges to be displayed by specplot.

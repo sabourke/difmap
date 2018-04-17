@@ -1,0 +1,20 @@
+
+Delete all clean windows.
+EXAMPLE
+-------
+
+0> delwin
+All clean windows deleted
+0>
+
+CONTEXT
+-------
+Presently, the only way to delete specific clean windows is in mapplot.
+Delwin provides an alternate way to remove all windows without having
+to run mapplot.
+
+RELATED COMMANDS
+----------------
+mapplot - Allows interactive adding and deletion of clean windows.
+addwin  - Allows command line addition of windows.
+wwins   - Save CLEAN windows to a text file.

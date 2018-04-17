@@ -1,0 +1,183 @@
+
+A description of the format of telescope specifications.
+
+Many Difmap commands expect you to select one or more sub-arrays,
+antennas, baselines, or closure triangles. To make this easier, a
+consistent syntax is used to specify all such telescope aggregates.
+This specification of an aggregate of n>=0 telescopes is of the form:
+
+ [sub-array:][antenna_1 antenna_n...]
+
+Where "sub-array" is a number between 1 and nsub, and antenna_n is an
+exactly matching or an otherwise unambiguous prefix of an antenna
+name. 
+
+[Sub-array]
+-----------
+The sub-array index is optional and defaults to a context dependent
+value. From the command line it generally defaults to sub-array 1.
+Within interactive commands, such as vplot, it defaults to whatever
+sub-array is currently being viewed.
+
+If both a sub-array index and one or more antenna names are specified,
+the first antenna name must be separated from the sub-array index with
+a colon (:). Otherwise the colon is optional. A colon without a
+preceding sub-array index implies selection of the default sub-array.
+
+[antenna_1 ...antenna_n]
+-------------------------
+If a telescope aggregate is made up of n telescopes then there may be
+up to n antenna names specified. Omitted trailing antenna names are
+treated as wild-cards.
+
+Omitting trailing components of a specification
+------------------------------------------------
+For non-interactive commands, omitting one or more trailing components
+from a specification is interpreted to mean that all telescope
+aggregates of the expected type (eg. a sub-array or baseline
+aggregate...) that match in the initial specified components, are
+acceptable. The omission is thus effectively a wild-card. For
+interactive commands, such as vplot, which won't plot all the
+wild-carded aggregates without further user direction, the first
+aggregate that matches in the initial given indexes is sought and the
+selection is then forgotten. Thus to the vplot command an empty
+specification string "" means plot all baselines of all sub-arrays
+when plotting to a non-interactive device, whereas on an interactive
+device the same specification would mean start plotting from the first
+baseline in the default sub-array.
+
+Escaping special characters
+---------------------------
+
+If the name of an antenna contains a special character that would
+normally be interpretted as a separator between antenna names, or as a
+set-operator, then to tell difmap that the character is actually part
+of the antenna name, it is necessary to precede it with a backslash
+character. Special characters that need this treatment, are the space
+character, the plus character, the minus character, and the
+exclamation mark. Beware that since the command line undergoes
+backlash interpretation before the telescope specification is passed
+to the function that interprets telescope names; at the command line,
+it is necessary to use a pair of backslash characters.
+
+For example, suppose that you have an antenna name like "AN WEST",
+which has a space in it. If you were to attempt to specify this to the
+'selfant' command, by typing:
+
+ 0>selfant AN WEST
+
+then difmap would interpret this as a baseline specification
+containing two antennas, one callewd "AN" and the other called
+"WEST". To prevent it from doing this, you would need to type the
+following:
+
+ 0>selfant AN\\ WEST
+
+When specifying a telescope name at the prompt of an interactive
+plotting function, such as radplot, you would only use one backslash,
+like AN\ WEST, since the entered text doesn't undergo backslash
+interpretation before being sent to the telescope parsing function.
+
+EXAMPLES
+--------
+The following examples illustrate how specifications are interpreted
+in different contexts. Note that while each specification is shown
+enclosed within quotes, this is to make it possible to display an
+empty string. In practice quotes are only legal for specifications
+that are given as command-line arguments to commands, and even there
+they are rarely necessary. Also note that all difmap commands
+interpret the omission of a trailing telescope specification argument
+as equivalent to specifying an empty string.
+
+Sub-array specifications
+------------------------
+
+  ""                All sub-arrays.
+  ":"               The default sub-array.
+  "2"               Sub-array 2.
+
+Telescope specifications
+------------------------
+
+  ""                 All telescopes of all sub-arrays.
+  ":"                All telescopes of the default sub-array.
+  "2"                All telescopes of sub-array 2.
+  "an1"              Telescope AN1 of the default sub-array.
+  "2:an1"            Telescope AN1 of sub-array 2.
+
+Baseline specifications
+-----------------------
+
+  ""                 All baselines of all sub-arrays.
+  ":"                All baselines of the default sub-array.
+  "2"                All baselines of sub-array 2.
+  "an1"              All baselines of telescope AN1 in the default sub-array.
+  "2:an1"            All baselines of telescope AN1 in sub-array 2.
+  "an1 an2"          Baseline an1-an2 in the default sub-array.
+  "2:an1 an2"        Baseline an1-an2 in subarrary 2.
+
+Closure triangle specifications
+-------------------------------
+
+  ""                 All triangles of all sub-arrays.
+  ":"                All triangles of the default sub-array.
+  "2"                All triangles of sub-array 2.
+  "an1"              All triangles of telescope AN1 in the default sub-array.
+  "2:an1"            All triangles of telescope AN1 in sub-array 2.
+  "an1 an2"          All triangles of baseline an1-an2 in the 
+                     default sub-array.
+  "2:an1 an2"        All triangles of baseline an1-an2 in subarrary 2.
+  "an1 an2 an3"      Triangle an1-an2-an3 in the default sub-array.
+  "2:an1 an2 an3"    Triangle an1-an2-an3 in sub-array 2.
+
+SPECIFIC EXAMPLES
+-----------------
+
+1. Inspection of the currently selected self-cal constraints
+   for one or more telescopes.
+
+   0>selfant "" 
+   1:AN1      self-cal  status=correctable  weight=1
+   1:AN2      self-cal  status=correctable  weight=1
+   1:AN3      self-cal  status=correctable  weight=1
+   2:AN1      self-cal  status=correctable  weight=1
+   2:AN2      self-cal  status=correctable  weight=1
+   2:AN3      self-cal  status=correctable  weight=1
+
+   0>selfant 2
+   2:AN1      self-cal  status=correctable  weight=1
+   2:AN2      self-cal  status=correctable  weight=1
+   2:AN3      self-cal  status=correctable  weight=1
+
+   0>selfant an3  
+   1:AN3      self-cal  status=correctable  weight=1
+
+2. Non-interactive visibility plotting to a hard-copy device.
+
+   0>dev /ps
+
+   0>vplot 0, ""
+   Using default options string "efbm3"
+   Page 01: baselines of 1:AN1
+   Page 02: baselines of 1:AN2
+   Page 03: baselines of 1:AN3
+   Page 04: baselines of 2:AN1
+   Page 05: baselines of 2:AN2
+   Page 06: baselines of 2:AN3
+
+   0>vplot 0, 1
+   Using default options string "efbm3"
+   Page 01: baselines of 1:AN1
+   Page 02: baselines of 1:AN2
+   Page 03: baselines of 1:AN3
+
+   0>vpl 0, 2:an2
+   Using default options string "efbm3"
+   Page 01: baselines of 2:AN2
+
+   0>vpl 1, 2:an2 an3
+   Using default options string "efbm3"
+   Page 01: baselines of 2:AN2
+
+   
+

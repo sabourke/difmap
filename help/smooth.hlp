@@ -1,0 +1,2 @@
+data_array, x-FWHM, y-FWHM
+Returns a smoothed version of a 2-D array

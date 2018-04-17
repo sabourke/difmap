@@ -1,0 +1,71 @@
+uvmin, uvmax
+Set the min and max UV radii of usable visibilities.
+EXAMPLE
+-------
+
+0>uvrange 0.1,10
+Only data in the UV range: 0.1 -> 10 (mega-wavelengths) will be used.
+0>
+
+The second line is the response from the 'uvrange' command, confirming
+the user's selection. To see what the currently assigned range is, type:
+
+0>uvrange
+Only data in the UV range: 0.1 -> 10 (mega-wavelengths) will be used.
+0>
+
+To cancel a previously selected range, type:
+
+0>uvrange 0,0
+The full UV range of the data is currently selected.
+0>
+
+PARAMETERS
+----------
+
+uvmin - The minimum UV radius from which visibilities will be used
+        during gridding, self-calibration, modelfitting and by
+        the uvstat function. Unless changed with the mapunits command,
+        the units are million-wavelengths.
+
+uvmax - The maximum UV radius from which visibilities will be used
+        during gridding, self-calibration, modelfitting and by
+        the uvstat function. Unless changed with the mapunits command,
+        the units are million-wavelengths.
+
+If uvmax <= 0 or uvmin < 0 or uvmax < uvmin, no range is
+applied and any previous select range is cancelled.
+
+eg.  'uvrange 0,0'  cancels any previous select range.
+
+Whenever a new UV data set is read with the 'observe' command, any
+existing values of uvmin and uvmax are discarded.
+
+CONTEXT
+-------
+
+This function effects subsequent invokations of the 'invert',
+'selfcal', and 'modelfit' commands, plus the 'uvstat' function. The
+select range remains in force until this command is called again, or
+until a new data-set is read with the 'observe' command.
+
+The range is applied, such that all visibilities whose radial distance
+in the UV plane exceeds uvmax, or is less that uvmin, are ignored. If
+no select range has been specified, or zero values are given for both
+the min and the max, all visibilities are used regardless of their
+UV radii.
+
+SIDE EFFECTS
+------------
+Use of this command will cause the next 'clean', 'mapplot' etc..
+to re-invert the modified UV data-set to produce an updated dirty
+beam and residual map.
+
+RELATED COMMANDS
+----------------
+uvtaper  - Apply a gaussian taper to the gridding weights.
+uvweight - Selects combinations of natural,uniform, uncertainty, and
+           radial weighting.
+uvrange  - Constrain the min and max UV radii within which visibilities
+           are gridded.
+uvzero   - Set a zero-UV-spacing flux.

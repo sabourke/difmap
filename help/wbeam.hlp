@@ -1,0 +1,29 @@
+file_name
+Save the dirty beam to a FITS file.
+EXAMPLES
+--------
+
+0>wbeam beam.fits
+Writing dirty beam to FITS file: beam.fits
+0>
+
+PARAMETERS
+----------
+file_name - The file name to be given to the new FITS file.
+
+CONTEXT
+-------
+'wbeam' can be used to save the restored beam to a FITS file at any
+point during mapping. Many other programs, such as AIPS can read such
+files.
+
+The whole area of the beam grid is saved.
+
+RELATED COMMANDS
+----------------
+wmap   - Write the clean (restored) map to a FITS file.
+wdmap  - Save the dirty (residual) map.
+wobs   - Write the UV data to a random-groups UV FITS file.
+wmodel - Write the CLEAN model to a (text) VLBI model file.
+wwins  - Write CLEAN windows to a text file.
+save   - Save UV data, models, windows and the restored map.

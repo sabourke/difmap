@@ -1,0 +1,2 @@
+cal_cube, model_cube, peaka, peakb, sigran, noiran, chi_vs_epoch, freedom
+Finds chi-squared residuals between re-calibrated and model spectra.

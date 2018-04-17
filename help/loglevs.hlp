@@ -1,0 +1,62 @@
+min, max, base
+Set logarithmic contour levels for mapplot.
+
+EXAMPLE
+-------
+
+0>loglevs 0.5
+The new contour levels are:
+ -0.5 0.5 1 2 4 8 16 32 64
+0>
+
+The second and third lines are output lines from loglevs and show the
+resulting levels assigned to the levs variable.
+
+PARAMETERS
+----------
+min  -  The lowest (positive) level to include. The levels list starts
+        with  -min,min,... ie. The first positive level is also used as
+        the only negative value.
+
+max  -  (Optional: Default=100)
+        This is the highest (positive) level to include in the levels
+        listing. Thus:  loglevs 0.5,2  produces  -0.5,0.5,1,2 .
+
+base -  (Optional: Default=2)
+        The scale factor between subsequent levels in the listing.
+        Thus:  loglevs 0.5,2,1.5  produces  -0.5 0.5 0.75 1.125 1.6875 .
+
+CONTEXT
+-------
+The full dynamic range of a contour plot is often most cleanly
+represented by an exponentially increasing set of contour levels
+(conventionally called logarithmic levels).
+
+The contour levels used by subsequent calls to the mapplot command
+are defined in a user-variable called  levs. One way to set these
+levels is to directly assign them:
+
+For example:
+
+0> cmul=0
+0> levs=-1,1,2,4,8,16,32,64
+
+Defines a set of percentage contour levels starting at -1% and
+increasing exponentially up to 64%.
+
+It is tedious to have to type out the levels explicitly in this
+way. The loglevs command provides a more convenient means to
+assigning "logarithmic" levels to the levs variable. Thus the
+above example could be achieved by typing:
+
+0> cmul=0
+0> loglevs -1
+
+RELATED COMMANDS
+----------------
+mapplot  -  Display map and beam images.
+xyrange  -  Set the boundaries of the sub-image to be displayed in mapplot.
+loglevs  -  Set logarithmic levels.
+mapcolor -  Select mapplot colormap type and transfer function.
+mapfunc  -  Change the transfer function used in mapplot.
+beamloc  -  Change when and where mapplot plots the clean beam ellipse.

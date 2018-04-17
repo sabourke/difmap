@@ -1,0 +1,37 @@
+size, doabs
+Place a CLEAN window around the brightest pixel in the residual map.
+EXAMPLE
+-------
+
+0>peakwin
+Added new window around map position (2, -2).
+0>
+
+PARAMETERS
+----------
+
+size   -   Default = 1.0
+           The relative size of the clean window with respect to the
+           aspect of the clean beam.
+
+doabs  -   Default = false
+           By default the clean window will be placed around the pixel
+           with the maximum flux. However, if doabs=true then the clean
+           window will be placed around the pixel with the maximum
+           absolute value in the map. The latter could be useful for
+           spectral line mapping of absorption features.
+
+CONTEXT
+-------
+This command is provided as a primitive for automatic mapping scripts,
+where CLEAN windows need to be set non-interactively. The command
+looks at the position of the brightest pixel in the residual map, and
+if it is not already enclosed in a CLEAN window, adds a new CLEAN
+window centered upon it. The added window has the dimensions of the
+rectangular area that just encloses the ellipse of the CLEAN beam last
+estimated by the 'invert' command, scaled by the optional 'size' argument.
+
+SIDE EFFECTS
+------------
+If the residual map and/or beam is not up to date when this function
+is called, the 'invert' command will be invoked.

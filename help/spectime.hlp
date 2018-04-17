@@ -1,0 +1,96 @@
+start_time, end_time, scan_time
+Select the range(s) of times to be averaged by the specplot command.
+EXAMPLES
+--------
+
+1. To see the current time ranges omit all arguments.
+
+   0>spectime
+   Specplot time range 306/07:56:44 - 398/08:16:19,  scan length=132500 mins
+   0>
+
+2. Select a single time range between 7am and 9am on day 306 of the
+   year of observation.
+
+   0>spectime 306/07, 306/09
+   Specplot time range 306/07:56:44 - 306/08:59:46,  scan length=63.0333 mins
+   0>
+
+   Note that the time range actually selected is determined by what
+   times are actually sampled between the requested times.
+
+3. Split a single time range into a number of 10 minute scans.
+
+   0>spectime 306/07, 306/09, 10
+   Specplot time range 306/07:56:44 - 306/08:59:46,  scan length=10 mins
+   0>
+
+3. Split a single time range into its component integrations.
+
+   0>spectime 306/07, 306/09, 0
+   Specplot time range 306/07:56:44 - 306/08:59:46,  scan length=0 mins
+   0>
+
+4. Split the time range at time gaps of at least 1 hour (60 minutes).
+
+   0>spectime 306/07, 306/09, -60
+   Specplot time range 306/07:56:44 - 306/08:59:46,  scan separation=60 mins
+   0>
+
+ARGUMENTS
+---------
+
+stime     -  Default = The time of the first observed integration.
+             The start time of the overall time range as a string of
+             form: DDD/HH:MM:SS.sss, where all but the initial DDD can
+             be omitted (they each default to zero).
+
+etime     -  Default = The time of the last observed integration.
+             The end time of the overall time range, in the same form
+             as 'stime'.
+
+scan_time -  Default = etime - stime
+             A scan length or interval (minutes).
+             If scan_time >= 0 then the time range stime -> etime will be
+             split into sampled periods of up to 'scan_time' minutes.
+             If scan_time < 0 then the time range stime -> etime will be
+             split wherever there is at least '|scan_time|' minutes
+             separating neighbouring integrations.
+
+CONTEXT
+-------
+The specplot command plots scalar and vector averaged visibility
+spectra. Visibilities are selected by polarization, time range, UV
+radius range, and baseline groups. The spectime command is responsible
+for supplying time ranges.
+
+Where more than one time range is given, spectra can be plotted for
+each of them separately. The 'specorder' command can be used to direct
+when to change from one time range to the next while plotting spectra.
+
+The arguments of the 'spectime' specify both the overall duration over
+which to plot spectra and how to apportioned this duration between
+spectra. The spectime command supports two ways to apportion times.
+
+1. To separate the specified duration into multiple scans, each of a
+   given length, specify that length, using the 'scan_time' argument,
+   as a positive number of minutes. 
+   Each scan starts with the first sampled integration that follows
+   the end of the preceding scan. Individual scans will be shorter than
+   the given length where insufficient integrations are available.
+   Note that if the specified length is zero, then each scan will
+   encompass a single integration.
+
+2. To separate the specified duration into scans that are separated by
+   at least a given interval of time, specify the interval, using the
+   'scan_time' argument, as a negative number of minutes.
+
+RELATED COMMANDS
+----------------
+specplot   -  Plot time-averaged visibility spectra.
+specopt    -  Preset specplot display options.
+specsmooth -  Preset the spectral resolution displayed by specplot.
+specorder  -  Set the order in which spectra are to be displayed.
+specpol    -  Select the list of polarizations to be displayed by specplot.
+specbase   -  Select baselines to be displayed by specplot.
+specuvr    -  Select the UV radius ranges to be displayed by specplot.

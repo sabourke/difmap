@@ -1,0 +1,150 @@
+nx, dx, ny, dy
+Request a new map grid of given width and cell size
+EXAMPLES
+--------
+
+1. To request a square map with square pixels:
+
+   0>mapsize 256,0.5
+   Map grid = 256x256 pixels with 0.5x0.5 milli-arcsec cellsize.
+   0>
+
+2. To request a rectangular grid with rectangular pixels.
+
+   0>maps 256,0.5,128,1.0
+   New map grid = 256x128 pixels with 0.5x1.0 milli-arcsec cellsize.
+   0>
+
+3. To see what the current map size is, omit all arguments:
+
+   0>maps
+   Map grid = 256x128 pixels with 0.500x1.00 milli-arcsec cellsize.
+   0>
+
+The second line of each example shows the response from the 'mapsize'
+command, confirming what was typed.
+
+PARAMETERS
+----------
+nx   -  The number of pixels along the X-axis map and beam grids.
+        This number must be positive and be an integer power of 2,
+        such as 256 or 512 or 1024.
+
+dx   -  This is the width of each pixel along the X-axis. Unless
+        changed with the mapunits command, the units are milli-arcsec.
+        If this is omitted, or specified as zero, the maximum pixel
+        size that can be used without cutting off any visibilities
+        will be substituted.
+
+ny   -  Optional: If not provided, ny is given the value of nx.
+        The number of pixels along the Y-axis map and beam grids.
+        This number must be positive and be an integer power of 2,
+        such as 256 or 512 or 1024.
+
+dy   -  Optional: If not provided, dy is given the value of dx.
+        This is the width of each pixel along the Y-axis. Unless
+        changed with the mapunits command, the units are milli-arcsec.
+        If this is specified as zero, the maximum pixel
+        size that can be used without cutting off any visibilities
+        will be substituted.
+
+SIDE EFFECTS
+------------
+Any existing map will be destroyed, and the new map will be
+initialized to contain 0.0 in each element.
+
+CONTEXT
+-------
+This command specifies the size of the grid to use to sample the map
+and beam in the image plane. All commands that operate on maps, such
+as 'clean', 'restore', 'mapplot' and 'invert', require that such a
+grid be created before they are invoked. 'mapsize' may be called
+at any time thereafter to change the size of the map or beam arrays.
+
+The maxmimum size of the map and beam grids is limited only by the
+amount of memory available on your computer. Note that the amount of
+memory required by the two arrays is 2.(nx.ny).sizeof(float) bytes.
+If sizeof(float) is 4 bytes, then the following numbers apply for
+square grids:
+
+nx=ny      Memory
+-----      ------
+128        131 Kb
+256        524 Kb
+512        2.0 Mb
+1024       8.4 Mb
+2048      34.0 Mb
+
+Clearly, large grids require large amounts of memory, take a much
+longer time to process and may cause your computer to page heavily.
+For this reason it is beneficial to use the smallest grid that can
+accomodate the region of interest. In particular, if there are many
+sources to be mapped, scattered over a wide area, it may be faster to
+partially map each source separately, using the 'shift' command to
+temporarily shift each source into the center of a smaller map area.
+
+CHOOSING THE CELL SIZE
+----------------------
+The appropriate choice of cellsize along the X and Y axes of a
+map grid depends on the sampling of the UV plane by visibilities. To
+sample the finer detail in the image-plane implied by larger U or V
+coordinates, requires smaller cell sizes in the map. In particular, to
+avoid undersampling the image plane, the highest spatial frequencies
+sampled by the UV data must have a period of at least two pixels. This
+contraint applies separately to spatial frequencies along the X and Y
+axes of the map.
+
+The maximum cell sizes that can be selected, can either be implicitly
+selected by specifying them as 0.0, to the mapsize command, or they
+can be pre-calculated and displayed by entering the following
+commands.
+
+ print rad_to_map((0.25 - 2/nx) / uv_to_wav(vis_stats(umag)(6))
+ print rad_to_map((0.25 - 2/ny) / uv_to_wav(vis_stats(vmag)(6))
+
+where nx and ny are the number of pixels that are to be requested
+along the RA and Dec axes of the map.
+
+In the above example, note that vis_stats(umag) returns an array of 6
+different statistics for the U coordinate magnitudes of all of the
+visibilities that are included by the current UV range, and that the
+sixth element of this returned array holds the maximum value of this
+magnitude. Therefore vis_stats(umag)(6) returns the maximum sampled U
+coordinate that is sampled by any visibility. Since this is returned
+in the UV units that were last specified via the 'mapunits' command,
+the 'uv_to_wav()' function is then used to convert this to
+wavelengths. Similarly, the 'rad_to_map() function is used to convert
+the calculated cell size from radians to the units that will be
+expected by the 'mapsize' command.
+
+The "+ 2/nx" part of the above equation, is due to the 2 pixel fuzz
+that is introduced by the gridding convolution function that is used
+to interpolate visibilities onto a regular grid.
+
+The maximum cell-size described above is enforced by the difmap
+'invert' command, whose job it is to create a dirty map and beam from
+the visibility data.  Visibilities that represent higher spatial
+frequencies than can be Nyquist sampled by the chosen pixel size are
+excluded from the maps that it creates. When it does this, the
+'invert' command tells you what percentage of the visibilities had to
+be excluded and displays the above limiting values of dx and dy so
+that you can, if you want, change the map grid to avoid omitting any
+data from subsequent maps. Note that it is not necessarily an error to
+choose a cell size that is too big to sample all of the
+visibilities. Sometimes this is the only practicle way to create a map
+that is large enough to view one's field of interest.
+
+Also note that because the standard CLEAN algorithm only cleans the
+inner nx/2 by ny/2 pixels of the map, the maximum map area cleanable
+by 'clean' and displayed by 'mapplot' is actually the area:
+
+  X range  =  -nx/(4.umax+2)/2 -> +nx/(4.umax+2)/2
+  Y range  =  -ny/(4.umax+2)/2 -> +ny/(4.umax+2)/2
+
+RELATED COMMANDS
+----------------
+invert  - Invert the UV visibility residuals to form a residual map
+          and dirty beam.
+restore - Combine model components and a residual map to produce a
+          clean map.
+mapplot - Display the residual or clean map, or dirty beam.

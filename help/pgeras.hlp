@@ -1,0 +1,22 @@
+
+Erase all graphics from the current PGPLOT device.
+
+CONTEXT
+-------
+Note that to erase all graphics, this command actually performs an
+area fill using the current color of color index 0. One use of this
+function is to set the background color of a plot before plotting
+any graphics. This is basically the only way to set the background
+color of a postscript plot. For example:
+
+0>dev /ps
+0>pgscr 0, 0.0, 0.0, 1.0
+0>pgeras
+0>box 0,1,0,1
+0>pgend
+0>$ghostview pgplot.ps
+0>
+
+The above starts by redefining color index 0 to be blue, then uses
+pgeras to fill the background, then plots axes on the plot and finally
+after closing the postscript file, plots the file with ghostview.

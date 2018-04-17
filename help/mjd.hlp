@@ -1,0 +1,26 @@
+date_and_time
+Return the Modified Julian Date corresponding to a given calendar date.
+
+EXAMPLES
+--------
+ The following example, returns the Modified Julian Date that corresponds
+ to 13-jun-2001 at 10:30am UTC.
+
+ 0>print mjd(13-jun-2001:10:30)
+ 52073.4
+ 0>
+
+PARAMETERS
+----------
+date_and_time  -  This must be a Gregorian calendar date and time,
+                  formatted like dd-mmm-yyyy:hh:mm. Where dd is the
+                  date within the month, mmm is a three character
+                  month name, yyyy is a fully qualified year, hh
+                  is the hour in the day, and mm is the number of
+                  minutes into the hour. Trailing time components
+                  can be omitted.
+RETURN VALUE
+------------
+The return value is a Modified Julian Date, expressed in floating
+point. This unfortunately only provides a resolution of about
+5 minutes.

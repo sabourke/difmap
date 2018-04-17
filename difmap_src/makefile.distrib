@@ -1,0 +1,345 @@
+#-----------------------------------------------------------------------
+# This is the (hopefully) site independant part of the difmap makefile.
+# The site-specific part should be appended to this makefile and named
+# Makefile by the configure script also present in this directory. You
+# should not have to modify this file - changes should only be made to
+# the configure script.
+# The configure script must define CC,CCLIB,FC,CFLAGS,FFLAGS,BINDIR,
+# INCDIR,LIBDIR,HELPDIR,PGPLOT_LIB,LDFLAGS.
+#-----------------------------------------------------------------------
+
+# Compile time flags.
+
+CFLAGC = -c $(CFLAGS) -I$(INCDIR)
+
+FFLAGC = -c $(FFLAGS)
+
+# Specify how the PGPLOT library is to be specified on the loader
+# line.
+
+PGLIB  = -L$(LIBDIR) -lcpgplot $(PGPLOT_LIB)
+
+# Specify how the SPHERE library is to be specified on the loader line.
+
+SPHLIB = -L$(LIBDIR) -lsphere
+
+# Specify how the LOGIO library is to be specified on the loader line.
+
+IOLIB = -L$(LIBDIR) -llogio
+
+# Specify how the PAGER library is to be specified on the loader line.
+
+PAGER = -L$(LIBDIR) -lpager
+
+# Specify how the record I/O library is to be specified on the loader line.
+
+RECIO = -L$(LIBDIR) -lrecio
+
+# Specify how the scratch utility library is to be specified on the loader line.
+
+SCRFIL = -L$(LIBDIR) -lscrfil
+
+# Specify how the FITS library is to be specified on the loader line.
+
+FITS = -L$(LIBDIR) -lfits
+
+# Specify how the SLALIB library is to be specified on the loader line.
+
+SLALIB = -L$(LIBDIR) -lslalib
+
+# This tells make how to compile a C file - don't touch.
+
+.c.o:
+	$(CC) $(CFLAGC) $<
+
+.f.o:
+	$(FC) $(FFLAGC) $<
+
+# List UV FITS object files.
+
+UVF_OBS = uvf_read.o uvf_write.o
+
+# List all object files required for use with observations.
+
+OB_OBS = obs.o subarray.o obutil.o binan.o dpage.o if.o ifpage.o intrec.o \
+	obedit.o obhead.o uvpage.o chlist.o obpol.o telcor.o visaver.o \
+	utbin.o intlist.o obshift.o resoff.o winmod.o subamphs.o \
+	addamphs.o nextif.o wtscal.o units.o scans.o mapwin.o stokes.o \
+        visstat.o pb.o mapcor.o
+
+# LIst all object files required for use with Models.
+
+MOD_OBS = model.o modvis.o besj.o addmod.o modfit.o modeltab.o
+
+UTIL_OBS = hms.o termstr.o visflags.o telspec.o ellips.o uvrange.o \
+	baselist.o spectra.o pollist.o freelist.o planet.o cksum.o
+
+MATH_OBS = fnint.o dnint.o frange.o imran.o minmax.o lmfit.o matinv.o \
+	newfft.o 
+
+#-----------------------------------------------------------------------
+# Default to making just difmap.
+
+default: $(BINDIR)/difmap
+
+install-help:
+	cp ../help/*.hlp $(HELPDIR)/
+	chmod ugo+r $(HELPDIR)/*
+
+DMAP_OBS = startup.o f77main.o difmap.o slfcal.o wmapbeam.o \
+	maplot.o moddif.o vlbhead.o uvaver.o mapmem.o mapclean.o \
+	mapres.o costran.o uvinvert.o clphs.o clplot.o vlbhist.o \
+	enumpar.o symtab.o plbeam.o uvrotate.o stnstr.o uvtrans.o \
+	corplt.o modplot.o uvradplt.o vedit.o vplot.o color.o uvplot.o \
+	timplt.o specplot.o markerlist.o \
+	$(UVF_OBS) $(OB_OBS) $(UTIL_OBS) $(MATH_OBS) $(MOD_OBS)
+
+$(BINDIR)/difmap: $(DMAP_OBS) $(LIBDIR)/libcpgplot.a $(LIBDIR)/libsphere.a $(LIBDIR)/liblogio.a $(LIBDIR)/libpager.a $(LIBDIR)/libfits.a $(LIBDIR)/librecio.a $(LIBDIR)/libslalib.a $(LIBDIR)/libscrfil.a $(TECLA_DEPEND)
+	$(FC) -o difmap $(LDFLAGS) $(DMAP_OBS) $(SPHLIB) $(IOLIB) $(PAGER) $(PGLIB) $(FITS) $(RECIO) $(SCRFIL) $(SLALIB) $(TECLA_LIB) $(CCLIB) -lm
+	mv difmap $(BINDIR)/difmap
+	chmod ugo+rx $(BINDIR)/difmap
+
+#-----------------------------------------------------------------------
+# list object file dependancies
+
+uvf_read.o: obs.h vlbutil.h vlbconst.h intlist.h visaver.h $(INCDIR)/logio.h $(INCDIR)/slalib.h $(INCDIR)/libfits.h
+
+uvf_write.o: obs.h vlbconst.h $(INCDIR)/logio.h $(INCDIR)/slalib.h $(INCDIR)/libfits.h
+
+obutil.o: obs.h $(INCDIR)/logio.h obedit.h modeltab.h
+
+obpol.o: obs.h $(INCDIR)/logio.h
+
+if.o: obs.h $(INCDIR)/logio.h
+
+binan.o: obs.h $(INCDIR)/logio.h
+
+chlist.o: chlist.h $(INCDIR)/logio.h
+
+termstr.o: vlbutil.h $(INCDIR)/logio.h
+
+dpage.o: dpage.h obs.h vlbconst.h $(INCDIR)/recio.h $(INCDIR)/logio.h
+
+ifpage.o: ifpage.h $(INCDIR)/recio.h $(INCDIR)/logio.h
+
+uvpage.o: uvpage.h $(INCDIR)/recio.h $(INCDIR)/logio.h
+
+telcor.o: obs.h $(INCDIR)/logio.h
+
+resoff.o: obs.h vlbconst.h $(INCDIR)/logio.h
+
+nextif.o: obs.h $(INCDIR)/logio.h
+
+moddif.o: obs.h $(INCDIR)/logio.h
+
+matinv.o: matinv.h
+
+freelist.o: freelist.h $(INCDIR)/logio.h
+
+modfit.o: obs.h vlbconst.h lmfit.h besj.h $(INCDIR)/logio.h
+
+lmfit.o: matinv.h lmfit.h
+
+obedit.o: obs.h obedit.h telspec.h $(INCDIR)/logio.h vlbconst.h
+
+obhead.o: obs.h $(INCDIR)/logio.h
+
+obshift.o: vlbconst.h obs.h
+
+intrec.o: obs.h $(INCDIR)/logio.h
+
+obs.o: obs.h obedit.o $(INCDIR)/logio.h
+
+subarray.o: obs.h scans.h $(INCDIR)/logio.h
+
+scans.o: scans.h obs.h $(INCDIR)/logio.h
+
+fnint.o: vlbmath.h
+
+minmax.o: vlbmath.h
+
+hms.o: vlbconst.h vlbutil.h $(INCDIR)/logio.h $(INCDIR)/slalib.h
+
+uvrange.o: obs.h
+
+vedit.o: obs.h vlbconst.h vlbutil.h telspec.h visplot.h vplot.h \
+ $(INCDIR)/cpgplot.h $(INCDIR)/logio.h
+
+vplot.o: obs.h vlbconst.h vlbutil.h telspec.h visplot.h vlbmath.h \
+ vplot.h scans.h $(INCDIR)/cpgplot.h $(INCDIR)/logio.h
+
+vplot.h: freelist.h
+	touch $@
+
+uvplot.o: obs.h units.h vlbutil.h telspec.h visplot.h $(INCDIR)/cpgplot.h \
+	 $(INCDIR)/logio.h
+
+uvradplt.o: obs.h units.h vlbconst.h telspec.h visplot.h vlbutil.h \
+ $(INCDIR)/cpgplot.h $(INCDIR)/logio.h
+
+corplt.o: obs.h vlbconst.h telspec.h visplot.h vlbutil.h vlbmath.h scans.h \
+ $(INCDIR)/cpgplot.h $(INCDIR)/logio.h 
+
+timplt.o: obs.h vlbconst.h telspec.h visplot.h vlbutil.h vlbmath.h scans.h \
+ $(INCDIR)/cpgplot.h $(INCDIR)/logio.h
+
+obs.h: $(INCDIR)/recio.h dpage.h ifpage.h uvpage.h model.h chlist.h pb.h
+	touch obs.h
+
+mapwin.h: mapmem.h
+	touch mapwin.h
+
+vlbinv.h: mapmem.h
+	touch vlbinv.h
+
+maplot.h: color.h markerlist.h
+	touch maplot.h
+
+color.h: symtab.h
+	touch $@
+
+enumpar.h: symtab.h
+	touch $@
+
+modeltab.h: obs.h model.h chlist.h
+	touch $@
+
+markerlist.h: freelist.h enumpar.h
+	touch $@
+
+modvis.h: model.h obs.h
+	touch $@
+
+mapmem.h: obs.h
+	touch $@
+
+minerr.o: obs.h vlbutil.h
+
+model.o: vlbconst.h model.h $(INCDIR)/logio.h $(INCDIR)/scrfil.h
+
+mapwin.o: mapwin.h units.h vlbmath.h vlbconst.h ellips.h $(INCDIR)/logio.h
+
+slfcal.o: obs.h slfcal.h vlbconst.h $(INCDIR)/logio.h
+
+modvis.o: modvis.h model.h besj.h vlbconst.h obs.h $(INCDIR)/logio.h
+
+besj.o: besj.h
+
+winmod.o: model.h vlbconst.h mapwin.h winmod.h $(INCDIR)/logio.h
+
+visflags.o: obs.h $(INCDIR)/logio.h
+
+subamphs.o: vlbutil.h
+
+addamphs.o: vlbutil.h
+
+uvrotate.o: obs.h
+
+uvweight.o: obs.h vlbinv.h
+
+uvinvert.o: obs.h units.h vlbinv.h vlbconst.h vlbmath.h mapmem.h \
+ $(INCDIR)/logio.h
+
+uvgrid.o: obs.h vlbinv.h vlbconst.h vlbmath.h
+
+unifwt.o: obs.h vlbinv.h vlbmath.h
+
+uvtrans.o: obs.h vlbinv.h vlbfft.h
+
+newfft.o: vlbfft.h vlbconst.h
+
+wtscal.o: obs.h $(INCDIR)/logio.h
+
+elips.o: vlbutil.h
+
+dnint.o: vlbmath.h
+
+frange.o: vlbmath.h
+
+mapmem.o: mapmem.h $(INCDIR)/logio.h
+
+mapclean.o: vlbconst.h mapmem.h mapwin.h model.h mapcln.h $(INCDIR)/logio.h
+
+mapres.o: vlbconst.h mapmem.h model.h mapres.h vlbutil.h $(INCDIR)/logio.h
+
+imran.o: vlbmath.h
+
+uvbeam.o: vlbconst.h obs.h vlbinv.h $(INCDIR)/logio.h
+
+costran.o: vlbconst.h vlbmath.h
+
+uvaver.o: obs.h visaver.h utbin.h vlbconst.h $(INCDIR)/logio.h
+
+visaver.o: obs.h visaver.h $(INCDIR)/logio.h
+
+intlist.o: intlist.h vlbconst.h utbin.h
+
+utbin.o: utbin.h
+
+vlbhead.o: obs.h units.h scans.h vlbconst.h vlbutil.h $(INCDIR)/logio.h
+
+color.o: symtab.h color.h $(INCDIR)/cpgplot.h $(INCDIR)/logio.h
+
+maplot.o: mapmem.h mapwin.h obs.h units.h vlbutil.h vlbconst.h vlbmath.h \
+ maplot.h $(INCDIR)/cpgplot.h $(INCDIR)/logio.h
+
+modplot.o: vlbconst.h model.h ellips.h $(INCDIR)/cpgplot.h $(INCDIR)/logio.h
+
+ellips.o: ellips.h vlbconst.h $(INCDIR)/cpgplot.h $(INCDIR)/logio.h
+
+plbeam.o: vlbmath.h vlbconst.h ellips.h $(INCDIR)/cpgplot.h $(INCDIR)/logio.h
+
+stnstr.o: obs.h vlbutil.h $(INCDIR)/logio.h
+
+wmapbeam.o: obs.h mapmem.h vlbutil.h vlbconst.h model.h wmap.h \
+	 $(INCDIR)/logio.h $(INCDIR)/libfits.h
+
+addmod.o: modvis.h obs.h vlbutil.h mapwin.h winmod.h obwin.h $(INCDIR)/logio.h
+
+startup.o: version.h $(INCDIR)/logio.h
+
+vlbhist.o: obs.h $(INCDIR)/logio.h $(INCDIR)/pager.h $(INCDIR)/sphere.h
+
+clphs.o: obs.h vlbconst.h telspec.h clphs.h $(INCDIR)/logio.h
+
+clplot.o: obs.h vlbconst.h vlbutil.h vlbmath.h telspec.h visplot.h clphs.h \
+	 scans.h $(INCDIR)/cpgplot.h $(INCDIR)/logio.h
+
+telspec.o: obs.h telspec.h $(INCDIR)/logio.h
+
+units.o: vlbconst.h units.h symtab.h $(INCDIR)/logio.h
+
+enumpar.o: enumpar.h $(INCDIR)/logio.h
+
+symtab.o: symtab.h $(INCDIR)/logio.h
+
+baselist.o: obs.h telspec.h baselist.h  $(INCDIR)/logio.h
+pollist.o: obs.h pollist.h  $(INCDIR)/logio.h
+spectra.o: $(INCDIR)/logio.h obs.h vlbconst.h telspec.h baselist.h spectra.h
+stokes.o: obs.h enumpar.h $(INCDIR)/logio.h
+
+specplot.o: obs.h vlbconst.h vlbutil.h vlbfft.h telspec.h baselist.h \
+	pollist.h spectra.h enumpar.h units.h specplot.h \
+	$(INCDIR)/logio.h $(INCDIR)/cpgplot.h
+
+modeltab.o: modeltab.h freelist.h $(INCDIR)/logio.h
+
+markerlist.o: markerlist.h vlbconst.h $(INCDIR)/logio.h
+
+visstat.o: $(INCDIR)/logio.h obs.h vlbconst.h visstat.h
+
+planet.o: $(INCDIR)/logio.h $(INCDIR)/slalib.h vlbconst.h planet.h
+
+pb.o: $(INCDIR)/logio.h obs.h freelist.h cksum.h telspec.h model.h pb.h
+
+mapcor: $(INCDIR)/logio.h obs.h mapmem.h mapcor.h
+
+cksum.o: $(INCDIR)/logio.h cksum.h
+
+difmap.o: $(INCDIR)/logio.h $(INCDIR)/sphere.h $(INCDIR)/scrfil.h \
+ $(INCDIR)/helpdir.h obs.h vlbinv.h mapmem.h vlbconst.h vlbutil.h \
+ vlbmath.h mapwin.h mapcln.h mapres.h maplot.h winmod.h obwin.h slfcal.h \
+ wmap.h telspec.h visplot.h scans.h units.h enumpar.h baselist.h pollist.h \
+ specplot.h $(INCDIR)/cpgplot.h modeltab.h markerlist.h visstat.h planet.h \
+ pb.h mapcor.h
+

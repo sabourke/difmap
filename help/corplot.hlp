@@ -1,0 +1,79 @@
+tel_name, IF_index
+Display accumulated telescope based self-cal corrections versus UT.
+EXAMPLES
+--------
+1. Display the corrections for the BONN telescope in sub-array 1.
+
+   0>corplot BONN
+
+2. Display corrections for telescope 3 in sub-array 1.
+
+   0>corplot `telname(3)`
+
+3. Display corrections interactively for any telescopes.
+
+   0>corplot
+
+4. Display a telescope from sub-array 2, and its corrections in IF 3.
+
+   0>corplot 2:BOLOGNA, 3
+
+PARAMETER
+---------
+tel_name  -  Optional - default="".
+             A telescope name specification. In interactive mode this
+             specifies the first telescope to be plotted. When
+             plotting to a non-interactive device it specifies a range
+             of telescopes to be displayed. See the antenna_names help
+             topic for a description of the syntax and meaning of
+             valid telescope specification arguments.
+
+IF_index  -  Default = The first sampled IF.
+             The index of the IF to start displaying from. One may
+             also move between IFs with the '[' and ']' keys - see
+             below.
+
+CONTEXT
+-------
+This command gives one the opportunity to see what corrections
+have been applied by selfcal and which integrations couldn't be
+corrected due to lack of data. It also gives you the opportunity to
+flag or unflag corrections, and to reset indivudual corrections.
+
+Flagged corrections are plotted in blue. Good corrections are plotted
+in green. Each page shows the corrections of a single telescope from a
+single sub-array, in a given IF.
+
+INTERACTIVE MODE
+----------------
+If the plot device has a cursor, then an interactive mode will be
+invoked. In this mode, initially corrections for the first telescope
+of the observation, or the requested telescope, will be displayed.
+Thereafter keyboard keys, in conjunction with the cursor allow one to
+peruse the corrections of other telescopes in any order.
+
+To get a list of the currently defined keys and what they do,
+place the cursor within the plot window and then hit the 'H' key on
+the keyboard.
+
+EDITING
+-------
+Unless the selfflag command has been used to suppress flagging, the
+selfcal comand automatically flags corrections that it has
+insufficient information to determine. These flags can either all be
+removed with the 'uncalib' command, or toggled individually in
+'corplot'. To toggle the flag status of a correction in corplot, click
+the left-mouse-button, or keyboard key 'A' near the point that you
+wish to flag or unflag. The flags will be applied both to the
+correction, and to all visibilities affected by that correction.
+
+RELATED COMMANDS
+----------------
+scangap  -  Change the time gap used to delimit neighboring scans.
+uncalib  -  Remove selected parts of corrections.
+radplot  -  Display visibility amplitude vs. UV radius.
+projplot -  Display visibility amplitude/phase vs. projected UV distance.
+uvplot   -  Display the sampling of the UV plane.
+vplot    -  Display observed and model visibilities.
+tplot    -  Display the time-sampling of each telescope.
+cpplot   -  Display observed and model closure phases interactively.

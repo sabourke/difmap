@@ -1,0 +1,408 @@
+\documentclass[11pt]{article}
+
+%
+% Set the page size.
+%
+\topmargin -0.5in \headsep 0.251in
+\hoffset -0.8in
+\marginparwidth 0in \marginparsep 0in
+\textheight 9.5in \textwidth 6.5in
+\parindent 0pt
+\parskip 8pt plus 1pt minus 1pt
+\pagestyle{headings}
+
+\begin{document}
+
+\title{Proposal to add UV-plane model fitting to Difmap.}
+
+\author{Martin Shepherd (mcs@phobos.caltech.edu)\\
+	Copyright \copyright 1994 California Institute of Technology}
+
+\date{}
+\maketitle
+
+\clearpage
+
+\section{Introduction}
+
+It is common practice in VLBI to parameterize maps by fitting simple
+models directly to the source UV data. These models may be used as
+plausible starting models for self-calibration, or to augment the
+CLEAN/self-calibration mapping loop by removing the kinds of extended
+structure that CLEAN has difficulty describing.
+
+An existing program that has been used extensively in VLBI to fit
+models to UV data, is the modelfit program in the ``Caltech VLBI
+Package'' \cite{tjp91}. This program is capable of fitting models
+composed of aggregates of up to 15 simple components, each component
+being chosen from a list that includes delta-functions, elliptical
+gaussians and elliptical tapered-disks. The free parameters of the
+model are adjusted to minimize the value of $\chi^{2}$ formed between
+the UV-plane representation of the model and the measured amplitudes
+and closure-phases. The use of closure phases rather than raw phase
+makes modelfit immune to station-based phase mis-calibrations.
+Modelfit does have some faults. Its two least-squares minimization
+algorithms are not optimal and for the best fits and fast convergence
+it relies on the coincidental match between the data and the arbitrary
+iteration step sizes used. The use of closure-phases also requires
+large amounts of memory and CPU time, amounts that grow as the cube of
+the number of stations in the data, times the number of integrations.
+
+While Difmap still used the same data format as the rest of the
+Caltech VLBI package, no real need for a new model fitting algorithm
+was deemed necessary in Difmap. But now that Difmap uses FITS as its
+data format, observations that make use of the multiple dimensions
+that FITS allows but the Caltech merge format does not, can not be
+model fitted by the modelfit program. It is with this in mind that a
+new model fitting algorithm to be incorporated in difmap is to be
+written.
+
+\section{Requirements}
+
+Given that a new model fitting implementation is required, it would be
+short sighted to simply re-produce the algorithms used in the modelfit
+program without examining alternative techniques. One such technique
+which purportedly incorporates the strengths of both of the algorithms
+used in the modelfit program, and which has the extra advantage that
+step sizes are automatically determined, is the Levenberg-Marquardt
+method. This is described in \cite{nr} and will be adopted for the new
+implementation.
+
+The Levenberg-Marquardt technique requires equations for the partial
+derivatives of the UV-plane model representation with respect to all
+free parameters, rather than determining them numerically as the
+modelfit gradient search algorithm does. The next section derives
+these equations.
+
+Unlike the modelfit program, the new algorithm will be designed to
+fit models directly to the measured real and imaginary parts of the
+complex visibilities. The advantage gained is mainly one of speed,
+memory requirements and simplicity. In addition, the errors are more
+likely to be Gaussian distributed than say those of the measured
+amplitudes. The main disadvantage is that the program will not be
+immune to station based phase mis-calibration. However fringe-fitting,
+self-calibration and phase-referencing techniques have improved to the
+extent that this should not be a significant problem.
+
+It has been decided that the new algorithm will fit component
+positions in a Cartesian rather than a polar coordinate system,
+although initial guesses will still be presented in the established
+polar form. This removes the problem of what to do if the model
+fitting algorithm produces negative radii. The similar problem of what
+to do if the sizes or aspect ratios of components go out of bounds
+remains un-answered.
+
+A useful feature that does not exist in the modelfit program, is the
+estimation of the uncertainties in the fitted parameters. This is not
+as straight forward as might be expected, since the free parameters
+can turn out to be correlated. The full generality of this problem
+will be met in the new algorithm by optionally printing out the
+covariance matrix, thus leaving the onus on the user to interpret the
+results.
+
+\section{Partial derivatives of UV plane models.}
+
+Adopting the Levenberg-Marquardt algorithm requires a knowledge of the
+partial derivatives of the functions being fitted, calculated
+separately with respect to each free parameter. This section will
+serve to derive such equations.
+
+A single model component of flux $S$, placed at the center of the
+image plane can be represented in the UV plane by a function of form:
+
+\begin{equation}
+F(u,v) = S f(u,v)
+\end{equation}
+
+Where $(u,v)$ is a position in the UV plane. From the {\em shift
+theorem} of Fourier transforms we know that the same component whose
+centroid has been shifted to a position $(x,y)$ in the image plane
+appears in the UV plane as:
+
+\begin{equation}
+F(u,v) = S f(u,v) e^{2 \pi i (u x + v y)}
+\end{equation}
+
+By the {\em addition theorem} of Fourier transforms we also know that
+an aggregate model $M(u,v)$ can be formed from a sum of $n$ individual
+components as:
+
+\begin{equation}
+M(u,v) = \sum^{n}_{i=1} S_{i} f_{i}(u,v) e^{2 \pi i (u x_{i} + v y_{i})}
+\end{equation}
+
+The partial derivative of $M(u,v)$ with respect to a single
+free-parameter $\beta$ of the $k$'th component is then given by:
+
+\begin{eqnarray}
+\frac{\partial}{\partial \beta_{k}} M(u,v) & = & \frac{\partial}{\partial \beta_{k}} \sum^{n}_{i=1} S_{i} f_{i}(u,v) e^{2 \pi i (u x_{i} + v y_{i})}\\
+%
+\label{cmp_deriv}
+\frac{\partial}{\partial \beta_{k}} M(u,v) & = & \frac{\partial}{\partial \beta_{k}} [S_{k} f_{k}(u,v) e^{2 \pi i (u x_{k} + v y_{k})}]
+\end{eqnarray}
+
+Given that for all model component types, $f(u,v)$ is independent of
+flux $S$ and shifted position $(x,y)$ we can determine the following
+partial derivatives for these parameters:
+
+\begin{eqnarray}
+\frac{\partial}{\partial x_{k}} M(u,v) & = & 2 \pi i u F_{k}(u,v) \\
+%
+\frac{\partial}{\partial y_{k}} M(u,v) & = & 2 \pi i v F_{k}(u,v) \\
+%
+\frac{\partial}{\partial S_{k}} M(u,v) & = & \frac{1}{S_{k}} F_{k}(u,v)
+\end{eqnarray}
+
+All the supported model types can be represented by an azimuthally
+symmetric function, which is stretched into an elliptical shape along
+a specific direction. In the following equations the elliptical aspect
+will be parameterized by the major-axis half-extent, $a$, the
+direction of the major axis with respect to North, by the angle $\phi$
+measured North through East, and by the minor-axis half-extent, $b$,
+or the alternative axial ratio $\gamma = b/a$.
+
+For the purpose of model fitting we will choose to allow $a$, $\gamma$
+and $\phi$ to be free parameters. The alternative choice of $a$,
+$b$ and $\phi$ is less useful, because there is then no way for the
+user to constrain components to have circular aspects, as required in
+some specialized problems. To fit these parameters requires equations
+of the partial derivatives of components with respect to them, in
+addition to those above for $x$, $y$, and $S$.
+
+To give the components the desired rotated elliptical aspect, the
+value of the function at $(x,y)$ in the image plane is assigned the
+value of the circularly symmetric function at radius:
+
+\begin{equation}
+R_{xy} = \sqrt{(x\cos{\phi}-y\sin{\phi})^{2}\frac{1}{\gamma^{2}} + (x\sin{\phi}+y\cos{\phi})^{2}}
+\end{equation}
+
+The Fourier transform of a circularly symmetric real function in the
+image plane is another circularly symmetric function in the UV plane.
+As in the image plane, the value of the rotated and stretched
+function at $(u,v)$ in the UV plane is that of the circularly
+symmetric function measured at UV radius:
+
+\begin{equation}
+R_{uv} = \sqrt{(u\cos{\phi}-v\sin{\phi})^{2}\gamma^{2}+(u\sin{\phi}+v\cos{\phi})^{2}}
+\end{equation}
+
+Since each of the functions of interest multiplies this radius by
+$\pi a$, the following parameter will also be defined:
+
+\begin{equation}
+\Gamma = \pi a \sqrt{(u\cos{\phi}-v\sin{\phi})^{2}\gamma^{2}+(u\sin{\phi}+v\cos{\phi})^{2}}
+\end{equation}
+
+Partial derivatives of individual components that depend on $\Gamma$,
+with respect to one of $a$, $\gamma$, or $\phi$ (denoted as $\beta$) are
+then given by: 
+
+\begin{equation}
+\frac{\partial}{\partial \beta_{k}} M(u,v) = \frac{\partial F_{k}(u,v)}{\partial\Gamma} \times \frac{\partial\Gamma}{\partial\beta_{k}}
+\end{equation}
+
+If the latter part is evaluated for each of the desired free
+parameters, this expands to:
+
+\begin{eqnarray}
+%
+\label{par_phi}
+\frac{\partial}{\partial\phi_{k}} M(u,v) & = & \frac{\partial
+F_{k}(u,v)}{\partial\Gamma} \times \frac{2\pi^{2}a_{k}^{2}}{\Gamma} (1-\gamma_{k}^{2})
+(u\cos{\phi_{k}}-v\sin{\phi_{k}})(u\sin{\phi_{k}}+v\cos{\phi_{k}}) \\
+%
+\frac{\partial}{\partial a_{k}} M(u,v) & = & \frac{\partial
+F_{k}(u,v)}{\partial\Gamma} \times \frac{\Gamma}{a_{k}} \\
+%
+\frac{\partial}{\partial \gamma_{k}} M(u,v) & = & \frac{\partial
+F_{k}(u,v)}{\partial\Gamma} \times \frac{\pi^{2}a_{k}^{2}\gamma_{k}}{\Gamma} 
+(u\cos{\phi_{k}}-v\sin{\phi_{k}})^{2}
+\end{eqnarray}
+
+Further, since we know that neither the flux nor the position of the
+components depends on $\Gamma$, we can simplify the unknown
+$\frac{\partial F(u,v)}{\partial\Gamma}$ term to:
+
+\begin{equation}
+\frac{\partial F(u,v)}{\partial\Gamma} = S e^{2 \pi i (u x + v y)}
+\frac{\partial f(u,v)}{\partial\Gamma}
+\end{equation}
+
+and thus only $\frac{\partial f(u,v)}{\partial\Gamma}$ need be
+calculated individually for the different component types. This will
+be done in the following sections.
+
+\subsection{Gaussian components}
+
+The equation for the value of a gaussian component at position $(u,v)$
+in the UV plane is given in \cite{tjp91} as:
+
+\begin{equation}
+f(u,v) = e^{-\frac{\Gamma^{2}}{4\ln{2}}}
+\end{equation}
+
+This has a partial derivative {\em wrt} $\Gamma$ of:
+
+\begin{equation}
+\frac{\partial}{\partial\Gamma} f(u,v) = -\frac{2\Gamma}{4\ln{2}} f(u,v)
+\end{equation}
+
+\subsection{Uniformly Bright Disk components}
+
+The equation for the value of a uniformly bright disk component at
+position $(u,v)$ in the UV plane is given in \cite{tjp91} as:
+
+\begin{equation}
+f(u,v) = 2 \frac{J_{1}(\Gamma)}{\Gamma}
+\end{equation}
+
+Using a standard derivative from \cite{handbook}, the partial
+derivative of $f(u,v)$ {\em wrt} $\Gamma$ is:
+
+\begin{equation}
+\frac{\partial}{\partial\Gamma} f(u,v) = -2 \frac{J_{2}(\Gamma)}{\Gamma}
+\end{equation}
+
+\subsection{Optically Thin Sphere}
+
+The equation for the value of a optically thin sphere component at
+position $(u,v)$ in the UV plane is given in \cite{tjp91} as:
+
+\begin{equation}
+f(u,v) = \frac{3}{\Gamma^{3}}(\sin{\Gamma} - \Gamma \cos{\Gamma})
+\end{equation}
+
+The partial derivative of this function {\em wrt} $\Gamma$ is:
+
+\begin{equation}
+\frac{\partial}{\partial\Gamma} f(u,v) =
+\frac{9\cos{\Gamma}}{\Gamma^{3}} -
+\frac{9\sin{\Gamma}}{\Gamma^{4}} +
+\frac{3\sin{\Gamma}}{\Gamma^{2}}
+\end{equation}
+
+\subsection{Ring components}
+
+The equation for the value of a ring component at position $(u,v)$ in
+the UV plane is given in \cite{tjp91} as:
+
+\begin{equation}
+f(u,v) = J_{0}(\Gamma)
+\end{equation}
+
+Using a standard derivative from \cite{handbook}, the partial
+derivative of $f(u,v)$ {\em wrt} $\Gamma$ is:
+
+\begin{equation}
+\frac{\partial}{\partial\Gamma} f(u,v) = -J_{1}(\Gamma)
+\end{equation}
+
+\section{Alternative parameterizations.}
+
+The above partial derivatives were coded up for use in a simple
+implementation of the Levensburg-Marquardt non-linear least-squares
+algorithm. It turned out that the parameterization of the elliptical
+part of the models had significant problems. In particular in
+equation~\ref{par_phi} the partial derivative of the model {\em wrt}
+$\phi$ is zero when $\gamma_{k}=1$. This means that the parameter can
+be changed by an infinite amount without changing the model. This
+results in zero column and row vectors in the Levensburg-Marquardt
+Hessian matrix, which in turn results in a singular matrix when
+inverted.
+
+A better parameterization that is free of this problem was initially
+suggested by Steve Myers and formalized by Tim Pearson. The essential
+parts of Tim Pearson's suggestion are included below.
+
+\subsection{Reformulation of Model Fitting [Written by Tim Pearson]}
+
+I start from Martin's definition (11) of parameter $\Gamma$ for an
+elliptical component with major axis $a$, minor axis $b= \gamma a$,
+and position angle $\phi$: 
+
+\begin{equation}
+\Gamma = \pi \sqrt{a^2(u \sin\phi + v\cos\phi)^2 + b^2(u\cos\phi -
+v\sin\phi)^2}.
+\end{equation}
+
+Expanding this expression and collecting terms,
+
+\begin{equation}
+\Gamma^2/\pi = \cos^2\phi(a^2v^2 + b^2u^2) +
+               \sin^2\phi(a^2u^2 + b^2v^2) + 2uv\cos\phi\sin\phi(a^2-b^2).
+\end{equation}
+
+Applying the double-angle formulae:
+
+\begin{eqnarray}
+\sin2z & = & 2\sin z \cos z, \\ 
+\cos2z & = & 2\cos^2 z -1 = 1 - 2\sin^2 z, 
+\end{eqnarray}
+
+we obtain
+
+\begin{eqnarray} 
+\Gamma^2/\pi &=& (1 + \cos 2\phi)(a^2v^2 + b^2u^2)/2 + (1 - \cos 2\phi)(a^2u^2 + b^2v^2)/2 + uv \sin 2\phi (a^2 - b^2) \\
+%
+             &=& (a^2+b^2)(u^2+v^2)/2 + \cos 2\phi(a^2-b^2)(v^2 -u^2)/2 + uv\sin 2\phi (a^2 - b^2) \\
+%
+             &=& (v^2 -u^2) X + 2uv Y + (u^2+v^2) Z,
+\end{eqnarray}
+
+where I have defined 
+
+\begin{eqnarray}
+ X &=& (a^2 -b^2)\cos 2\phi /2,\\
+ Y &=& (a^2 -b^2)\sin 2\phi /2,\\
+ Z &=& (a^2+b^2)/2.
+\end{eqnarray}
+
+A point in the $(X,Y,Z)$ system represents an ellipse. Circles ($a=b$)
+are on the line $X=Y=0$.
+
+\subsection{Partial derivatives.}
+
+We need the derivatives of
+
+\begin{equation}
+\Gamma = \pi \sqrt{(v^2 -u^2) X + 2uv Y + (u^2+v^2) Z}
+\end{equation}
+
+with respect to the model parameters $X,Y,Z$:
+
+\begin{eqnarray}
+\frac{\partial\Gamma}{\partial X} &=& \frac{\pi^2}{2\Gamma} (v^2 - u^2),\\
+\frac{\partial\Gamma}{\partial Y} &=& \frac{\pi^2}{2\Gamma} (2uv),\\
+\frac{\partial\Gamma}{\partial Z} &=& \frac{\pi^2}{2\Gamma} (v^2 + u^2).
+\end{eqnarray}
+
+\subsection{Disadvantages}
+
+Use of $(X,Y,Z)$ as variable parameters instead of $(a,\gamma,\phi)$
+has the disadvantage that axial ratio and position angle cannot be
+constrained. Fixing $Z$ is somewhat equivalent to fixing major
+axis. There are some non-physical domains in $X,Y,Z$ space, e.g.,
+$Z<0$.
+
+\subsection{Advantages}
+
+$X,Y,Z$ all have the same dimensions so equal increments in each parameter
+are likely to affect $\chi^2$ by similar amounts. Components can be
+constrained to be circular by fixing $X=Y=0$. Note that convolving two
+elliptical gaussians is equivalent to adding their $X,Y,Z$ parameters---not
+that this has any relevance to model fitting.
+
+
+\begin{thebibliography}{xx}
+\bibitem{handbook} Abramowitz, M. and Stegun, I.A (eds) 1972 {\em
+Handbook of Mathematical functions} \S~9.1.30, 9th printing, Dover publications
+
+\bibitem{tjp91} Pearson, T.J. 1991 {\em Introduction to the Caltech VLBI
+Programs} \S~7.2
+
+\bibitem{nr} Press, W. H., Flannery, B. P., Teukolsky, S. A. and
+Vetterling, W. T. 1989, {\em Numerical Recipes}, Cambridge University
+Press.
+\end{thebibliography}
+\end{document}

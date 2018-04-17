@@ -1,0 +1,12 @@
+angle, separation, phase
+Set the cross-hatching style to be used with fill-area style 3.
+
+PARAMETERS
+----------
+
+angle        -     The angle of the hatching lines wrt the horizontal.
+                   The angle increases clockwise.
+separation   -     The separation of the lines in units of 1 percent
+                   of the smallest of the horizontal or vertical size
+                   of the view surface.
+phase        -     The phase of the lines, from 0 to 1.

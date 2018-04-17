@@ -1,0 +1,64 @@
+maxamp, maxphs
+Set limits on acceptable amplitude and phase corrections in selfcal.
+EXAMPLES
+--------
+
+1. To prevent selfcal from making amplitude corrections of more than
+   1.1 (unitless scale factor), or phase corrections of more that 10
+   degrees, type:
+
+   0>selflims 1.1,10
+   Selfcal amplitude corrections will be limited to 0.909091 -> 1.1.
+   Selfcal phase corrections will be limited to -10 -> 10 degrees.
+   0>
+
+   All but the first line are the response from selflims confirming
+   the new limits.
+
+2. To display the currently selected limits omit all arguments:
+
+   0>selflims
+   Selfcal amplitude corrections will be limited to 0.909091 -> 1.1.
+   Selfcal phase corrections will be limited to -10 -> 10 degrees.
+   0>
+
+3. To cancel all limits type:
+
+   0>selflims 0,0
+   Selfcal amplitude corrections will not be limited.
+   Selfcal phase corrections will not be limited.
+   0>
+
+PARAMETERS
+----------
+maxamp   -   If maxamp < 1 then no limit will be placed on amplitude
+             corrections. Otherwise selfcal solution intervals that
+             result in one or more amplitude corrections outside
+             the range 1/maxamp to maxamp will be left un-corrected.
+
+maxphs   -   If maxphs <= 0 then no limit will be placed on amplitude
+             corrections. Otherwise selfcal solution intervals that
+             result in one or more phase corrections outside
+             the range -maxphs to maxphs degrees will be left
+             un-corrected.
+
+When a new data-set is read in using the 'observe' command the
+limits are reset to provide no limits on corrections.
+
+CONTEXT
+-------
+In some data sets where the data is sparse, noisy or not well
+constrained for other reasons, selfcal may produce ridiculously large
+aberrant corrections. The selflims command is used before calling
+selfcal to set limits on the allowed corrections.
+
+Note that rejection of the solution for a given solution bin does NOT
+result in the effected visibilities being flagged - regardless of the
+flagging disposition set by any previous use of the selfflag command.
+
+RELATED COMMANDS
+----------------
+selfcal   - Perform self-calibration.
+selfflag  - Used to control the fate of un-correctable data.
+selftaper - Used to down-weight short baselines during selfcal.
+selfant   - Set antenna based constraints in selfcal.

@@ -1,0 +1,8 @@
+
+Undo all resoff calibration-offsets applied during this difmap session.
+
+CONTEXT
+-------
+If you have cold-feet about having used resoff to make your model
+and observed data look better, clroff will remove the resoff
+corrections.

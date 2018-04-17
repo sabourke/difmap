@@ -1,0 +1,19 @@
+left, right, bottom, top
+Set the viewport for a new plot on the current plot surface.
+
+PARAMETERS
+----------
+left    -    The normalized device coordinate of the left edge of
+             the new viewport.
+right   -    The normalized device coordinate of the right edge of
+             the new viewport.
+bottom  -    The normalized device coordinate of the bottom edge of
+             the new viewport.
+top     -    The normalized device coordinate of the top edge of
+             the new viewport.
+
+RELATED COMMANDS
+----------------
+pgswin -  Set the current world-coordinates of a plot.
+pgbox  -  Draw the world-coordinate axes of a plot.
+pgenv  -  Set the viewport, the world coordinates and draw axes.

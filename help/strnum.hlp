@@ -1,0 +1,12 @@
+number, <precision>
+Return the string representation of a number
+Convert a numeric argument into its textual equivalent in a string.
+The optional precision argument specifies the maximum number of
+significant figures to write - default = 4. For example:
+
+0> type "The result is: "//strnum(12.34567)//" OK?"
+		"The result is: 12.35 OK?" 
+
+0> type "The result is: "//strnum(12.34567,2)//" OK?"
+		"The result is: 12 OK?"
+

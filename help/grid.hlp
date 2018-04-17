@@ -1,0 +1,3 @@
+grid_axis, grid, array, new_grid, re-gridded-array
+Linearly interpolate an array onto a regular grid
+

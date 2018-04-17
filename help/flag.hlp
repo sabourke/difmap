@@ -1,0 +1,97 @@
+baselines, allchan, start_time, end_time
+Flag a set of baselines over a selectable time range.
+EXAMPLES
+--------
+The following example flags all visibilities of the currently
+selected channels.
+
+ 0>flag *
+ Flagging all baselines in the currently selected channels.
+
+The next example flags all visibilities of sub-array 2 of
+the currently selected channels.
+
+ 0>flag 2:
+ Flagging baselines of subarray 2 in the currently selected channels.
+
+The next example flags just the visibilities of baselines that are
+associated with an antenna called rx3, (in the default subarray,
+which is 1). If rx3 were in sub-array 2, you would type 2:rx3.
+
+ 0>flag rx3
+ Flagging baselines of antenna 1:RX3 in the currently selected channels.
+
+The next example flags just a single baseline, but this time for all
+channels, irrespective of the current selection.
+
+ 0>flag rx3-rx5, true
+ Flagging baseline 1:RX3-RX5 in all channels.
+
+The final example flags all baselines in just the selected channels,
+between 10:45 and 10:50 on the 20th of November 2001.
+
+ 0>flag *, false, 20-nov-2001:10:45, 20-nov-2001:10:50
+ Flagging all baselines in the currently selected channels.
+
+PARAMETERS
+----------
+
+baselines  -   The set of baselines to flag, specified by one
+               of the following forms:
+
+                 *         -    All baselines in all sub-arrays.
+
+                 sub:      -    All baselines in the sub-array
+                                specified by the number 'sub'.
+
+                 sub:ta    -    All baselines of the telescope
+                                named 'ta', in sub-array 'sub'.
+
+                 sub:ta-tb -    The single baseline of the
+                                telescopes named 'ta' and 'tb'.
+
+               In the above, if sub: is omitted from the last
+               two specifications, 1: is quietly substituted.
+
+allchan    -   Default = false
+               If true, flag visibilities of the specified
+               baselines over all channels and IFs. Otherwise
+               only flag visibilities in the channels that
+               were last selected with the 'select' command.
+
+start_time -   Default = ""
+               If not omitted, or specified as an empty string,
+               visibility editing will start from the start of
+               the observation. Otherwise this argument should
+               specify the date and time at which editing
+               should start, specified in the following format.
+
+                 dd-mmm-yyyy-mm:hh:mm:ss
+
+               Where dd is the day of the month 1-31, mmm is
+               a standard 3-letter abreviation of a month name,
+               and yyyy is a fully qualified year (ie. 2003, not
+               03). Trailing components of the time that follows
+               the date can be omitted. The hour part, hh, is
+               an hour number 0-23. The minute part, mm and the
+               seconds part, ss go from 0-59.
+
+end_time   -   Default = ""
+               If omitted, or specified as an empty string,
+               visibilities from the start time to the end of
+               the observation will be edited. Otherwise this
+               argument should specify the date and time at
+               which editing should end, using the same format
+               as described for the start_time argument.
+
+CONTEXT
+-------
+In most cases it is best to edit visibilities visually, using a
+visibility inspection command like vplot, tplot or radplot. However
+sometimes it is desirable to be able to be able to perform editting
+from a script, without any user interaction. The 'flag' command
+facilitates this.
+
+RELATED COMMANDS
+----------------
+unflag  -  Unflag a set of baselines over a selectable time range.

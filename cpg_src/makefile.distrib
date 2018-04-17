@@ -1,0 +1,53 @@
+#-----------------------------------------------------------------------
+# This is the (hopefully) site independant part of the libcpgplot.a makefile.
+# The site-specific part should be appended to this makefile and named
+# Makefile by the configure script. You should not have to modify this
+# file - changes should only be made to the configure script.
+# The configure script must define CC, CFLAGS, INCDIR, LIBDIR, HELPDIR,
+# RANLIB, PGBIND_FLAGS.
+#-----------------------------------------------------------------------
+# Description: Makefile for the record I/O interface library.
+#
+# Martin Shepherd  (mcs@phobos.caltech.edu)
+#-----------------------------------------------------------------------
+
+# Compile time C compiler flags.
+
+CFLAGC = -c $(CFLAGS) -I$(INCDIR)
+
+# This tells make how to compile a C file - don't touch.
+
+.c.o:
+	$(CC) $(CFLAGC) $<
+
+# The library name.
+
+LIBCPGPLOT = $(LIBDIR)/libcpgplot.a
+
+#-----------------------------------------------------------------------
+
+default: pgbind $(LIBCPGPLOT) $(INCDIR)/cpgplot.h
+
+pgbind: pgbind.c
+	$(CC) $(CFLAGS) -I$(INCDIR) -o pgbind pgbind.c
+
+$(LIBCPGPLOT): $(CPGPLOT_OBS)
+	ar ru $(LIBCPGPLOT) $(CPGPLOT_OBS)
+	$(RANLIB) $(LIBCPGPLOT)
+
+$(INCDIR)/cpgplot.h: cpgplot.h
+	cp cpgplot.h $(INCDIR)/cpgplot.h
+	chmod ugo+r $(INCDIR)/cpgplot.h
+
+#-----------------------------------------------------------------------
+# list object file dependencies
+
+$(CPGPLOT_OBS): cpgplot.h
+	./pgbind $(PGBIND_FLAGS) -w prototypes
+	$(CC) $(CFLAGC) $(CPGPLOT_SRC)
+	rm -f $(CPGPLOT_SRC)
+
+cpgplot.h: makefile.lis pgbind
+	./pgbind $(PGBIND_FLAGS) -h prototypes
+
+

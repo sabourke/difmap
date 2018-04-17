@@ -1,0 +1,30 @@
+direction, x_coords, y_coords, bar_lengths, terminal_size
+Plot an array of error bars in a given direction.
+
+PARAMETERS
+----------
+direction     -    direction to plot the error bar relative to
+                   the data point:
+
+                     One-sided error bar:
+                       DIR is 1 for +X (X to X+E);
+                              2 for +Y (Y to Y+E);
+                              3 for -X (X to X-E);
+                              4 for -Y (Y to Y-E).
+                     Two-sided error bar:
+                       DIR is 5 for +/-X (X-E to X+E); 
+                              6 for +/-Y (Y-E to Y+E).
+
+x_coords      -    The X-axis coordinates of each error bar.
+
+y_coords      -    The Y-axis coordinates of each error bar.
+
+bar_lengths   -    The lengths of each error bar.
+
+terminal_size -    (Optional: default=1)
+                   The height of the error-bar terminals relative to
+                   their default height.
+
+Note that if the three coordinate arrays contain differing numbers of
+elements, the smallest array will dictate the number of error bars
+drawn.

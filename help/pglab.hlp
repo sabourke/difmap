@@ -1,0 +1,11 @@
+x-label, y-label, title
+Annotate a plot with a title and axis labels
+
+PARAMETERS
+----------
+
+x-label   -   The label to place beneath the X-axis.
+
+y-label   -   The label to place to the left of the Y axis.
+
+title     -   The title to place above the plot.

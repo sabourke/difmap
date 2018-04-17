@@ -1,0 +1,128 @@
+
+Grid selected UV data and Fourier invert it to a (residual) dirty map
+EXAMPLE 1
+---------
+
+ 0>invert
+ Inverting map and beam
+ Estimated beam: bmin=0.7503 mas, bmaj=1.8830 mas, bpa=-10.9 degrees
+ 0>
+
+The two lines without prompts are the response from the invert command.
+The second of these is an estimate of the restoring beam size.
+
+EXAMPLE 2
+---------
+
+ 0>mapsize 256,2
+ 0>invert
+ Inverting map and beam 
+ Your choice of large map pixels excluded 49.3% of the data.
+  The x-axis pixel size should ideally be below 1.025 milli-arcsec
+  The y-axis pixel size should ideally be below 3.466 milli-arcsec
+ Estimated beam: bmin=9.189 mas, bmaj=23.87 mas, bpa=-11.54 degrees
+ Estimated noise=6.17991 mJy/beam.
+ 0>
+
+In this case 49% of the visibilities represented higher spatial
+frequencies than could be Nyquist sampled by the coarse pixel spacing
+of the chosen map grid. These visibilities were thus excluded from the
+map produced by invert. The third and fourth lines of output show the
+maximum pixel spacings that can be accomodated in RA and Dec without
+lossing data. One could satisfy both sizes by using the mapsize
+command to select a new square map pixel size of 1 arcsecond, or by
+using the mapsize command to select a rectangular pixel size of
+1.0 x 3.0 arcseconds.
+
+CONTEXT
+-------
+Invert is the command that takes UV data and transforms it to a dirty map
+and a dirty beam. Normally 'invert' is run for you by any commands that
+operate on the residual map, such as:
+
+clean   - CLEAN a residual map.
+restore - Restore a residual map.
+mapplot - Display a residual map or beam.
+
+It is only run by these commands when the current dirty map and/or
+beam has been invalidated by modifications to the UV data. The beam
+often doesn't need to be recomputed under these circumstances. When it
+does need to be re-computed then 'invert' will also report a
+corresponding estimate of the new beam dimensions.
+
+RESIDUALS
+---------
+If an established clean model exists then this will be subtracted from
+the observed visibilities while gridding. The result is to produce a
+dirty residual map approximately the same as the one left after clean,
+but devoid of any aliasing from the removed components. If a
+non-residual dirty map is desired, then discard the established clean
+model by typing 'clrmod true' and re-invert.
+
+RUNNING PARAMETERS
+------------------
+Although the command itself takes no arguments, the procedure that it
+runs takes a number of parameters. These are set and changed through
+a number of related difmap commands. Reasonable defaults are set for
+most of these, but you will be required to at least read a UV data
+file, using the 'observe' command and to specify a map grid, via the
+'mapsize' command before first using invert. The rest of the commands
+offer a choice of visibility weighting and selection schemes which
+effect how the data are gridded on the UV plane. These commands are
+listed in the RELATED COMMANDS section below, and each command is
+discussed separately in its own help file.
+
+GRIDDING
+--------
+Visibilities for each IF of an observation are combined in the UV
+plane during gridding. If each IF has a different frequency then this
+implements a crude form of multi-frequency-synthesis, however
+currently no provision is made to correct for spectral-index effects,
+so if you don't think that the source structure and flux are constant
+between the multiple frequencies then you are advised to split the IFs
+in AIPS and map them separately.
+
+Also note that if a range of spectral-line channels is selected via
+the difmap 'select' command, that a vector average of visibilities
+over those channels is formed before gridding. Thus different channels
+are not gridded separately and if the UV coordinates of visibilities
+change appreciably over the selected range them some degree of
+bandwidth smearing will be apparent.
+
+UV SAMPLING CONSTRAINTS
+-----------------------
+
+In order to avoid aliasing and to avoid undersampling the image plane,
+the UV grid must be no more than half filled along either the U or the
+V axes. If the current map cell-size is too large to accomodate the
+range of U or V coordinates along the respective axes of the UV grid,
+then 'invert' will exclude visibilities that lie outside the Nyquist
+UV limits from the final map. The accompanying warning messages
+provide directions for remedying this situation with the mapsize
+command. Note that these are no more than warnings. There are times
+when using large pixels is the only practicle way to view a large
+enough field.
+
+If the Nyquist limits are exceeded along both the RA (x) axis and the
+Dec (y) axis, then the invert command will report corresponding
+limiting pixel sizes for the two axes separately. In such cases you
+could either take the smallest of the reported sizes and use the
+mapsize command to select square pixels, or you could use the mapsize
+command to select rectangular pixels to match both constraints. See
+'help mapsize' for details.
+
+SIDE EFFECTS
+------------
+The latest CLEAN model will be added to the established model
+component list and model visibilities. If this is undesirable then use
+the 'clrmod' command to clear the latest CLEAN model before inverting.
+
+RELATED COMMANDS
+----------------
+mapsize  - Specify the dimensions of subsequent maps.
+uvweight - Selects combinations of natural,uniform, uncertainty, and
+           radial weighting.
+uvtaper  - Apply a gaussian taper to the weights.
+uvrange  - Constrain the range of UV radii within which to select
+           visibilities for gridding.
+uvzero   - Set a zero-UV-spacing flux.

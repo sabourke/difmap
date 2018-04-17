@@ -1,0 +1,2 @@
+axis, array-name
+Return the number of elements along a given axis

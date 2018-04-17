@@ -1,0 +1,167 @@
+doamp, dofloat, solint
+Self calibrate for telescope phase (and amplitude) corrections.
+EXAMPLES
+-------
+
+1. Phase-only self-calibration:
+
+   0>selfcal
+   Performing phase self-cal
+   Adding 49 model components to the UV plane model.
+   The established model now contains 49 components and 5.43211 Jy
+  
+   Correcting IF 1.
+    A total of 2187 telescope corrections were flagged in sub-array 1.
+ 
+   Fit before self-cal, rms=0.333969Jy  sigma=1.037002
+   Fit after  self-cal, rms=0.325501Jy  sigma=1.012208
+ 
+   Reinstating the default IF.
+   0>
+
+2. Amplitude and phase self-calibration with a solution interval.
+
+   0>selfcal true,true,1440
+   Performing amp+phase self-cal over 1440 minute time intervals
+ 
+   Correcting IF 1.
+    A total of 222 telescope corrections were flagged in sub-array 1.
+ 
+   Fit before self-cal, rms=0.325501Jy  sigma=1.012208
+   Fit after  self-cal, rms=0.255853Jy  sigma=0.747795
+ 
+   Reinstating the default IF.
+   0>
+
+All but the first line of each example are responses from 'selfcal'.
+
+PARAMETERS
+----------
+doamp   - (Default=false)
+          If this parameter is omitted or given as false, only phase
+          corrections are calculated and applied. Alternatively, if
+          doamp=true telescope amplitude corrections will also be
+          calculated and applied.
+
+dofloat - (Default=false)
+          If doamp=true, then dofloat specifies how the amplitude
+          corrections are to be applied. Initially the corrections are
+          applied verbatim to the visibilities. If dofloat is true
+          then this is all that occurs. However if dofloat is false
+          then the total amplitude self-cal corrections so far
+          applied to the data, by this and previous invocations of
+          selfcal and gscale, are summed over all integrations and
+          telescopes to form a mean, and then all corrections are
+          divided through by this number to normalize them. This
+          provides an established but hard to justify means of
+          anchoring the flux scale, in the event that feedback in the
+          CLEAN+selfcal loop becomes slightly positive. It is also
+          often abused as a means to get amplitude self-cal to work
+          before the model has been completed at short UV spacings. If
+          you are tempted to do this please look at the help given for
+          the selftaper command.
+
+solint  - The solution interval in minutes.
+          Solutions are calculated within top-hat solution bins of
+          this width and then are smoothed with a gaussian filter.
+          The half power point of the filter in the Fourier plane is
+          at 1/(2.solint). According to the Shannon sampling theorem
+          this is the highest frequency that can be sampled with a
+          sample grid spacing of solint.
+
+CONTEXT
+-------
+Self-calibration is a means to finding self-consistent telescope based
+amplitude and phase corrections, through comparison of the observed
+data to an approximate model of the source structure. The algorithm
+implemented here performs least-squares minimization. It was based on
+sample code provided by Tim Cornwell.
+
+As explained in the 'clean' help topic, self-calibration with
+'selfcal' is usually combined in a loop with 'clean' and a number of
+auxiliary data editing, display etc.. commands.
+
+The initial model to use with selfcal may either be provided by a few
+iterations of CLEAN, or by an external model read in with the rmodel
+command. Such an external model could come from model fitting, or be
+the model from a different map of the same source.
+
+It is strictly recommended that one initially avoid amplitude
+self-calibration, and only use phase self-calibration until the model
+flux from CLEAN reaches that of the data, as displayed in
+radplot. Only at this point should amplitude self-calibration be used
+to remove amplitude errors. If you have trouble getting all the flux
+at short UV spacings, try switching to natural weighting (see help
+uvweight) and/or to using a UV-taper (see help uvtaper) or UV range,
+(see help uvrange) before continuing CLEANing. This may reveal the
+extended emission implied by the extra flux at short spacings. If this
+still doesn't reveal any more believable flux then, and only then
+attempt amplitude self-cal, but be sure to use the selftaper command
+to weight down the significance of the badly fitting short UV
+spacings. If you fail to use selftaper in this way then selfcal will
+happily attempt to drag the short UV spacing visibilities down to fit
+the erroneously low model.
+
+When interleaved applications of clean and selfcal start to provide
+diminishing returns, the residual map (as displayed by 'mapplot map')
+should appear to contain only noise and be devoid of beam-shaped 
+features. Depending on the quality of the data, this may not always be
+achievable. If artifacts remain after many cycles of clean and self-cal,
+then this may indicate, either low-surface brightness extended
+emission that will take some time to clean out, or real problems with
+the data. Both cases can be determined by examining the fit between
+the model and observed visibilities with the 'vplot' command and the
+radplot command. Judicious editing may then be used to remove any bad
+data.
+
+In addition, self-calibration will fail to find phase-solutions for
+any telescope that appears on less than one un-flagged closure triangle at
+a given integration and similarly fail to find gain solutions for
+telescopes with no un-flagged closure amplitudes. The selfflag command
+may be used to specify how to deal with this. The default is to flag
+all corrections that can not be deduced. These correction flags are
+propagated to the visibilities that they effect when the corrections
+are applied to the data.
+
+To assign extra weight to a given telescope during self-calibration,
+or to prevent the complex gain of a given telescope from being
+changed see help on the selfant command.
+
+Application of selfcal to multiple sub-arrays, IFs and polarizations
+--------------------------------------------------------------------
+Selfcal is applied separately to each sub-array of each IF.
+Corrections accumulated in this fashion are propogated to all
+spectral-line channels and polarizations in the same IFs and
+sub-arrays. Thus by careful mapping and self-calibration of a strong
+spectral-line channel you will also be correcting the phases and
+amplitudes of the weaker channels so that they can sub-sequently be
+cleaned.
+
+Agreement factors
+-----------------
+Selfcal displays two agreement factors.
+
+The one denoted 'rms' is the root-mean-square difference between the
+model and observed visibilities, measured in Jy. This is formed as the
+mean of the squares of the amplitude difference vectors between the
+model and observed visibilities.
+
+The second, which is denoted by the name 'sigma', is the root mean
+square of the squared difference between the data and the model
+(taking the real and imaginary parts of visibilities as separate
+measurements) divided by the individual variances implied by the
+visibility weights. This would be equivalent to the square-root of the
+reduced chi-squared, except that no account is taken of the number of
+degrees of freedom implied by the number of gains being varied.
+
+RELATED COMMANDS
+----------------
+selfflag  - Used to control the fate of un-correctable data.
+selftaper - Used to down-weight short baselines during selfcal.
+selflims  - Used to set limits to amp and phase corrections in selfcal.
+selfant   - Set antenna based constraints in selfcal.
+gscal     - Calculate overall telescope amplitude corrections.
+startmod  - Phase selfcal to a starting model then discard the model.
+corplot   - Display and allow editing of corrections.
+uncalib   - Remove selected parts of corrections.
+uvrange   - Set the min and max UV radii of usable visibilities.

@@ -1,0 +1,143 @@
+file_name, bin_width, do_scatter
+Read UV data from a random-groups UV FITS file.
+EXAMPLE
+-------
+
+  0>observe /scr/mcs/fits/gbt_spec.uvf
+  Reading UV FITS file: /scr/mcs/fits/gbt_spec.uvf
+  AN table 1: 7 integrations on 45 of 45 possible baselines.
+  Apparent sampling: 1 visibilities/baseline/integration-bin.
+  Found source: 1641+399
+ 
+  There are 2 IFs, and a total of 128 channels:
+
+   IF  Channel    Frequency  Freq offset  Number of   Overall IF
+        origin    at origin  per channel   channels    bandwidth
+   ------------------------------------------------------------- (Hz)
+   01        1  1.53575e+10       125000         64        8e+06
+   02       65  1.53655e+10       125000         64        8e+06
+ 
+  Polarization(s): RR LL RL LR
+ 
+  Read 353 lines of history.
+ 
+  Reading 161280 visibilities.
+  0>
+
+All lines following the 'observe' command line are informational output
+messages from the observe command.
+
+PARAMETERS
+----------
+file_name  -   The name of the UV FITS file to be read.
+
+bin_width  -   Default=0.0 (seconds)
+               This argument is used to specify how visibilities are
+               to be collected into integrations. This is discussed
+               further in the CONTEXT section below. There are two
+               alternatives:
+
+               1. If binwid<1.0 seconds then 'observe' will assign an
+                  integration to every time-stamp in the file. This is
+                  ok if visibilities on different baselines within the
+                  same integration have the same time-stamps, but
+                  disasterous otherwise.
+
+               2. If binwid>=1.0 seconds then 'observe' will bin
+                  visibilities onto a regular integration grid of
+                  spacing 'binwid' seconds anchored at 0 UTC on the
+                  first day of the observation. Where multiple
+                  visibilities fall on the same baseline of a given
+                  integration, they will be vector averaged using a
+                  weighted mean using the same algorithm as uvaver.
+
+do_scatter -   Default=false
+               If do_scatter=true the weights from the FITS file
+               will be supplanted by weights estimated from the
+               scatter of the data within each integration bin. There
+               must be at least two visibilities per baseline within each
+               integration bin to do this. Where this is not the case
+               the output visibility will be flagged, and be assigned
+               the input visibility weight.
+
+CONTEXT
+-------
+Before interferometer data can be processed, it must be read into
+difmap. The observe command reads interferometer data in the form of
+single source UV FITS files. The older Caltech VLBI merge format files
+are no longer acceptible. The caltech VLBI package program 'MERGEFITS'
+may be used to convert merge files to FITS.
+
+UV FITS files do not provide any means to map visibilities on
+different baselines into integrations. Each visibility has its own
+time-stamp, which need not aggree with those on other baselines within
+the same logical integration. In fact UV FITS files do not even limit
+visibilities on different baselines to have the same integration
+time. Difmap, on the other hand does require that visibilities be
+grouped into integrations. This is the reason for the 'binwid'
+argument of the 'observe' command. If the visibilities do not lie on
+an integration grid then you must specify a suitable integration time
+into which visibilities should be binned into integrations. Depending on
+how the FITS file has been processed, it may already have visibilities
+grouped into integrations with identical time-stamps assigned to each
+grouped visibility, in which case no 'binwid' argument will be
+required. This is the case for files written by difmap. If you do not
+know what state your file is in, then try to read it with the observe
+command without specifying an integration time. Then if 'observe'
+reports something along the following lines, then either run the
+'uvaver' command to re-grid the data or equivalently re-run the
+observe command with a suitable integration time.
+
+observe poor_sampling.uvf
+...
+Apparent sampling: 0.245305 visibilities/baseline/integration.
+*** This seems a bit low - see "help observe" on the binwid argument.
+...
+
+Other symptoms of in-completely binned integrations are that selfcal
+flags all of your data due to the lack of closure quantities, and that
+station based editing in vplot behaves like baseline based editing.
+
+While the 'binwid' and 'scatter' options are provided primarily as a
+mechanism to group data into integrations, they may also be employed
+to average ones data to longer integration times for efficiency
+reasons. The effect is identically equivalent to reading the data with
+observe and then running the 'uvaver' command with the same arguments,
+except that in the latter case you might not have sufficient memory to
+read the data before averaging and reading in the larger file would
+take longer.
+
+LIMITATIONS
+-----------
+Only single source, time-ordered UV FITS files will be accepted by
+difmap. Multi-source files must be split into one or more single
+source files before presenting them to difmap. AIPS provides the
+SPLIT task to do this. Similarly, AIPS UVSRT may be used to re-sort
+files into time order (eg. TB order).
+
+Difmap accepts multiple sub-arrays within a file, multiple
+polarizations, spectral-line channels and multiple IFs.
+
+While difmap does accept multiple IFs, it does not make any
+allowances for spectral-index effects over the range of frequencies
+covered by the IFs. If the source structure changes significantly
+between IFs, you should SPLIT the IFs into separate files and process
+them independantly within difmap. Also note that difmap requires that
+the frequencies assigned to each IF do not change over the duration of
+the file. To enforce this difmap rejects files containing multiple
+frequency IDs.
+
+SIDE EFFECTS
+------------
+Any previously read UV data will be discarded before the new file is
+read. Any existing models and CLEAN windows will also be discarded.
+All weight options are restored to their defaults.
+
+The current map-grid will be cleared, but its dimensions and cell-size
+will not be changed.
+
+RELATED COMMANDS
+----------------
+wobs   -  Write out a modified UV FITS file.
+select -  Select a polarization and channels to be processed.
+uvaver -  Used to re-grid UV data.

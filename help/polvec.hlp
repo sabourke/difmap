@@ -1,0 +1,55 @@
+scale, icut, pcut, dx, dy
+Configure how polarization vectors are displayed.
+
+EXAMPLE
+-------
+
+  0>polvec 5.0, 0.3, 0.0, 2, 2
+  Give polarization vectors lengths of 5 milli-arcsec/Jy.
+  Draw vectors where unpolarized flux > 0.3 Jy and polarized flux > 0 Jy.
+  Draw polarization vectors in every 2nd X pixel and in every 2nd Y pixel.
+
+All but the first of the above lines are responses from the polvec command.
+
+PARAMETERS
+----------
+scale  -  Specify the length per Jy of each vector on the map.  This
+          length is specified in the units specified by the last call
+          to the 'mapunits' command.
+
+          The initial default is 0.0, which results in an error
+          message being emitted by the mapplot command when it is
+          asked to draw a vector plot.
+
+icut   -  Default = 0.0 Jy.
+          The minimum flux of the underlying single polarization map
+          for which vectors should be drawn.
+
+pcut   -  Default = 0.0 Jy.
+          The minimum polarized intensity for which vectors should be
+          drawn.
+
+dx,dy  -  Default = 1,1.
+          Polarization vectors will be drawn at most every this number
+          of pixels horizontally and vertically. Thus by default
+          vectors will be drawn in every pixel that satisfies the icut
+          and pcut flux constraints.
+          
+CONTEXT
+-------
+Given an observation with Q and U polarizations, the 'mapplot' command
+has the capability to overlay polarization vectors over the map of
+the currently selected polarization. Normally one selects I polarization
+before running mapplot in this mode, so that the total intensity map
+is displayed overlaid with polarization vectors.
+
+The 'polvec' command configures the general attributes of these
+polarization vectors, allowing specification of their length per Jy of
+polarized flux density, how bright the underlying map or the polarized
+flux must be before a vector should be drawn in a given pixel, and
+whether to subsample the available pixels to avoid overcrowding.
+
+RELATED COMMANDS
+----------------
+mapplot      -  Display map and beam images.
+multi_model  -  Enable or disable multi-model mode.

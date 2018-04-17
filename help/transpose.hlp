@@ -1,0 +1,31 @@
+data-array, axis-order
+Return a transposed version of a data array
+
+The axis order is specified as a string giving the new order of
+axes in terms of the original order. The first axis of the original
+array is denoted as 0.
+
+For example:
+
+Given a 2-D array, the axis-order string "10" means transpose the
+array to one in which the second axis becomes the first axis
+and the first axis becomes the second. Axes here are denoted in a FORTRAN
+sense, with the most rapidly changing axis first. Thus the 1D array:
+
+(1,2,3,4,5) has 5 elements along axis 0 and 1 along axes 1,2 etc..
+
+whereas the following 2-D array has 2 elements along axis 0, 3 elements
+along axis 1 and 1 along axes 2,3 etc..
+
+     1 2
+     3 4
+     5 6
+
+So to transpose the above array one might type:
+
+0> typ trans(array,"10")
+
+yielding:
+
+        1 3 5
+        2 4 6

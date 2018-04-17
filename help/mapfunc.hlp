@@ -1,0 +1,64 @@
+function, vmin, vmax
+Change the transfer function and data range displayed in mapplot.
+EXAMPLES
+--------
+
+To select a linear transfer function:
+
+ 0>mapfunc linear
+ Mapplot transfer-function = linear, Data range = data min -> data max.
+ 0>
+
+To select a logarithmic transfer function, and limit the range of
+fluxes displayed:
+
+ 0>mapfunc log, peak(flux,min), peak(flux,max)/2
+ Mapplot transfer-function = log, Data range = -0.103472 -> 0.162955 Jy.
+ 0>
+
+To select the whole available data range:
+
+ 0>mapfunc linear,0,0
+ Mapplot transfer-function = linear, Data range = data min -> data max.
+ 0>
+
+PARAMETERS
+----------
+
+ function  -  The transfer function to use, selected from:
+               linear -   Linear transfer function.
+               log    -   Logarithmic transfer function.
+               sqrt   -   Square-root transfer function.
+
+ vmin      -  The minimum map intensity to be plotted (Jy).
+
+ vmax      -  The maximum map intensity to be plotted (Jy).
+              To select the whole data range, set vmin and vmax
+              both to zero.
+
+CONTEXT
+-------
+Mapplot displays images using contours and/or grey-scale/psuedo-color
+plots. When grey-scale or psuedo-color are selected (see help
+mapcolor), mapplot defaults to mapping the whole range of data in the
+map or beam, linearly onto the current colormap. In high dynamic range
+images with bright features this has the tendency of making low
+brightness features difficult to see. In such cases it is often
+advantageous to take the log or square root of the image values,
+and/or reduce the maximum intensity plotted. The 'mapfunc' command
+allows one to do this.
+
+Note that mapplot also  allows one to interactively change the
+transfer function (but not the data range).
+
+Also note that older versions of PGPLOT did not allow one to change
+the transfer function, and if you are using such a version, all
+transfer functions will appear linear.
+
+RELATED COMMANDS
+----------------
+mapplot  -  Display map and beam images.
+mapcolor -  Change the colormap, brightness and contrast used in mapplot.
+xyrange  -  Set the boundaries of the sub-image to be displayed in mapplot.
+loglevs  -  Set logarithmic contour levels for use in 'mapplot'.
+beamloc  -  Change when and where mapplot plots the clean beam ellipse.

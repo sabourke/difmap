@@ -1,0 +1,10 @@
+min_color_index, max_color_index
+Set the range of color indexes to be used in pggray and pgimag.
+
+PARAMETERS
+----------
+
+min_color_index   -   The lowest color index to be used.
+
+max_color_index   -   The highest color index to be used.
+

@@ -1,0 +1,82 @@
+#-----------------------------------------------------------------------
+# This is the (hopefully) site independant part of the libslalib.a makefile.
+# The site-specific part should be appended to this makefile and named
+# Makefile by the configure script. You should not have to modify this
+# file - changes should only be made to the configure script.
+# The configure script must define CC, CFLAGS, INCDIR, LIBDIR, HELPDIR,
+# RANLIB.
+#-----------------------------------------------------------------------
+# Description: Makefile for a subset of the slalib positional astronomy
+# library - See the accompanying README file in this directory for
+# copyright and disclaimer information.
+#
+# Martin Shepherd  (mcs@phobos.caltech.edu)
+#-----------------------------------------------------------------------
+
+# Compile time C compiler flags.
+
+CFLAGC = -c $(CFLAGS) -I$(INCDIR)
+
+# This tells make how to compile a C file - don't touch.
+
+.c.o:
+	$(CC) $(CFLAGC) $<
+
+# List slalib object files.
+
+SLALIB_OBS = cldj.o dat.o dcc2s.o dcs2c.o deuler.o djcl.o dmoon.o dmxm.o \
+ dmxv.o dranrm.o dt.o dvdv.o dvn.o epb2d.o epj.o eqeqx.o evp.o fk45z.o \
+ geoc.o gmst.o map.o mappa.o mapqk.o nut.o nutc.o prebn.o prec.o preces.o \
+ prenut.o planet.o
+
+# The library name.
+
+LIBSLALIB = $(LIBDIR)/libslalib.a
+
+#-----------------------------------------------------------------------
+
+default: $(LIBSLALIB) install-header
+
+$(LIBSLALIB): $(SLALIB_OBS)
+	ar ru $(LIBSLALIB) $(SLALIB_OBS)
+	$(RANLIB) $(LIBSLALIB)
+
+install-header:	$(INCDIR)/slalib.h
+
+$(INCDIR)/slalib.h: slalib.h
+	cp slalib.h $(INCDIR)/slalib.h
+	chmod ugo+r $(INCDIR)/slalib.h
+
+#-----------------------------------------------------------------------
+# list object file dependancies
+
+cldj.o: slamac.h slalib.h
+dat.o: slamac.h slalib.h
+dcc2s.o: slamac.h slalib.h
+dcs2c.o: slamac.h slalib.h
+deuler.o: slamac.h slalib.h
+djcl.o: slamac.h slalib.h
+dmoon.o: slamac.h slalib.h
+dmxm.o: slamac.h slalib.h
+dmxv.o: slamac.h slalib.h
+dranrm.o: slamac.h slalib.h
+dt.o: slamac.h slalib.h
+dvdv.o: slamac.h slalib.h
+dvn.o: slamac.h slalib.h
+epb2d.o: slamac.h slalib.h
+epj.o: slamac.h slalib.h
+eqeqx.o: slamac.h slalib.h
+evp.o: slamac.h slalib.h
+fk45z.o: slamac.h slalib.h
+gmst.o: slamac.h slalib.h
+geoc.o: slamac.h slalib.h
+map.o: slamac.h slalib.h
+mappa.o: slamac.h slalib.h
+mapqk.o: slamac.h slalib.h
+nut.o: slamac.h slalib.h
+nutc.o: slamac.h slalib.h
+planet.o: slamac.h slalib.h
+prebn.o: slamac.h slalib.h
+prec.o: slamac.h slalib.h
+preces.o: slamac.h slalib.h
+prenut.o: slamac.h slalib.h

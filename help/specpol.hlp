@@ -1,0 +1,58 @@
+polarization1, polarization2, ...
+Select the list of polarizations to be displayed by specplot.
+
+EXAMPLE
+-------
+
+1. Select a single polarization.
+
+   0>specpol I
+   Specplot polarization selections: I
+   0>
+
+2. Select a list of polarizations.
+
+   0>specpol I,Q,U,V   
+   Specplot polarization selections: I, Q, U, V
+   0>
+
+3. To see what polarizations are currently selected, omit all arguments.
+
+   0>specpol
+   Specplot polarization selections: I, Q, U, V
+   0>
+
+ARGUMENTS
+---------
+
+polarization1, ...  -   A list of one or more names of polarizations.
+                        Type 'help polarization' for the list of
+                        recognized names.
+
+To see the current list omit all arguments.
+
+CONTEXT
+-------
+The specplot command plots scalar and vector averaged visibility
+spectra. Visibilities are selected by polarization, time range, UV
+radius range, and baseline groups. The specpol command is responsible
+for supplying a list of polarizations.
+
+Where more than one polarization is given, spectra can be plotted for
+each of them separately. The 'specorder' command can be used to direct
+when to change from one polarization to the next while plotting spectra.
+
+Recognized polarization names are listed in the on-line help for
+polarization. To see the list, type:
+
+ help polarization
+
+RELATED COMMANDS
+----------------
+specplot   -  Plot time-averaged visibility spectra.
+specopt    -  Preset specplot display options.
+specsmooth -  Preset the spectral resolution displayed by specplot.
+specorder  -  Set the order in which spectra are to be displayed.
+specbase   -  Select baselines to be displayed by specplot.
+spectime   -  Select time ranges to be displayed by specplot.
+specuvr    -  Select the UV radius ranges to be displayed by specplot.

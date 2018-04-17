@@ -1,0 +1,19 @@
+data_array, min_value, max_value, nbin, <draw_axes>
+Plot a histogram of data values in an array.
+
+PARAMETERS
+----------
+
+data_array    -   The array whose histogram is to be plotted.
+
+min_value     -   The minimum value to bin.
+
+max_value     -   The maximum value to bin.
+
+nbin          -   The number of histogram bins between
+                  min_value and max_value.
+
+draw_axes     -   If this is true then a new plot will be started
+                  with axes suitable for the histogram.
+                  If this is false then the histogram will be drawn
+                  within the current plot.

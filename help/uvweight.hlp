@@ -1,0 +1,73 @@
+bin_size, error_power, do_radial
+Set the type and degree of weighting for subsequent UV gridding.
+EXAMPLE
+-------
+
+1. To select uniform weighting and to scale the uniform weighting grid
+   weights by the errors implied by the data raised to the power -1, type:
+
+   0>uvweight 2,-1
+   Uniform weighting binwidth: 2 (pixels).
+   Gridding weights will be scaled by errors raised to the power -1.
+   Radial weighting is not currently selected.
+   0>
+
+   The first line illustrates a typical use of the command, and the
+   following three lines are the response by the 'uvweight' function,
+   confirming the choices made.
+
+2. To see the current choice of weighting, omit all arguments:
+
+   0>uvweight
+   Uniform weighting binwidth: 2 (pixels).
+   Gridding weights will be scaled by errors raised to the power -1.
+   Radial weighting is not currently selected.
+   0>
+
+PARAMETERS
+----------
+bin_size  - If this is > 0 then it selects uniform weighting. The
+            value sets the bin size in UV-grid pixels within which to
+            count neighboring visibilities. The reciprocal of these
+            counts are then used to weight the visibilities by the
+            local number density. A value of 2 is recommended.
+            Non-integral values are legal but fractional values below
+            1 are not.
+
+error_pow - If < 0 then this selects additional weighting by amplitude
+            errors. The value selects the exponent to raise the error
+            to. Statistically this should be -2, but -1 is recommended.
+            Make sure that the relative errors between baselines are
+            meaningful before using this option or you may end up with
+            some baselines making no contribution to the final map!
+
+do_radial - If true then the weight given to each visibility will be
+            divided by its UV radius. Only recommended when one's
+            UV coverage is approximately circular.
+
+CONTEXT
+-------
+This command sets the weights given to individual visibilities as they
+are gridded, prior to Fourier inversion into the image plane. The
+choices made remain in effect until this function is called again.
+
+When a new data set is read with the 'observe' command, the defaults
+are reset to apply uniform weighting with a bin-width of 2 and no
+other form of weighting.
+
+Unless the commands mentioned in the last section are of interest, you
+would typically follow this command by invoking the 'invert' command.
+(See help on 'invert' for details).
+
+SIDE EFFECTS
+------------
+Use of this command will cause the next 'clean', 'mapplot' etc..
+to re-invert the modified UV data-set to produce an updated dirty
+beam and residual map.
+
+RELATED COMMANDS
+----------------
+uvtaper - Apply a gaussian taper to the weights.
+uvrange - Constrain the min and max UV radii within which visibilities
+          are gridded.
+uvzero  - Set a zero-UV-spacing flux.

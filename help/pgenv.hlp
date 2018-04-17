@@ -1,0 +1,29 @@
+xa, xb, ya, yb, just, axis
+Set up the axes for a new graph.
+
+PARAMETERS
+----------
+
+xa      -      The X coordinate of the left edge of the plot.
+
+xb      -      The X coordinate of the right edge of the plot.
+
+ya      -      The Y coordinate of the bottom edge of the plot.
+
+yb      -      The Y coordinate of the top edge of the plot.
+
+just    -      1 - Make the physical aspect ratio of the plot
+                   equal to the world-coordinate aspect ratio.
+
+               Otherwise make the X and Y axes have the same
+               physical length.
+
+axis    -      -2  -  Draw no box or labels.
+               -1  -  Draw an unlabeled box.
+                0  -  Draw a labeled box.
+                1  -  Draw a labeled box with extra x=0,y=0 axes.
+                2  -  Same as 1, but with the addition of grid
+                      lines at major coordinate ticks.
+               10  -  Draw box with logarithmically labeled X axis.
+               20  -  Draw box with logarithmically labeled Y axis.
+               30  -  Draw box with logarithmically labeled axes.

@@ -1,0 +1,26 @@
+color_index, red, green, blue
+Change the color of a PGPLOT color index (RGB version).
+
+PARAMETERS
+----------
+
+color_index   -   The color index to be changed. See 'help pgsci'
+                  for the standard assignments.
+
+red           -   The red contribution to the color:
+                   0 - Black.
+                   1 - 100% red.
+
+green         -   The green contribution to the color:
+                   0 - Black.
+                   1 - 100% green.
+
+blue          -   The blue contribution to the color:
+                   0 - Black.
+                   1 - 100% blue.
+
+RELATED COMMANDS
+----------------
+pgshls - Change the color of a PGPLOT color index (HLS version).
+pgscrn - Set the color of a PGPLOT color index by name.
+

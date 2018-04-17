@@ -1,0 +1,186 @@
+\documentclass[12pt]{article}
+
+\begin{document}
+
+\def\pair{\stackrel{\mbox{\tiny FT}}{\Longleftrightarrow}}
+\def\ft{{\cal F}}
+\def\ift{{\cal F}^{\mbox{\,-}1}}
+\parindent 0pt
+
+\section{Smoothing spectra via Fourier transforms}
+
+Smoothing data with an even smoothing function is equivalent to
+convolving the data with that function. This can be achieved via
+Fourier transforms.
+ 
+\subsection{Definition of terms}
+
+\begin{itemize}
+\item Let $\ft(g)$ denote the Fourier transform of a function $g$.
+\item Let $\ift(G)$ denote the inverse Fourier transform of a function $G$.
+\item Let $.$ denote multiplication, and $\otimes$ denote convolution.
+\item Let the smoothing function be denoted by $s$.
+\item Let the original arrays of data values and weights be denoted by $f$ and $w$, respectively.
+\item Let the smoothed arrays of data values and weights be denoted by $\overline{f}$ and $\overline{w}$, respectively.
+\end{itemize}
+
+\subsection{Smoothing a discrete array using an unweighted convolution}
+
+The Fourier convolution theorem says that multiplying the Fourier
+transforms of two continuous functions by each other and then taking
+the inverse transform of the result yields the convolution of the two
+functions.
+
+\begin{eqnarray}
+     \overline{f} &=& f \otimes s \\
+%
+     \label{convolve}
+     \overline{f} &=& \ift\left[\ft(f).\ft(s)\right]
+\end{eqnarray}
+
+For discretely sampled data one can either convolve the two functions
+explicitly via
+
+\begin{equation}
+ \overline{f_{i}} = \frac{\sum_{u} f_{u}.s_{i-u}}
+	                 {\sum_{u} s_{i-u}}
+\end{equation}
+
+or substitute a discrete Fourier transform for each of the Fourier
+transforms shown in equation~\ref{convolve}. In practice, if the
+width of the smoothing function encompasses a significant number of
+elements of the function being smoothed then it will be faster to use the
+latter approach, particularly if a Fast Fourier Transform can be used.
+
+\subsection{Smoothing a discrete array using a weighted convolution}
+
+If the data are weighted then one must take account of the weights
+during convolution, and the convolution must be modified to
+
+\begin{eqnarray}
+ \overline{f_{i}} &=& \frac{\sum_{u} f_{u}.w_{u}.s_{i-u}} {\sum_{u} w_{u}.s_{i-u}}\\
+     \overline{f} &=& \frac {f.w \otimes s} {w \otimes s}\\
+     \overline{f} &=& \frac {\ift[\ft(f.w).\ft(s)]} {\ift[\ft(w).\ft(s)]}
+\end{eqnarray}
+
+The original weights of the unsmoothed data are also modified by smoothing.
+If the weight of each $f_i$ is defined in terms of its variance
+$\sigma_i^2$, as
+
+\begin{equation}
+  w_{i}  = \frac{1}{\sigma_{i}^2},
+\end{equation}
+
+Then the weight $\overline{w_{i}}$ that should be assigned to
+$\overline{f_{i}}$, is given by:
+
+\begin{eqnarray}
+ \frac{1}{\overline{w_{i}}} &=& \sum_{j}\left(\frac{\partial\overline{f_{i}}}{\partial f_{j}}\right)^{2} . \frac{1}{w_{j}} \\
+%
+ \frac{\partial \overline{f_{i}}}{\partial f_{j}} &=& \frac {w_{j}.s_{i-j}}{\sum_{u} w_{u} . s_{i-u}} \\
+%
+ \frac{1}{\overline{w_{i}}} &=& \sum_{j}\left(\frac {w_{j}.s_{i-j}}{\sum_{u} w_{u} . s_{i-u}}\right)^{2} . \frac{1}{w_{j}} \\
+%
+ \label{variance}
+ \frac{1}{\overline{w_{i}}} &=& \frac {\sum_{j} w_{j}.s_{i-j}^2}{(\sum_{u} w_{u} . s_{i-u})^{2}}
+\end{eqnarray}
+
+In terms of convolutions this can be re-expressed as
+
+\begin{equation}
+ \frac{1}{\overline{w_{i}}} = \frac {w \otimes s^{2} } {(w \otimes s)^2}.
+\end{equation}
+
+The smoothed data array and its weights can then be obtained via
+Fourier transforms as:
+
+\begin{eqnarray}
+ \overline{f} =& \frac {f.w \otimes s} {w \otimes s} &= \frac{\ift\left[\ft(f.w).\ft(s)\right]} {\ift\left[\ft(w).\ft(s)\right]}\\
+ \overline{w} =& \frac {(w \otimes s)^2}{w \otimes s^{2} } &= \frac{\left(\ift\left[\ft(w).\ft(s)\right]\right)^2}{\ift\left[\ft(w).\ft(s^{2})\right]}
+\end{eqnarray}
+
+Thus, to account for data weights when smoothing an array, one must
+first determine $\ft(s)$ and $\ft(s^2)$ for the chosen smoothing
+function.
+
+\section{Smoothing functions}
+
+\def\fwhm{\mbox{\tiny FWHM}}
+
+Each smoothing function will be described in terms of its full-width
+at half maximum value, denoted as $\fwhm$. For convenience the
+dependent coordinate of each function will be defined such that it is
+unity where the function falls to half its maximum value. In terms of
+the spectrum channel--based coordinates, $i$ this requires the
+following change of coordinates.
+
+\begin{equation}
+  \delta x = \frac{2 \delta i}{\fwhm}.
+\end{equation}
+
+In the Fourier plane this has the effect of modifying the delay
+coordinate increment per channel $j$ from $1/n$ to $2.\fwhm/n$,
+yielding
+
+\begin{equation}
+  \delta t = 2.\delta j.\fwhm / n.
+\end{equation}
+
+Note that in order that the total power in the smoothed data be
+unchanged by smoothing. The area under the smoothing function and thus
+the value at the origin of its Fourier transform, must be unity.
+
+\subsection{Hanning}
+
+\begin{eqnarray}
+s_{x} &=& \frac{\sin(\pi x)} {2\pi x(1-x^2)}\\
+\ft(s_{x}) &=& \left\{
+              \begin{array}{rl} \frac{1}{2}[1 + \cos(2\pi t)] & |t| \le \frac{1}{2}\\
+                                                            0 & |t|   > \frac{1}{2}\\
+              \end{array}
+        \right.\\
+\ft(s_{x}^2) &=&  \left\{
+              \begin{array}{rl} \frac{1}{4}[(1 - |t|)(1+\frac{1}{2}\cos(2\pi t)) + \frac{3}{4\pi}\sin(2\pi|t|)] & |t| \le 1\\
+                                                            0 & |t|   > 1\\
+              \end{array}
+        \right.
+\end{eqnarray}
+
+\subsection{Gaussian}
+
+\begin{eqnarray}
+s_{x} &=& \sqrt{\ln(2)/\pi} \; e^{-\ln(2) x^{2}}\\
+\ft(s_{x}) &=& e^{-\frac{\pi^2 t^2}{\ln(2)}}\\
+\ft(s_{x}^2) &=& \sqrt{\ln(2)/2\pi} \; e^{-\frac{\pi^2 t^2}{2 \ln(2)}}
+\end{eqnarray}
+
+\subsection{Boxcar}
+
+\begin{eqnarray}
+s_{x} &=& \left\{
+              \begin{array}{ll} \frac{1}{2} & |x| \le 1\\
+                                          0 & |x|   > 1\\
+              \end{array}
+        \right.\\
+\ft(s_{x}) &=& \frac{\sin(2\pi t)}{2\pi t}\\
+\ft(s_{x}^2) &=& \frac{1}{2} \frac{\sin(2\pi t)}{2\pi t}
+\end{eqnarray}
+
+\subsection{Sinc}
+
+\begin{eqnarray}
+s_{x} &=& \frac{\beta}{\pi} \frac{\sin(\beta x)}{\beta x}\\
+\beta &=& 1.8954942670340\\
+\ft(s_{x}) &=& \left\{
+              \begin{array}{ll} 1 & |t| \le \frac{\beta}{2\pi}\\
+                                0 & |t|   > \frac{\beta}{2\pi}\\
+              \end{array}
+        \right.\\
+\ft(s_{x}^2) &=& \left\{
+                     \begin{array}{ll} \frac{\beta}{\pi} - t & |t| \le \frac{\beta}{\pi}\\
+                                                           0 & |t|   > \frac{\beta}{\pi}\\
+                     \end{array}
+                  \right.
+\end{eqnarray}
+
+\end{document}

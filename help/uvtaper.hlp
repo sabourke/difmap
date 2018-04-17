@@ -1,0 +1,64 @@
+gaussian_value, gaussian_radius
+Set a gaussian taper to weight down long baselines and reduce sidelobes
+EXAMPLE
+-------
+
+0>uvtaper 0.5,10
+Gaussian taper: value 0.5 at UV radius = 10 Mega-wavelengths
+0>
+
+The second line is the response from the 'uvtaper' command, confirming
+the selection made by the user. To see what the current values are
+without changing them:
+
+0>uvtaper
+Gaussian taper: value 0.5 at UV radius = 10 mega-wavelengths.
+0>
+
+To cancel a previously set taper type:
+
+0>uvtap 0
+No UV-taper is currently set.
+0>
+
+PARAMETERS
+----------
+gaussian_value  - The value of the gaussian taper at 'gaussian_radius'.
+                  Valid values lie between 0 -> 1 exclusive. Other
+                  values cause the cancellation of any existing gaussian
+                  taper.
+gaussian_radius - The UV radius at which gaussian taper should have
+                  fallen to 'gaussian_value'. (values <= 0 de-select
+                  gaussian tapering). Unless changed with the mapunits
+                  command, the units are million-wavelengths.
+
+To cancel a previous gaussian taper you should type: uvtaper 0
+Whenever a new UV data set is read with the 'observe' command
+any existing gaussian taper is cancelled.
+
+CONTEXT
+-------
+Before the visibilities are inverted to the image plane they are first
+gridded. In the process of gridding, individual visibilities are
+weighted. Gaussian tapering can be applied in addition to the other forms
+of weighting specified with command 'uvweight'. It is generally used
+to weight down long baselines in order to increase the signal to noise
+ratio of low-surface brightness, extended emission or to reduce
+side-lobes during the initial stages of mapping. It does this at the
+expense of spatial resolution. The taper selected remains in force
+for use by all subsequent uses of the 'invert' command, until 'uvtaper'
+is used again to change or cancel the taper.
+
+SIDE EFFECTS
+------------
+Use of this command will cause the next 'clean', 'mapplot' etc..
+to re-invert the modified UV data-set to produce an updated dirty
+beam and residual map.
+
+RELATED COMMANDS
+----------------
+uvweight - Selects combinations of natural,uniform, uncertainty, and
+           radial weighting.
+uvrange  - Constrain the min and max UV radii within which visibilities
+           are gridded.
+uvzero   - Set a zero-UV-spacing flux.

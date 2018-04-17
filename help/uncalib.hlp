@@ -1,0 +1,54 @@
+dophase, doamp, doflag
+Undo recorded telescope calibrations (eg. self-cal corrections).
+EXAMPLE
+-------
+
+1. To remove all phase corrections amplitude corrections and correction
+   flags, type:
+
+   0>uncal true,true,true
+   uncal: All telescope phase corrections have been un-done.
+   uncal: All telescope amplitude corrections have been un-done.
+   uncal: All telescope correction flags have been un-done.
+   0>
+
+2. To remove just amplitude corrections, while leaving selfcal correction
+   flags and phase corrections in place, type:
+
+   0>uncal false,true
+   uncal: All telescope amplitude corrections have been un-done.
+   0>
+
+All but the first line are messages from 'uncalib'.
+
+PARAMETERS
+----------
+dophase - If true then undo telescope phase calibrations (Default=false).
+
+doamp   - If true then undo telescope amplitude calibrations (Default=false).
+
+doflag  - If true, then remove all telescope correction flags (Default=false).
+
+CONTEXT
+-------
+Contained in every data-set is the list of integration based telescope
+amplitude and phase corrections per sub-array and IF, that have been
+applied to the data. These corrections are incrementally updated
+whenever further telescope based calibrations are applied, such as
+when 'selfcal' is applied. By running the 'uncalib' command it is
+possible to undo the effects of either or both of the amplitude and
+phase calibrations. It is thus easy to go back to the un-calibrated
+data-set or undo the effects of a badly constrained self-calibration.
+Note that this removes the effects of ALL previous self-calibrations
+etc.. It is also possible to remove all visibility flags applied by
+selfcal without effecting normal visibility flags.
+
+SIDE EFFECTS
+------------
+The current residual map is invalidated by the data modification,
+so the next map oriented task invokes 'invert'.
+
+RELATED COMMANDS
+----------------
+selfcal   - Self-calibrate data with the current model.
+corplot   - Display and allow editing of corrections.

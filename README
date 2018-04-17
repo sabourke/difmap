@@ -1,0 +1,207 @@
+COPYRIGHT INFORMATION
+---------------------
+All files in this distribution except for the C code in the slalib_src
+directory are protected by the following copyright declaration.
+
+Copyright (c) 1992-2010 by the California Institute of Technology.
+
+Author: Martin C. Shepherd  (mcs@astro.caltech.edu)
+
+The C code in the slalib_src directory is included with permission
+from its author, Patrick Wallace. Slalib copying and usage
+restrictions are described in the README file in the slalib_src
+directory.
+
+The contents of the libtecla_src directory is copyright by the author,
+Martin Shepherd. See libtecla_src/LICENSE.TERMS for copyright details.
+If you are interested in using the tecla terminal-input library in
+your own programs please see libtecla_src/README.
+
+Permission to copy the difmap distribution is granted for
+non-commercial purposes on the understanding that neither the author,
+nor Caltech shall be held responsible for any adverse consequences
+resulting from its use. Difmap must not be re-distributed in a
+modified form without the author's explicit permission. No assurance
+of suitability for any purpose is implied by its availability for
+copying.
+
+
+GENERAL INFORMATION
+-------------------
+This is the second major version of Difmap. Instead of reading the
+Caltech VLBI merge format, this version reads UV FITS files directly.
+Support for UV FITS files is limited to single-source files containing
+one frequency-id (one set of possibly differing IF frequencies).
+Multiple sub-arrays, IFs, spectral-line channels and polarizations are
+now supported.
+
+Difmap version 2.4l should compile on the following systems:
+
+Architecture   OS           ANSI-C    FORTRAN-77   PGPLOT
+                            compiler  compiler     status
+------------   -----------  --------  -----------  ------------
+Sparc          SunOS 4.x    gcc       f77          Supported
+Sparc          Solaris 2.x  gcc       f77          Supported
+Sparc          Solaris 2.x  SUN cc    f77          Supported
+HP9000 700-800 HPUX         c89       fort77       Supported
+IBM RS6000     AIX          c89       xlf          Supported
+Alpha-AXP      OSF1         gcc       f77          Supported
+PC i86         Linux        gcc       gfortran     Supported
+PC AMD64       Linux        gcc       f77          Supported
+PC Itanium     Linux        gcc       f77          Supported
+PPC            MacOS X      gcc-4     gfortran     Supported
+Intel          MacOS X      gcc-4     gfortran     Supported
+
+No other machines are currently supported.
+
+SHOPPING LIST
+-------------
+
+To successfully install difmap you will need the following items:
+
+ 1. One of the above combinations of OS and compilers.
+
+   OR
+
+ 1. An ANSI-C compiler (eg. gcc). You can get the gcc distribution
+    via anonymous ftp from prep.ai.mit.edu in directory /pub/gnu/.
+
+ 2. A FORTRAN-77 compiler.
+
+ 3. PGPLOT at version 5.0.2 or above. This may be obtained via
+    anonymous ftp from ftp.astro.caltech.edu in directory
+    /pub/pgplot/. Older versions of PGPLOT will not work with this
+    version of Difmap. Note that PGPLOT 5.x is simpler to install
+    than earlier versions.
+
+GETTING THE LATEST DISTRIBUTION OF DIFMAP
+-----------------------------------------
+The latest version of difmap can be obtained via anonymous FTP, at the
+following URL:
+
+  ftp://ftp.astro.caltech.edu/pub/difmap/difmap2.4l.tar.gz
+
+The cookbook can also be obtained from:
+
+  ftp://ftp.astro.caltech.edu/pub/difmap/cookbook.ps.Z
+
+Next uncompress and untar the difmap distribution:
+
+ tar xzf difmap2.4l.tar.gz
+
+This will create a sub-directory of the current directory, called
+
+  uvf_difmap
+
+
+INSTALLATION INSTRUCTIONS
+-------------------------
+To make difmap, perform the following steps:
+
+1. First move into the uvf_difmap subdirectory that was created when
+   the difmap distribution was unpacked above.
+
+2. You should find a bourne shell script called configure in the top
+   level directory of the distribution. This script configures
+   the make files for a particular site. Before running this file you
+   must edit it.
+
+   Follow the instructions in the configure file on what to change,
+   [Probably only HELPDIR and PGPLOT_LIB]. 
+
+   Once you have edited the configure script, type:
+
+    ./configure operating_system_name-compiler_name
+
+   Recognized operating_system_name-compiler_name pairs are listed
+   at the top of the ./configure file.
+
+   For example to install difmap on an Intel PC running linux,
+   you would type:
+
+     ./configure linux-i486-gcc
+
+2. You will also find a bourne shell script called makeall in the same
+   directory as the file you are reading at the moment. This applies
+   make in each of the source code directories. To run this type:
+
+    ./makeall
+
+   If the compilation fails, check your changes to ./configure and if
+   you can't figure out the problem, send me an email displaying the
+   compiler generated error codes and any other information that you
+   can garner.
+
+3. Move the help files to the directory named in the configure script.
+
+     mkdir the_name_of_the_new_directory
+     cp -rp ./help/ the_name_of_the_new_directory/
+
+4. If you want LaTeX hard copy of the on-line help files provided with
+   difmap, check that you have the latex and dvi2ps commands installed
+   on your machine, ensure that difmap is in your path, and type the
+   following:
+
+     cd doc
+     ./makemanual
+
+   This will create a LaTeX file (help.tex) and run latex on it to
+   produce help.dvi. To print this type:
+
+     dvi2ps help.dvi | lpr -
+
+5. The only files that must be retained after building difmap, are the
+   help files (in the directory that you chose to install them in).
+   All other files can now be deleted if you wish to conserve space.
+   You might want to keep the difmap2.4l.tar.Z file around.
+
+NOTE that the ./configure script and the ./makeall script can be run
+any number of times, but note that ./configure script re-builds the
+make files in each subdirectory, so changes to the make files will be
+lost.
+
+If for some reason you need to restart the installation from scratch,
+there is a script in the top level directory called "clean". To run it
+just type:
+
+ ./clean
+
+This deletes object files, library files, make files etc. When it has
+finished you can go back to step 1 and re-start the installation
+process from scratch.
+
+RUNNING DIFMAP
+--------------
+Make sure that the difmap executable is in your PATH (also type rehash
+if you are using csh or tcsh) and type:
+
+  > difmap
+
+You should then see a message like:
+
+  Caltech difference mapping program - version 2.4l (17 Apr 2010)
+  Copyright (c) 1993-2010 California Institute of Technology. All Rights Reserved.
+  Type 'help difmap' to list difference mapping commands and help topics.
+  Started logfile: difmap.log_12 on Sat Apr 17 16:00:04 2010
+  0>
+
+Where 0> is the difmap prompt.
+If you then type:
+
+  0> help difmap
+
+Difmap will list a set of general help topics, followed by a list of
+all difmap commands, each annotated with a 1-line description. Type
+help and the name of any of these commands to get further help. (Hint:
+type  help observe  to get started).
+
+To get out of difmap, type:
+
+  0> exit
+
+For a simple introduction to using Difmap, please read the Difmap
+Cookbook (written by Greg Taylor).
+
+If you have any problems, send email to me at the following address.
+
+Martin Shepherd  (mcs@astro.caltech.edu)

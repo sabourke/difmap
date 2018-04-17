@@ -1,0 +1,10 @@
+width, aspect_ratio
+Set the physical size of the device area for plotting.
+
+PARAMETERS
+----------
+
+width         -  The width to make the view-surface (inches).
+
+aspect_ratio  -  The ratio of the height to the width.
+                 height = width * aspect_ratio.

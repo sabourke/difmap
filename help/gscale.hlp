@@ -1,0 +1,105 @@
+dofloat
+Self calibrate to determine overall telescope amplitude corrections.
+EXAMPLES
+-------
+
+0>gscale
+Computing UV representation of latest clean model (147 components)
+The established model now contains 147 components and 7.0511 Jy
+Performing overall amplitude self-cal
+
+Correcting IF 1.
+ Amplitude normalization factor in sub-array 1: 1.01723
+ Telescope amplitude corrections in sub-array 1:
+  BONN      0.97     WSRT      0.95     JBNK1     0.99     BOLOGNA   1.01     
+  TORUN     1.00*    HART      1.01     HSTK      1.01     NRAO      1.02     
+  VLBA_KP   0.96     VLBA_PT   1.00*    VLBA_LA   0.96     VLA27     0.98     
+  OVRO      0.96     
+ Fit before self-cal, rms=0.498946Jy  sigma=3.396564
+ Fit after  self-cal, rms=0.438911Jy  sigma=3.160276
+ 
+Reinstating the default IF.
+0>
+
+All but the first line are responses from the 'gscal' command.
+Some of the reported corrections are post-fixed with a '*' symbol.
+This means that no solution was possible for that telescope.
+These corrections are not 1.0, only because of amplitude
+normalization.
+
+Without amplitude normalization (dofloat=true) the same data-set gave:
+
+0>gscale true
+Performing overall amplitude self-cal
+
+Correcting IF 1.
+ Telescope amplitude corrections:
+  BONN      0.97     WSRT      0.95     JBNK1     0.98     BOLOGNA   1.01     
+  TORUN     1.00*    HART      1.02     HSTK      1.02     NRAO      1.01     
+  VLBA_KP   0.96     VLBA_PT   1.00*    VLBA_LA   0.96     VLA27     0.98     
+  OVRO      0.96     
+ Fit before self-cal, rms=0.500856Jy  sigma=3.412605
+ Fit after  self-cal, rms=0.365222Jy  sigma=2.861346
+ 
+Reinstating the default IF.
+0>
+
+
+PARAMETER
+---------
+dofloat - If this parameter is omitted or given as false, the
+          telescope corrections are normalized to maintain the current
+          total flux. Alternatively, if dofloat=true then the
+          telescope amplitudes will be allowed to float and the
+          observed flux may be changed if not sufficiently
+          constrained.
+
+CONTEXT
+-------
+When one or more telescopes are miscalibrated by a constant factor,
+this command may be used to solve for the correct telescope
+amplitudes. In order to do this a reasonable model of the source
+structure must have been provided. Such a model may be provided using
+CLEAN or using a model from the VLBI modelfit program read into this
+program via the 'rmodel' command.
+
+This command should be used with caution. For instance, comparison of
+the current model, in 'vplot', and the observed visibilities may
+appear to indicate a number of consistently high baselines. This often
+indicates data that hasn't been cleaned deeply enough. In particular,
+check to see if just the shortest baselines are too high by examining
+the plot of visibility amplitude verus UV radius given by the radplot
+command. Such missing flux implies the existence of un-cleaned low
+surface brightness extended emission that hasn't been cleaned yet. Try
+switching to natural weighting (see help uvweight) and/or apply a
+UV-taper before cleaning (see help uvtaper). This may reveal such
+emission, which may then be cleaned.
+
+If it turns out that artifacts due to poor amplitude calibration,
+prevent you from cleaning low surface-brightness extended emission
+then you should use the selftaper command to weight down the
+significance of the short baseline visibilities before calling gscale
+(see help selftaper). Failure to do this will make gscale attempt to
+force the visibility data to fit the incomplete model at short UV
+radii.
+
+Amplitude self-calibration relies implicitly on the existence of
+closure amplitudes. To form such a closure amplitude requires that
+there be un-flagged visibilities on that lie baselines in closed
+arrays of at least 4 telescopes. Gscale attempts to detect
+visibilities that do not satisfy these conditions and exclude them
+from the fit. How it does this, and whether these visibilities are
+then flagged, is controlled by the selfflag command. See help selfflag
+for more details.
+
+NB. Observations that contain multiple sub-arrays and/or multiple IFs
+    will produce nif * nsub lists of telescope corrections, instead of
+    the single list given the examples above.
+
+RELATED COMMANDS
+----------------
+selfflag - Used to control the fate of un-correctable data.
+selfcal  - General self-calibration command.
+selftaper - Used to down-weight short baselines during selfcal.
+selflims  - Used to set limits to amp and phase corrections in selfcal.
+startmod  - Phase selfcal to a starting model then discard the model.

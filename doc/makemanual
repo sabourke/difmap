@@ -1,0 +1,215 @@
+#!/bin/sh
+#-----------------------------------------------------------------------
+# Combine all difmap help files into a latex'd document.
+#-----------------------------------------------------------------------
+# Usage:
+#  makemanual help_dir
+#
+# This creates a latex file help.tex and runs latex on it, resulting
+# in help.dvi
+#-----------------------------------------------------------------------
+
+#
+# We need the difmap help directory.
+#
+case $# in
+  0)
+    if [ ! -d ../help -o ! -f ../help/difmap.idx ]; then
+      echo 'Please specify the difmap help directory as the first argument'
+      exit 1
+    fi
+    help_dir="../help"
+    ;;
+  1)
+    if [ ! -d "$1" -o ! -f $1/difmap.idx ]; then
+      echo "Please specify the difmap help directory as the first argument"
+      echo "The specified first argument ($1) is not valid."
+      exit 1
+    fi
+    help_dir="$1"
+    ;;
+  *)
+    echo 'Usage: makemanual [help_directory]'
+    exit 1;
+    ;;
+esac
+
+echo "Using Difmap help directory: $help_dir"
+
+# Start the LaTeX file with a set-up header.
+
+cat > help.tex << \EOF
+\documentclass[11pt]{report}
+
+% PAGE SIZE - 
+%
+\topmargin 0.0in \headsep 0.0in
+\oddsidemargin 0.0in \evensidemargin 0in
+\marginparwidth 0in \marginparsep 0in
+\textheight 9.5in \textwidth 6.5in
+\parindent 0pt
+\parskip 8pt plus 1pt minus 1pt
+\pagestyle{headings}
+\begin{document}
+\title{A manual of Difmap help pages}
+\author{Martin Shepherd (mcs@astro.caltech.edu)\\
+        Copyright \copyright 1993 California Institute of Technology}
+\maketitle
+EOF
+
+# Create a temporary awk script used to extract the list of difmap commands
+# from $help_dir/difmap.idx and add it to the latex file.
+
+echo 'Composing the list of Difmap commands and functions.'
+
+cat > commands.awk << \EOF
+BEGIN {
+  found=0
+  print "\\section*{The list of commands in difmap.}"
+}
+/^General help topics/ {found=0};
+/^Functions and commands/ {found=1};
+$0 ~ /^  / && found==1 {printf("\\verb|%s|\\\\\n", $0)}
+$0 ~ /^ [a-z]/ && found==1 {printf("\\verb|%s|\\dotfill\\pageref{%s}\\\\\n", $0, $1)}
+EOF
+
+# Add the list of difmap commands to the latex file.
+
+awk -f commands.awk $help_dir/difmap.idx >> help.tex
+\rm -f commands.awk
+
+# Now list help topics.
+
+echo 'Composing the list of Difmap help topics.'
+
+cat > topics.awk << \EOF
+BEGIN {
+  found=0
+  print "\\section*{The list of difmap help topics.}"
+}
+/^General help topics/ {found=1};
+/^Functions and commands/ {found=0};
+$0 ~ /^  / && found==1 {printf("\\verb|%s|\\\\\n", $0)}
+$0 ~ /^ [a-z]/ && $0 !~ /whatsnew/ && found==1 {printf("\\verb|%s|\\dotfill\\pageref{%s}\\\\\n", $0, $1)}
+$0 ~ /^ [a-z]/ && $0 ~ /whatsnew/ && found==1 {printf("\\verb|%s|\\dotfill N/A\\\\\n", $0)}
+EOF
+
+awk -f topics.awk $help_dir/difmap.idx >> help.tex
+\rm -f topics.awk
+
+# Create an awk script to extract the name of each topic.
+
+cat > topic_list.awk << \EOF
+BEGIN {found = 0}
+/^General help topics/ {found=1};
+/^Functions and commands/ {found=0};
+$0 ~ /^ [a-z]/ && $0 !~ /whatsnew/ && found==1 {print substr($0, 2, length($0)-1)}
+EOF
+
+# Compile the help listing of each difmap help topic.
+
+echo 'Composing the help-topic manual pages'
+
+cat >> help.tex << \EOF
+\newpage
+\chapter*{Difmap help topics}
+The following pages show the contents of each of the Difmap help topics.
+The same pages can be seen from whithin Difmap by typing:
+
+ help name\_of\_topic
+
+EOF
+
+for topic in `awk -f topic_list.awk $help_dir/difmap.idx`; do
+safe_topic="`echo $topic | sed 's/_/\\\\\\\\_/g'`"
+cat > help.awk << EOF
+BEGIN {
+  print "\\\\newpage \\\\section*{${safe_topic}}\\\\label{$topic} \\\\begin{verbatim}"
+  getline; getline; intro=\$0
+  printf("%s\n\n", intro)
+}
+{
+  print \$0
+}
+END {
+  print "\\\\end{verbatim}"
+}
+EOF
+awk -f help.awk $help_dir/${topic}.hlp >> help.tex
+rm help.awk
+done
+rm -f topic_list.awk
+
+# Create an awk script to extract the name of each command.
+
+echo 'Composing the command and function manual pages'
+
+cat > command_list.awk << \EOF
+BEGIN {found = 0}
+/^General help topics/ {found=0};
+/^Functions and commands/ {found=1};
+$0 ~ /^ [a-z]/ && found==1 {print substr($0, 2, length($0)-1)}
+EOF
+
+# Compile the help listing of each difmap command.
+
+cat >> help.tex << \EOF
+\newpage
+\chapter*{Difmap commands and functions}
+The following pages show the contents of the help files of each difmap
+command and function. The same pages can be seen from whithin Difmap by
+typing:
+
+ help name\_of\_command\_or\_function
+
+EOF
+
+for command in `awk -f command_list.awk $help_dir/difmap.idx`; do
+safe_command="`echo $command | sed 's/_/\\\\\\\\_/g'`"
+cat > help.awk << EOF
+NR==1 {gsub(/_/, "\\\\_");args=\$0}
+NR==2 {
+  printf("\\\\newpage \\\\section*{${safe_command} {\\\\it %s}}\\\\label{$command} \\\\begin{verbatim}", args)
+  print \$0
+}
+NR > 2 {
+  print \$0
+}
+END {
+  print "\\\\end{verbatim}"
+}
+EOF
+awk -f help.awk $help_dir/${command}.hlp >> help.tex
+rm -f help.awk
+done
+rm -f command_list.awk
+
+cat << \EOF >> help.tex
+\end{document}
+EOF
+
+# Run latex on the compiled file.
+
+cat << EOF
+
+  makemanual will now run latex on help.tex to generate help.dvi.
+  Latex will be run twice. On the first pass, latex will generate lots
+  of warnings about undefined labels. These will be resolved by the
+  second pass.
+
+EOF
+sleep 5
+
+latex help.tex
+
+cat << EOF
+
+  Re-running latex to resolve page references.
+
+EOF
+
+latex help.tex
+
+# Delete temporary files.
+
+\rm -f help.aux help.log

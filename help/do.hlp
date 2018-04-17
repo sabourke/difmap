@@ -1,0 +1,56 @@
+variable = start_val,end_val,<increment_val>
+Start of do-loop, complete with:  end do
+
+ do do_variable_name = start_value,end_value, <step_value>
+   <commands>
+ end do
+
+This is a special looping structure for use in writing procedures.
+While the do_variable is incremented between start_value and end_value
+in steps of step_value (default=1), the commands within the loop are
+repeated.
+
+Before the first iteration of the loop the do_variable is given the
+value of start_value. Before each iteration of the loop, including the
+first, the value of the do_variable is examined to see if it lies
+between start_value and end_value. If it does then the commands within
+the loop are executed. Otherwise execution proceeds from the command
+immediately following the 'end do' command. At the end of iteration N,
+the value of the do_variable is incremented to start_value +
+step_value * N and the test at the start of the loop is repeated for
+the next iteration.
+
+There are break and continue commands for breaking out of the loop or
+starting the next iteration prematurely. See help looping for more
+details.
+
+The do_variable can be any scalar variable.
+
+Example:
+0> float test(20),angle
+0> i=0
+0> do angle = 0, 2*pi, 0.6
+1>   i=i+1
+1>   test(i) = sin(angle)
+1>   print i,test(i)
+1> end do
+0> print "Loop complete - results are:"
+0> type test(1:i)
+
+results in:
+1.000000 0.000000 
+2.000000 0.564642 
+3.000000 0.932039 
+4.000000 0.973848 
+5.000000 0.675463 
+6.000000 0.141120 
+7.000000 -0.442521 
+8.000000 -0.871576 
+9.000000 -0.996165 
+10.000000 -0.772764 
+11.000000 -0.279415 
+ 
+Loop complete - results are:
+
+		0.0 0.6 0.9 1.0 0.7 0.1 -0.4 -0.9 -1.0 -0.8 -0.3
+0>

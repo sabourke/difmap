@@ -1,0 +1,36 @@
+file_name, do_continuum
+Write CLEAN models to a VLBI model file.
+EXAMPLE
+-------
+
+0>wmodel test.mod
+Writing 26 model components to file: test.mod
+0>
+
+PARAMETERS
+----------
+file_name    - (Default=standard output)
+               The name to be given to the new model file. If this
+               argument is omitted or "" is specified, then the model
+               will be displayed on the standard output and also in the
+               log file. 
+
+do_continuum - (Default=false)
+               If omitted or given as FALSE, the normal established and
+               tentative models will be written. If it is given as TRUE,
+               then just the continuum model (if any) will be written.
+
+CONTEXT
+-------
+This command is used to save both the established followed by the
+latest clean models in one file. On a later date the model can be
+re-read using the 'rmodel' command and used as a starting model.
+
+It can also be used to save the continuum model, if one exists, by
+presenting the optional second argument with the value TRUE.
+
+RELATED COMMANDS
+----------------
+rmodel - Read a new CLEAN model from a file.
+save   - Save all data files and the difmap running parameters.
+

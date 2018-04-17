@@ -1,0 +1,23 @@
+color_index
+Change the graphics pen colour.
+
+PARAMETERS
+----------
+
+color_index   -   The PGPLOT color index for subsequent graphics.
+                    0 - Background (black).
+                    1 - White.
+                    2 - Red.
+                    3 - Green.
+                    4 - Blue.
+                    5 - Cyan.
+                    6 - Purple.
+                    7 - Yellow.
+                    8 - Orange.
+                    9 - Green-yellow (chartreuse).
+                   10 - Spring green.
+                   11 - Light blue.
+                   12 - Purplish blue.
+                   13 - Magenta.
+                   14 - Dark grey.
+                   15 - Light grey.

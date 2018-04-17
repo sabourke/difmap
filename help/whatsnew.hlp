@@ -1,0 +1,1620 @@
+
+The details of recent difmap changes.
+-----------------------------------------------------------------------
+This file contains a compilation of the mail messages that I send to
+users whenever the local version of difmap is updated. Each message
+describes significant changes that were made. The file is ordered
+such that the most recent messages appear first, and the oldest
+messages appear last.
+
+Martin Shepherd  (mcs@astro.caltech.edu)
+-----------------------------------------------------------------------
+
+-----------------------------------------------------------------------
+Version 2.4 released.
+-----------------------------------------------------------------------
+
+Date: Fri, 19 Jan 2000
+Subject: The general release of Difmap 2.4
+
+  The Tecla command-line input library:
+
+    This version of difmap features an optional command-line input
+    editor, written by myself (The FSF disallowed use of GNU readline
+    in difmap). I designed this to mimic the command-line editing
+    facilities in the tcsh UNIX shell, including command-line recall,
+    and tab completion. The tab completion facility completes difmap
+    command names when used at the beginning of a command line, and
+    filenames elsewhere. For the moment, since I haven't had a chance
+    to test it on many systems, the command-line editor is not
+    compiled in by default.  However I believe that it should compile
+    cleanly on all modern UNIX systems, so if you are interested in
+    having interactive command-line editing, I encourage you to edit
+    the ./configure file, find the USE_TECLA configuration parameter
+    and set it to "1". Otherwise, if left at its default value of "0",
+    difmap will continue to use its original command-line input code,
+    which didn't include any command line editing capabilities apart
+    from those provided by the terminal driver.
+
+    In case you are interested in using the command-line editor in
+    your own programs, note that it is available as a separate library
+    from http://www.astro.caltech.edu/~mcs/tecla/index.html. This web
+    page is also the place to go if you want to see the documentation
+    of the library and how to change its default key bindings.
+
+  Spectral indexes in model components:
+
+    Difmap now supports model components with spectral indexes, and
+    includes the ability to fit for them in modelfit. See 'help
+    modelfit'.
+
+  Multiple model mode:
+
+    If told to do so via the new 'multi_model' command, difmap now
+    maintains separate models for each distinct set of channel ranges
+    and polarizations selected with the 'select' command. This is
+    useful both for spectral line mapping and polarization mapping.
+    For example, one can now make maps of all spectral line channels,
+    then go back and plot them, or improve on previous models, without
+    having to save anything to intermediate files or run clean again.
+
+    For polarization mapping, the gain is even greater in that given
+    models for U, Q and I, mapplot can now display linear polarization
+    vectors. For further details of multi-model mode, see 'help
+    multi_model' and for information on how to make and display linear
+    polarization maps, see 'help polarization'.
+
+  mapplot:
+
+    The biggest change to mapplot is the inclusion of the ability to
+    plot linear polarization vectors, requested using new 'pmap' and
+    'pclean' values for the first argument. See 'help polarization'
+    for details.
+
+    Another useful change is the ability to display optionally
+    annotated markers, specified with the new 'mark_xy' and
+    'mark_radec' commands.
+
+    In addition to the statistics that it used to display, the mapplot
+    'v' key now also displays the Right Ascension and Declination of
+    the point under the cursor.
+
+  radplot and projplot:
+
+    The new 'S' and 'v' keys allow one to select a rectangular area
+    of visibilities on the plot and have the statistics of these
+    visibilities written to the user's terminal. The 'S' key shows
+    scalar averages, whereas the 'v' key requests vector averages
+    and error estimates.
+
+    The new '-' key toggles the display of the amplitude and phase
+    of the vector difference between the model and the real data.
+
+    The new 'e' key toggles the display of an extra graph showing the
+    length of the error bars associated with each visibility.
+
+  vplot:
+
+    As in radplot and projplot, the new '-' key toggles the display of
+    the amplitude of the vector difference between the model and the
+    data.
+
+    In addition to UTC, the visibilities can now be plotted versus
+    Greenwhich Sidereal Time. This is toggled with the 'g' key.
+
+  shiftto:
+
+    I added a new command called shiftto, which shifts a given RA,Dec
+    to the center of the map.
+
+  uvrange:
+
+    The limits established by the 'uvrange' command are now used not
+    only when producing a map, but also by the 'modelfit' and
+    'selfcal' commands, plus the 'uvstat' function.
+
+  uvplot:
+
+    There is now a 'uflags' variable that can be used to select
+    large dot sizes etc. before plotting.
+
+  tplot:
+
+    As in other plots, the '.' key now toggles between small and large
+    dot sizes. This can be toggled interactively or set up in advance
+    of plotting with the new 'tflags' variable.
+
+    In addition to UTC the time sampling can now be displayed versus
+    Greenwhich Sidereal Time. This is toggled with the 'g' key.
+
+  observe:
+
+    Until now Difmap has discarded antennas that appeared in the input
+    UV FITS files, but weren't sampled by any visibilities. This
+    seemed like a good idea at the time, but in reality it caused
+    problems for some other programs, so I have turned off this
+    feature.
+
+    Difmap now knows about the little-used INTTIM random parameter.
+    In the CBI we use this random parameter for carrying integration
+    times with visibilities. Most datasets don't use this random
+    parameter, so difmap doesn't do anything with it except make sure
+    that it isn't destroyed by averaging in 'uvaver' and 'observe',
+    and passing it on to output files written by the 'wobs' command.
+
+    When difmap reads a UV FITS file, it places the visibilities in
+    scratch files in the current directory. Until now these scratch
+    files were visible to the user, and if difmap was killed for
+    whatever reason, instead of being exited, they didn't get deleted.
+    In this release the configuration script now provides the option
+    to hide these files, relying on the fact that deleting a file
+    under UNIX, if a file is currently open in any process, deleting
+    it, only deletes its directory entry, not the file itself.  This
+    option is enabled by default in the uvf_difmap/configure
+    script. It is provided as an option so that if difmap gets ported
+    to a platform on which this behavior can't be relied on, the
+    option can be disabled. I believe that it should work on all
+    currently supported systems.
+
+  wobs:
+
+    The 'wobs' command now provides an optional boolean argument for
+    requesting that accumulated shifts applied with the 'shift'
+    command be frozen into the output file. This shifts the data in
+    the output file and changes the RA and DEC fits keywords but not
+    the OBSRA or OBSDEC keywords.
+
+  vis_stats:
+
+    This new command/function displays or returns visibility
+    statistics within the current UV range.
+
+  Bugs fixed:
+
+    In 'cpplot' the signs of the closure phases plotted were
+    independent of the order in which the telescopes were specified.
+
+    Difmap was assuming that all visibility timestamps were in IAT
+    instead of taking account of the TIMSYS, DATUTC/IATUTC keywords in
+    binary antenna tables. The times are only used for anotation of
+    plots, so this wasn't a serious problem.
+
+    When modelfit was used with multi-IF data, the last visibility of
+    each IF was wrongly interpretted as the first point of the next
+    IF.  If this visibility happened to be flagged, it would terminate
+    the latest fitting cycle without looking at the remaining IFs.
+
+-----------------------------------------------------------------------
+VERSION 2.3 released.
+-----------------------------------------------------------------------
+
+Date: Mon, 7 Jul 97
+Subject: The general release of Difmap 2.3
+
+  Although little has changed since the last release, a new release is
+  being made because until now Difmap rejected orbital VLBI observations.
+
+  Changes in this release include:
+
+    Previously, if orbital stations were discovered in a UV fits file,
+    then Difmap would reject the file. Now that the usage of orbital
+    parameters has been settled, I have removed the rejection code and
+    replaced it with code that records the orbital parameters for
+    subsequent inclusion in output UV FITS files. I have also modified
+    the 'header' command to display the contents of the orbital
+    parameters array.
+
+    I have now modified difmap to preserve the values of the OBSRA and
+    OBSDEC keywords, read from input UV FITS files, for inclusion in
+    output UV FITS files. This makes it possible for users to make
+    maps in Difmap for subsequent mosaicing in AIPS. Previously these
+    keywords were omitted from output files. While testing this I
+    discovered that AIPS LTESS assumes that the third axis of any map
+    FITS file is always frequency, whereas Difmap was placing the
+    stokes axis there, so I have modified Difmap to write map files
+    that are compatible with LTESS.
+
+    Maplot now caters for maps with negative peaks. Previously the
+    reported peak was the maximum value in the map. Now it is the
+    largest of the minimum and maximum values. This potentially
+    effects both the reported peak and the percentage contour
+    levels. This was needed for SZ observations.
+
+    Difmap now has a 'pgend' command for closing the current plot
+    device without having to open another one.
+
+    The 'mapcolor' command now uses modified interpretations of its
+    brightness and contrast arguments. Interactive manipulation of the
+    color pallet should, however, appear little changed.
+
+    I have added trailing, optional 'npage' arguments to the vplot,
+    cpplot and specplot commands. This argument can be used to limit
+    the number of pages that are plotted to non-interactive devices.
+
+    Radplot, projplot and vplot now have optional min and max phase
+    arguments for constraining the range of phases to be displayed on
+    non-interactive devices.
+
+  Bugs fixed in this release include:
+
+    The most worrying bug was in the FFT algorithm. The center column
+    of the FFT was being set to half its correct value. Fortunately,
+    this column was where zero-padding of the outer part of the array
+    starts.  Unfortunately the code that checks whether the user's
+    chosen cell size and map size would cause UV data to fall into the
+    zero-padding zone, was 4 pixels too lenient. Since it isn't common
+    for significant amounts of flux to fall into the outermost edge of
+    the allowed UV plane, I doubt that the problem has had much
+    effect, and most observations won't have been effected at
+    all. While trying hard to excercise the bug, the worst difference
+    that I managed to introduce was a 0.1% difference in the peak flux
+    of an observation. Otherwise, the maps looked identical.
+
+    Another bug was exposed when reading Hat Creek UV FITS files. If an
+    input UV FITS file had CRPIXn before CTYPEn then Difmap would crash,
+    due to a missing break statement. The same bug (cut and paste strikes
+    again) occured with the PTYPEn and PSCALn keywords.
+
+    Finally, if integrations from different sub-arrays were interleaved,
+    Difmap would crash due to a bug in a sorting algorithm.
+
+
+-----------------------------------------------------------------------
+VERSION 2.2c released.
+-----------------------------------------------------------------------
+
+Date: Sun, 19 May 96
+Subject: The general release of Difmap 2.2c
+
+  Difmap development has been on hold for the past year due to
+  budgetary constraints. I had intended to add more spectral-line
+  facilities such as map cubes before releasing the latest version of
+  Difmap, but since this won't happen for some time, I have decided to
+  release the latest version anyway.
+
+  The only recent significant changes have been the inclusion of
+  support for Linux (i486), the re-implementation of the uvzero
+  command to take a visibility weight argument, and the addition of the
+  'mapvalue' function that returns the value of the pixel nearest to a
+  given map position.
+
+  External users should read the next two messages to see what has
+  changed since the last general release (version 2.1).
+
+Date: Wed, 26 Apr 95
+Subject: Improved multi-IF handling.
+
+  The latest version of Difmap handles multi-IF observations in a more
+  versatile fashion than before. In particular, it is now possible to
+  selectively include and exclude IFs from processing, and to select
+  different spectral-line channels from different IFs. In the process of
+  doing this, I have discarded the previously documented notion of a
+  "current IF", along with the 'getif' command that went with it.
+  Instead, plot commands that only show one IF at a time, now have an
+  extra optional command-line argument to specify the start IF, along
+  with new '[' and ']' keys which mean "show the next IF" and "show the
+  previous IF".
+
+  I have also changed the default editing scope in the various plot
+  commands. By default, edits now apply to all channels in all IFs.
+  Previously the default was to apply edits just to the selected
+  channels of the current IF.
+
+  To support the new IF-specific channel selections, the 'select'
+  command has been modified to interpret channel ranges differently from
+  before. Whereas previously, the range of channels available was given
+  by the number of channels per IF, now the range of channels is given
+  by the total number of channels in all IFs, and channel numbers
+  are now mapped seamlessly across IF boundaries. This is backwards
+  compatible for single-IF data-sets, so many users will not have to
+  make any changes to accommodate the new semantics.
+
+  The new semantics are described more fully in various help files,
+  including the spectral_line and multi_if help topics, but the
+  following examples illustrate some of the differences.
+
+  1. SPECTRAL-LINE EXAMPLES
+
+     Suppose that one has a 2 IF data-set with 64 channels per IF.
+     Under the new rules, there are 128 separate channels, 64 belonging
+     to the first IF and 64 to the second. The 'observe' command reports
+     the following description of the IFs.
+
+      There are 2 IFs, and a total of 128 channels:
+
+       IF  Channel    Frequency  Freq offset  Number of   Overall IF
+	    origin    at origin  per channel   channels    bandwidth
+       ------------------------------------------------------------- (Hz)
+       01        1  1.53575e+10       125000         64        8e+06
+       02       65  1.53655e+10       125000         64        8e+06
+
+     The "Channel origin" column reports the channel number assigned to the
+     first channel of each IF. So in this case, channels 1-64 refer to
+     channels in IF 1, and channels 65-128 refer to channels in IF 2.
+
+     This enumeration scheme is purely for specification purposes, and
+     does not say that neighboring IFs need to be contiguous in
+     frequency, or even that they be from the same sideband. In cases
+     such as the above example, where the channels at the end of one IF
+     happen to be contiguous with those at the start of the next IF, one
+     can exploit the new scheme to select ranges that cross IF boundaries
+     like:
+
+      0>select i,63,67
+      Selecting polarization: I,  channels: 63..67
+      Reading IF 1 channels: 63..64
+      Reading IF 2 channels: 65..67
+      0>
+
+     However, if the example were changed such that the two IFs were
+     interchanged, then to achieve the same effect as above, one would
+     have to explicitly select two separate channel ranges, as follows:
+
+      0>select i, 1, 3, 127, 128
+      Selecting polarization: I,  channels: 1..3 127..128
+      Reading IF 1 channels: 1..3
+      Reading IF 2 channels: 127..128
+      0>
+
+  2. CONTINUUM OBSERVATION EXAMPLES
+
+     For continuum observations and other observations that have only 1
+     channel per IF, the channel indexes of the select command are
+     equivalent to IF indexes. For example, consider the observe command
+     output for a 4 IF data-set:
+
+      There are 4 IFs, and a total of 4 channels:
+
+       IF  Channel    Frequency  Freq offset  Number of   Overall IF
+	    origin    at origin  per channel   channels    bandwidth
+       ------------------------------------------------------------- (Hz)
+       01        1  4.97799e+09        2e+06          1        2e+06
+       02        2  4.97999e+09        2e+06          1        2e+06
+       03        3  4.98199e+09        2e+06          1        2e+06
+       04        4  4.98399e+09        2e+06          1        2e+06
+
+     To select all IFs, one would have to ask for channels 1 through 4.
+     This is the default, if no channel ranges are explicitly specified.
+     Alternatively if one wanted to omit IF 3 from processing, one would
+     type:
+
+      0>select I, 1,2,4,4
+      Selecting polarization: I,  channels: 1..2 4..4
+      Reading IF 1 channels: 1..1
+      Reading IF 2 channels: 2..2
+      Reading IF 3 channels: (none)
+      Reading IF 4 channels: 4..4
+
+     IF 3 would then be regarded as unsampled, and would not be processed,
+     except to optionally apply edits to all channels of all IFs.
+
+  3. OTHER CHANGES
+
+     All plot commands that are capable of plotting multiple plots per
+     page, take an argument to specify the number of plots per page. All
+     but cpplot and specplot had this as the first argument. In the
+     interest of consistency, I have moved the 'nplot' argument of the
+     cpplot command from its position as the second argument, to its new
+     position as the first argument. Similarly, I have moved the 'nplot'
+     argument of the 'specopt' command to be the first argument of the
+     'specplot' command. If you object to either of these changes,
+     please tell me before others have a chance to get used to them.
+
+  4. BUG FIXES
+
+     I also have to report a few bugs that I noticed while making the
+     above changes.
+
+     1. resoff
+	This command was only being applied to the "current IF". This
+	was more of a feature than a bug, but it wasn't documented, so
+	I'm calling it a bug. I have now changed resoff to operate
+	sequentially on all sampled IFs.
+
+     2. clroff
+	This command had a more serious bug. It only cleared the
+	resoff corrections of the first baseline of each IF. I have
+	corrected this.
+
+     3. modelfit
+	This is the most serious bug. In multi-IF data-sets, Modelfit
+	incorrectly substituted the last IF for the first IF, so the
+	first IF was not processed, and the last IF was processed twice.
+	This was equivalent to giving the first IF no weight and
+	doubling the weights of the last IF. I have corrected this
+	behavior.
+
+
+Date: Wed, 12 Apr 95
+Subject: New Difmap 'specplot' command.
+
+  I have just released a new version of Difmap that contains a new
+  spectral line command called specplot. The new command is analogous to
+  the POSSM command in AIPS, but I hope that it is easier to use.
+
+  Specplot has so many options that it has required the creation of 7
+  other new commands to allow the options to be modified. However, the
+  default options are reasonable, and one can change them interactively
+  in specplot, so it is usually ok to simply start specplot without
+  having run any of the other commands. Note that all changes to the
+  defaults that are made interactively or through the setup commands,
+  are remembered between specplot sessions.
+
+  By default, if one hasn't run any of the setup commands, specplot
+  plots 3 spectra per page. Each spectrum represents a different
+  baseline. Alternatively, separate spectra can be plotted for multiple
+  groups of baselines, UV radius ranges, polarizations, time ranges or
+  scans. Thus one can look at the spectrum of a given baseline or group
+  of baselines as a function of UV radius, time or polarization.
+  Similarly one can look at the spectrum of a given polarization versus
+  baseline, UV radius etc...
+
+  A summary of the main features is:
+
+  1. Multiple IFs are plotted side-by-side.
+
+  2. Different spectra can be plotted for different UV ranges, different
+     times, different groups of baselines, and different polarizations.
+
+  3. Spectra can be smoothed to reach different spectral resolutions.
+     Smoothing widths can be specified in terms of frequency or spectral
+     line channels.
+
+  4. The X-axis units can be channel numbers or frequency (GHz).
+     I hope to add one or more velocity options later. At the moment I
+     can't because AIPS doesn't appear to specify how one can record
+     velocity information for multiple IFs in a single source UV FITS
+     file.
+
+  5. Spectra can be plotted as amplitude and/or phase.
+
+  6. Visibility averaging can be vector or scalar.
+
+  7. Spectra can be plotted as isolated points, staircase-like joined
+     channel bins or as a continuous lines joining the centers of
+     adjacent channels.
+
+  8. Error bars can be plotted for each point. These take account of
+     smoothing.
+
+  9. Time scans can be specified either as repeat intervals or as time
+     ranges that are separated by at least a given gap. 
+
+  10.Specplot is independent of the current 'select' command selection
+     and can be run before ever using the 'select' command. The only
+     minor exception to this claim is that if you haven't explicitly
+     specified the polarization(s) to be plotted, specplot will use the
+     current stream selection polarization if available.
+
+  For further details start Difmap and type:
+
+   help specplot
+
+-----------------------------------------------------------------------
+VERSION 2.1 released.
+-----------------------------------------------------------------------
+
+Date: Tue, 14 Feb 95
+Subject: Difmap telescope specification rationalization.
+
+  In preparation to writing a spectrum plotting command, I have just
+  completed an overhaul of the way sub-array, telescope, baseline and
+  closure triangles are taken from the user and interpretted. In the
+  process, I have changed a few other things. On the whole you should
+  notice little change, except to cpplot and to the non-interactive
+  behavior of plotting commands:
+
+  Major differences:
+
+   1. I have written a help topic called antenna_names that describes
+      the syntax of sub-array, antenna, baseline, and closure triangle
+      specifications and how they are now interpretted. Type:
+
+       0> help antenna_names
+
+      to read it.
+
+   2. All telescope specification strings, as before, have the following
+      form:
+
+	sub-array-index:antenna_1 antenna_2 ....
+
+      Trailing components can be omitted. The omitted components are
+      treated essentially as wild-cards, as described in the
+      antenna_names help topic. Non-interactive commands (including plot
+      commands, when plotting to non-interactive devices) now process
+      all such matches to a specification. Thus to print out a plot of
+      visibilities of all baselines of HSTK in sub-array 2, one can now
+      type:
+
+       dev /ps
+       vplot 0, 2:hstk
+
+      Previously, this specification meant start plotting baselines from
+      the first baseline of antenna 2:hstk, and don't stop until all
+      baselines of all telescopes that follow 2:hstk have been plotted.
+      This was rarely appropriate for hardcopy output.
+
+      Similarly, one can now get a print out of just the baselines of a
+      single sub-array, say sub-array 1, by typing:
+
+       dev /ps
+       vplot 0, 1
+
+      I have extended the same capabilities to all other plot commands,
+      including cpplot, as well as to non-plotting commands such as
+      'selfant' and 'resoff'.
+
+   3. I have added an option to vplot to order baselines such that if
+      all telescopes are viewed one after the other, each baseline is
+      only seen once. This is done by arranging that for a given
+      telescope it only shows baselines in which the other telescope
+      appears later in the list of telescopes than the reference
+      telescope. The new option can be toggled on and off with the 'o'
+      key. It is not the default because it is still preferable to see
+      all baselines of each telescope so as to be able to identify
+      station based problems.
+
+      I have added the same option to cpplot.
+
+   4. It is no longer mandatory to specify a reference telescope,
+      baseline or triangle argument to the cpplot command. In its
+      absence, cpplot now defaults to station based plotting of closure
+      triangles, starting with the first telescope of the observation.
+
+      cpplot also no longer restricts the 'n' and 'p' keys to displaying
+      triangles that match the last explicitly specified reference
+      telescope, baseline or triangle. They now also allow one
+      to step to the next or previous reference aggregate of the same
+      type. I have also added the capital 'N' and 'P' keys to allow
+      skipping to the next or previous sub-array - as in other plot
+      commands.
+
+   5. I have added a 'T' key to tplot, mainly for consistency with other
+      plot commands. This allows the selection of a new sub-array to
+      view via the keyboard.
+
+   6. uvplot, radplot and projplot now interpret an empty telescope
+      specification as meaning turn off telescope highlighting. This was
+      already the case for the command-line telescope name argument, but
+      is now also recognized when the 'T' key is used. Thus to turn off
+      highlighting, press 't' and then at the command line, press return.
+
+  Other changes and bug fixes since the last report:
+
+   1. I have added an SZ model component type for John Carlstrom. This
+      only copes with the case where Beta is 2/3.
+
+   2. I had deemed negative flux model components as being unphysical,
+      and rejected them during model fitting. This turned out to be a
+      bad assumption when presented with model fitting of SZ absorption
+      data!
+
+   3. When mapplot displays residual maps on hard-copy devices, it now
+      also plots CLEAN windows. CLEAN windows are still not plotted on
+      clean maps.
+
+   4. Before Christmas Greg noticed that U and V, when derived from the
+      parallel and cross hands of circular polarization, did not look
+      right. I had got the equation for deriving them wrong. Clearly
+      nobody had tried mapping such data - at least I hope that they
+      hadn't. Greg also noticed that when imported into AIPS, all Difmap
+      images were assigned the class .ICLN, regardless of their actual
+      polarization. Difmap now assigns a class derived by prepending the
+      polarization name to "CLN" or "MAP" depending on whether the map
+      is a clean map or a residual map. This results in the normal AIPS
+      QCLN, ICLN etc.. extensions, but also in extensions such as LLCLN,
+      which AIPS has no equivalent for.
+
+   5. Dhiraj noticed that exactly matching telescope names were reported
+      as ambiguous if another telescope had that telescope name as a
+      prefix. This has been fixed.
+
+   6. Nobody told me that the title of corplot has for a long time been:
+      "Baselines to <telescope_name>". Argh. Cut and paste strikes
+      again. I have changed this to the more appropriate:
+      "Calibration corrections to <telescope_name>" 
+
+
+Date: Mon, 31 Oct 94 18:42:41 PST
+Subject: Selfcal correction flags.
+
+  I have just completed an overhaul of selfcal flagging. There are now two
+  types of flags in difmap - normal visibility flags and selfcal-correction
+  flags. Most commands do not distiguish between them, and take any form
+  of flagging to mean "ignore this visibility". Exceptions are the
+  plotting commands (which display correction-flagged visibilities in
+  blue), and the 'selfcal', 'uncalib' and 'corplot' commands.
+
+  Rather than applying flags directly to the data, selfcal now records
+  correction flags as part of each solution. These flags are applied to
+  individual visibilities wherever selfcal calibrations are applied.
+  They are effectively separate from normal visibility flags and can be
+  removed or applied without affecting normal visibility flags.
+
+  The 'uncalib' command now has a new optional third argument to specify
+  whether to remove all selfcal correction flags. This allows one to
+  completely undo the effects of self calibration. Previously, flags
+  applied by selfcal were identical to normal visibility flags, so there
+  was no convenient way to undo flagging performed by selfcal.
+
+  I have also changed corplot such that the left-mouse-button, or
+  keyboard key 'A' toggles the flag status of the selected correction
+  without touching the associated amplitude and phase corrections.
+  Similarly, the middle-mouse-button, or keyboard key 'D', resets the
+  correction of the selected solution without touching the correction
+  flag.
+
+  Note that self-calibration flags are frozen into the data as normal
+  visibility flags whenever 'uvaver' is invoked and also in output UV
+  FITS files, saved with the 'wobs' command.
+
+  I have also written a general help topic on editing. To see this type:
+
+    help editing
+
+
+Date: Mon, 24 Oct 94 22:53:29 PDT
+Subject: Select no longer automatic for multi-channel data.
+
+  1. After reading a UV FITS file, the 'observe' command has until now
+     quietly called the 'select' command, selecting spectral-line
+     channel 1, and either stokes-I if available, or the first stokes
+     parameter listed. This represented a significant overhead for
+     large data-sets, if the automatic selection did not match what
+     was actually desired. So the observe command will henceforth only
+     automatically call the 'select' command for single polarization,
+     continuum data-sets. For spectral-line and multi-polarization
+     data-sets, you should use the 'select' command explicitly before
+     the selection is first needed. Difmap will inform you to do this
+     if you forget. Note that invoking the 'select' command with no
+     arguments after using the 'observe' command will install the old
+     default selection.
+
+  2. I have also modified the help system. Up until now, typing 'help
+     difmap' meant that difmap had to go and read the first couple of
+     lines of every difmap specific help file to gather the one-line
+     descriptions of each command and function. Needless to say, this
+     was not very fast. Similarly the 'apropos' command was even
+     slower since it had to open every help file. I have now
+     re-organized the help system to use index files to considerably
+     speed this process up. I have also re-organized the order in
+     which topics are presented and, in the apropos command output, I
+     now show the located functions, commands and help topics, grouped
+     into the modules that they came from.
+
+     I have also started adding general help topics for difmap. There
+     is now a brief intro to the rudimentary spectral-line facilities
+     in difmap, and an incomplete topic on the role of models in
+     difmap. I will add others as I get time. Comments and suggestions
+     are welcome.
+
+Date: Fri, 14 Oct 94 01:00:34 PDT
+Subject: Difmap changes
+
+  What follows is a description of difmap changes that I have
+  installed in the last two days.
+
+  I will outline the following changes:
+
+  1. More changes to the /xwindow driver, including the addition of a
+     new persistent version to provide a faster, more convenient, and
+     fully featured alternative to the /xdisp (pgdisp) driver.
+
+  2. More new interactive cursor features in all difmap plot commands.
+
+  3. Changes in the command-line semantics of many difmap commands,
+     with an emphasis on making it easier to find out what the current
+     difmap parameter settings are.
+
+  4. Miscellaneous other changes.
+
+  -----------------------------------------------------------------------
+  1. Changes to the /xwindow driver and the addition of /xserve.
+  -----------------------------------------------------------------------
+  As you may have noticed, the /xwin driver has changed again. It now
+  runs a PGPLOT window server so that multiple persistent windows can
+  be opened. Unlike /xdisp, there is no need to start the server by
+  hand.
+
+  There are now two names to select the same driver: /xwindow to open
+  a window that goes away when a new device is opened, and another,
+  called /xserve, that opens a window that remains displayed to be
+  reused by the next PGPLOT program that wants an X-window. The latter
+  is a fast alternative to the /xdisp (pgdisp) driver, and has all the
+  new features that /xwindow has. It is also possible to keep two or
+  more windows displayed at once and select one or other of them as
+  convenient, using the difmap device command.
+
+  Along with the new driver comes a few X resources.
+
+  To specify the initial size and position of the windows, use the
+  pgxwin.geometry resource, eg:
+
+  pgxwin.geometry: 500x500+600+33
+
+  To have /xserve windows automatically iconized and de-iconized as
+  PGPLOT programs open and close them, use:
+
+  pgxwin.iconize: True
+
+  To specify 100 colors as the default number that is allocated per
+  window, use:
+
+  pgxwin.maxColors: 100
+
+  To specify that the active PGPLOT cursor be augmented with a
+  cross-hair that extends across the height and width of the window,
+  use:
+
+  pgxwin.crosshair: True
+
+  -----------------------------------------------------------------------
+  2. New cursor options in difmap plotting commands.
+  -----------------------------------------------------------------------
+
+  In the new driver I have added options to select vertical and
+  horizontal hair-line cursors, as well as a cross-hair cursor. The
+  hair-line cursors are now used whenever X-axis or Y-axis ranges are
+  selected. They are exploited to dynamically show the bounds of the
+  ranges as they are being selected. In addition, the cross-hair
+  cursor can be toggled on and off with the '+' key.
+
+  -----------------------------------------------------------------------
+  3. Changes to the command-line semantics of core difmap commands.
+  -----------------------------------------------------------------------
+
+  A number of people have asked me to make it possible to examine
+  difmap configuration parameters. For instance, other than using the
+  'save' command to create a .par file, there has up until now been no
+  way to determine what, if any, uv-taper is in effect at any given
+  time.
+
+  Newer difmap setup commands all report their current settings when
+  provided with no arguments. I decided today to try to make as many
+  of the older commands act in the same manner.
+
+  The following commands now display the settings that they are
+  responsible for, when invoked with no arguments:
+
+   mapsize, uvtaper, uvrange, uvweight, uvzero, shift, selftaper,
+   selflims, xyrange, selfflag, wtscal, scangap, mapunit, mapcolor,
+   mapfunc, selfant.
+
+  Three of these commands now treat the lack of one or more optional
+  trailing command-line arguments differently than before. Previously
+  they substituted default values for omitted arguments. This had the
+  effect of overwriting previous selections. Now the parameters set by
+  the omitted arguments, are left untouched.
+
+  The commands involved are:
+
+   uvweight, selflims and selfflag.
+
+  The most significant is obviously the 'uvweight' command. For
+  example, omitting all the arguments of this command previously
+  resulted in all weighting being turned off. Now, instead this
+  results in a display of the existing settings, without changing any
+  of them.
+
+  I have also added a new command called 'showpar'. This command shows
+  the statements that the 'save' command would place in a .par file
+  if invoked to record the current difmap parameter settings. This can
+  be used to get an overview of all settings.
+
+  -----------------------------------------------------------------------
+  4. Other changes.
+  -----------------------------------------------------------------------
+
+  I had not realized that the settings specified with the 'scangap'
+  command were not getting saved in the parameter file written
+  by the 'save' command. I have rectified this, although I doubt that
+  anyone has every even used the 'scangap' command.
+
+  The 'wmap', 'wbeam' and 'wdmap' commands now add an AIPS IMCLASS
+  history line to output FITS files, for AIPS to use in constructing
+  its internal catalogue names. The AIPS ICLN extension is set for
+  clean maps, IMAP for residual and dirty maps, and IBEAM for beam
+  maps.
+
+  -----------------------------------------------------------------------
+
+  As always, I have updated the help files to reflect the changes.
+
+Date: Fri, 9 Sep 94 23:40:21 PDT
+Subject: More significant changes in difmap
+
+  I decided to report other changes to difmap [as opposed to the /xw
+  driver] in a separate E-mail. These include:
+
+  Continuum subtraction:
+
+   For those who haven't already found out, difmap can now handle
+   continuum subtraction. This has been in difmap for a few weeks, but
+   I forgot to tell those who would find it most useful!
+
+    setcont - New command. This command adds the current tentative and
+	      established models to the continuum model. There are
+	      also significant changes to other commands, notably
+	      'wmodel','rmodel', 'clrmod', 'save' and 'get' to handle
+	      continuum models.
+
+   If you are interested in trying these features, I suggest that you
+   read 'help setcont'. Difmap does continuum model subtraction in a
+   more versatile manner than AIPS, taking advantage of difference
+   mapping techniques. It is important that you understand the
+   differences before you try it.
+
+  Other changes:
+
+     maplot - New cursor key options include:
+
+	       f - Fiddle the colormap contrast and brightness.
+		   Holding the key down while you move the cursor
+		   changes the colormap contrast and brightness.
+		   Doing this with the cursor in the bottom left
+		   quadrant of the plot area generally yields the
+		   the most acceptible results.
+	       F - Reset the colormap contrast and brightness to 1, 0.5.
+	       c - Install the default pseudo-color color map.
+	       C - Install a color map named at the keyboard.
+	       T - Re-display with a different transfer function.
+	       L - Re-display the plot.
+
+   mapcolor - This command changes the colormap, brightness and
+              contrast to subsequently be used in mapplot.
+
+    mapfunc - This command changes the transfer function
+	      (linear,log,sqrt) to be used in mapplot, as well as the
+	      range of fluxes to be displayed. The latter feature
+	      supersedes the use of variables, gmin and gmax.
+
+    radplot - I have removed the radplot "IF-editing" option,
+              previously toggled with the 'I' key. I have removed it
+              since it wasn't useful in radplot and didn't do what
+              most people thought that it did. By default, edits in
+              radplot are applied to all data points in the region
+              selected with the cursor. This results in multiple IFs
+              being edited if the selected points come from multiple
+              IFs. What the 'I' option did was to also apply edits to
+              the same integration, baseline and sub-array as each
+              edited point but not just in the IF of the edited point,
+              but in all IFs. This resulted in points that were not
+              explicity selected with the cursor being edited. I can't
+              think of any good use for this, so I have removed it. I
+              originally put it in for consistence with the other
+              plotting commands, where it can be useful.
+
+   projplot - Removal of the 'I' option as described for radplot
+              above.
+
+     rmodel - Non-delta model components with major axis extents of
+              0.0 are now converted into delta functions.
+
+    peak()  - Minimum-match versions of the keyword arguments used to
+  uvstat()    select different items in these functions are now
+              acceptable.
+  imstat()    It is no longer necessary to type them out in full.
+
+  Bug fixes:
+
+     cpplot - Editing with the cursor was not always selecting the
+	      expected points. Noticed by gbt.
+
+     select - When two stokes parameters were added together to
+	      form a given polarization (eg. I=(RR+LL)/2), the weights
+	      on the resulting visibilities were 16 times too small.
+	      The resulting maps were unaffected, but the goodness of
+	      fit in selfcal and modelfit appeared 4 times better than
+	      it should have been. Fortunately few people have used
+	      this mode of operation. Noticed by ddt.
+
+
+Date: Fri, 9 Sep 94 23:39:18 PDT
+Subject: Changes in the PGPLOT /xw driver used by difmap
+
+  As many of you already know, I have spent the last few weeks
+  re-writing the PGPLOT /xw driver in collaboration with Tim, who has
+  added support in PGPLOT for the new facilities in the /xw driver,
+  added a new routine that allows one to plot images with a given
+  transfer function, (without first plotting them in grey-scale),
+  and added full color capabilities to the postscript driver to take
+  advantage of this.
+
+  The version of difmap that I have just placed in ~mcs/new/difmap
+  exploits these features, but to use most of them you will need to
+  use the /xw device - not pgdisp.
+
+  0>device /xw
+
+  All the plotting commands in difmap now make use of the new
+  rubber-band cursor facilities in the /xw driver. In particular, cut
+  boxes are represented by a red rectangle that expands as the cursor
+  is moved, restore boxes by a green box, zoom boxes by a light blue
+  box and mapplot windows by green boxes.
+
+  With the addition of cached colormap updates in the /xw driver, I
+  have also added interactive manipulation of the colormap in mapplot,
+  and two new commands, mapcolor and mapfunc. I will describe these in
+  the following E-mail.
+
+  Other major differences between the new /xw driver and the old are:
+
+  1. You can now resize the /xw window with the mouse.
+
+  2. You can also tell /xw where to initially place its window and
+     what its initial size should be. To do this place a line of the
+     following form in your ~/.Xdefaults file.
+
+     pgxwin.geometry:    WIDTHxHEIGHT+X+Y
+
+     With the capitalized names replaced by pixel numbers. Note that
+     the origin of the display is the top left corner, and the SUN
+     consoles are roughly 1150 pixels wide and 880 pixels in height.
+     X and Y denote the position of the top left corner of the /xw
+     window. WIDTH and HEIGHT denote the size of the window excluding
+     its border. To give you an idea, the following resource line:
+
+     pgxwin.geometry:        500x500+600+33
+
+     produces a window of about 5 inches on each side, placed in the
+     top right corner of the console.
+
+     The new resource will take effect when you next start openwin.
+     Alternatively, to see the changes immediately, type:
+
+     xrdb ~/.Xdefaults
+
+     at the shell prompt, and the next time that you open a /xw
+     window, the new geometry will be used.
+
+  3. Device '/xw' now runs an external expose-event handler program,
+     /usr/local/bin/pgxwin_client. If you don't already have
+     /usr/local/bin in your path, you will need to add it before
+     you can use /xw. Most people already have this in their path.
+     One planned side-effect of this scheme is that you can suspend
+     difmap and still have the /xw window updated when it is covered
+     and then exposed.
+
+  4. Grey-scale monitors used to be incorrectly treated as monochrome
+     devices. The new driver treats them correctly.
+
+  5. Previously, if you had another X program that was using a lot of
+     colors, /xwin would revert to black and white. The new version
+     allocates it own private colormap when this happens.
+
+  6. Iconizing the /xw window will no longer crash difmap or any other
+     PGPLOT program.
+
+  7. If you pull down the openwin menu on a /xw window, and select the
+     QUIT option, the /xw window ignores it. Previously this would
+     crash PGPLOT programs, including difmap.
+
+  8. I also added XErrorEvent handling to prevent program crashes.
+     Previously "non-fatal" X11 errors would kill PGPLOT programs.
+
+  9. When cursor input is initiated in the /xw window, the cursor is
+     no longer stolen. Previously you could be in the middle of typing
+     in another window, only to find the cursor unexpectedly move into
+     the /xw window without any warning.
+
+
+Date: Fri, 22 Jul 94 01:58:15 PDT
+Subject: Difmap update
+
+  I have made the following changes to difmap:
+
+  1. I have added a new command called projplot. This command is
+     similar to radplot except that it plots data versus the UV
+     distance projected parallel to a given position angle.
+     Interactive control of this angle is provided, for homing in on
+     the orientations of linear features such as jets and double
+     sources. Projplot defaults to plotting both amplitude and phase
+     in different sub-plots, but this is user selectable and defaults
+     can be set in pflags, a new variable similar to vplot's vflags.
+     The projplot command supports the same editing and range
+     selection options as radplot.
+
+  2. In the process of writing projplot, I also modified radplot. As
+     in projplot, radplot can now also display phases, and also has
+     interactive control of whether the model is plotted. I have added
+     an 'rflags' configuration variable with similar functionality to
+     vplot's vflags. The optional domodel command-line argument is now
+     redundant and has been removed.
+
+  3. By default, 'edmodel' now presents the whole model for editing,
+     instead of just the variable part. The old behavior is still
+     catered for via an optional boolean argument.
+
+  4. I have also added editing facilities to tplot. Among other things
+     this makes it easy to edit a whole station, or a whole scan at a
+     time. Point by point editing is not supported, but the usual 'C'
+     and 'R' cut area and restore area facilities are.
+
+Date: Tue, 12 Jul 94 21:52:01 PDT
+Subject: Difmap update
+
+  I have made the following minor changes to difmap:
+
+  1. For multi-IF data, selfcal now displays the overall goodness of
+     fit instead of showing a separate value for each IF.
+
+  2. Steve Myers got me to change modelfit such that typing modelfit 0
+     just gives iteration zero, which does nothing to the model, but
+     displays the current fit parameters and the reduced chi-squared.
+
+     Similarly, modelfit n, now performs iterations 0 -> n instead of
+     iterations 0 -> n-1.
+
+  3. I have added a new query function called uvstat(), that can be
+     invoked to return the current reduced chi-squared or rms between
+     the observed and model data, or the number of unflagged
+     visibilities used to do these calculations. This is primarily
+     intended for use in automatic mapping scripts.
+
+  4. Similarly I have added another query function called imstat()
+     that returns the RMS of the current map or its mean or the
+     theoretical noise level (RMS) estimated from the gridding
+     weights. It can also be asked to return the beam dimensions that
+     were estimated during the last invert. This supersedes the
+     maprms() function, which has been removed.
+
+  5. For the gravitational lens survey Steve Myers asked to have the
+     wmodel command write a comment line in model files to document to
+     R.A. and Dec of the phase center to which to component position
+     offsets are refered. I have implemented this.
+
+  6. I have changed the wtscale command so that its argument is now
+     the required absolute value of the weight scale factor, instead
+     of an incremental factor. An abolsute weight scale factor makes
+     more sense if one can calculate what the real scale factor should
+     be, based on observing details. This is usually the case with the
+     VLA. In order that users can still change the scale factor
+     incrementally as well, I have modified the wtscale command so
+     that it can also be used as a function returning the current
+     weight scale factor.
+
+  7. Finally, Dhiraj and Greg brought my attention to the fact that
+     source coordinates (the coordinates of the phase center) reported
+     by difmap were out by a few milliarcseconds compared to those
+     given in the input UV FITS files. This turned out to be an error
+     in the fifth significant digit of one of my constants. I have
+     fixed this and also increased the precision of other contants.
+
+Date: Wed, 6 Jul 94 00:31:32 PDT
+Subject: Difmap changes
+
+  There have been a few minor changes including one minor change with
+  major significance (left until last below).
+
+  1. I have changed the wmodel and wwins commands, so that if you omit
+     to give a filename or specify "" as the file name, then what
+     would have been written to files appears on the standard output
+     and in the log file. 
+
+  2. I have added a new command called addcmp, primarily for use in
+     automatic mapping scripts as an interface to supplying model
+     components non-interactively for model fitting. See help on
+     addcmp for details.
+
+  3. The select command now can be used to select multiple
+     spectral-line channel ranges instead of just the one. See help on
+     the select command for details.
+
+  4. **TAKE NOTE** The select command no longer has the side effect of
+     clearing the tentative and established models. This is mainly of
+     significance to spectral-line users.
+
+  5. **IMPORTANT** I have also removed the optional trailing
+     'preserve' argument of the select command, that was previously
+     used to override the side-effect removed in (4). Unfortunately,
+     this argument has been written to all *.par files created by the
+     save command, so old parameter files will not run without error
+     until this argument is removed. To this end I am providing the
+     following two scripts. (If you don't use .par files then you can
+     ignore the following).
+
+     1. ~mcs/new/fixpardir
+
+     This script searches a given directory and its sub-directories 
+     for files with names ending in '.par'. It then checks each file
+     to see if it contains an affected 'select' call, and if so, edits
+     the file, removing the offending argument. If the file doesn't
+     need fixing then the script leaves it alone.
+
+     For example, to fix all *.par files in my /scr/mcs/ directory and
+     all its sub-directories, I would type:
+
+       ~mcs/new/fixpardir /scr/mcs
+
+     Note that this script will not touch any file that doesn't
+     contain the regular-expression:
+
+       'select.*, true$'
+
+     so it is extremely unlikely that it will touch any other type of
+     file that just happens to also have a .par extension. For added
+     peace of mind, the script lists the files that it is fixing, as
+     it fixes them.
+
+     2. ~mcs/new/fixpar.
+
+     This takes the names of one or more parameter files be fixed. It
+     also won't touch any file unless the above regexp is present.
+
+     For example to fix all files in my /scr/mcs directory, but not
+     those in its sub-directories, I would type:
+
+	cd /scr/mcs
+	~mcs/new/fixpar *.par
+
+Date: Mon, 27 Jun 94 01:13:09 PDT
+Subject: Difmap changes.
+
+  Changes to difmap last week included:
+
+  1. The addition of interactive editing to cpplot (the closure phase
+     plotting command). Since closure phases are derived quantities,
+     they can't be edited directly, so the user is given the choice of
+     applying edits to visibilities of the reference station that
+     closure phases are plotted for, or the baseline for which
+     closure-phases are plotted for, or the three baselines that make
+     up a specific triangle. The default is now for edits to be
+     applied to visibilities of the telescope aggregate selected on
+     the command line, [or that selected via the interactive 'T'
+     option].
+
+     For example, if one invokes cpplot like:
+
+      0>cpplot OVRO
+
+     then by default, edits are applied to visibilities of the OVRO
+     telescope, whereas if one types:
+
+      0>cpplot OVRO-HSTK
+
+     then by default, edits are applied to visibilities of the
+     OVRO-HSTK baseline.
+
+     In each case, pressing the space-bar toggles between the default
+     edit mode and the alternate: "edit the three baselines of the
+     selected triangle". The selected editing mode is displayed above
+     the plot.
+
+     NB. Those who have been using the new editing facilities of
+         cpplot, note that the above behavior is new as of Sunday
+         night. Previously the default in all cases was for edits to
+         be applied to the three baselines of a selected triangle. To
+         get the earlier behavior, toggle the space bar to make the
+         mode line say "Triangle editing...".
+
+  2. When the number of plots per page is not explicitly specified on
+     the command line, cpplot now defaults to displaying up to 5 plots
+     per page, instead of a single plot.
+
+  3. Radplot now accepts the 'I' and 'W' options that the other
+     plotting commands have. These allow changing the scope of edits
+     with respect to the selected IF and spectral-line channels.
+
+  4. On Friday I realized that the way that the 'select' command
+     averaged spectral-line channels together could potentially
+     produce closure errors. The problem stems from using weighted
+     means, and in discarding flagged data from averages where
+     un-flagged visibilities exist. For this reason I have now
+     modified the 'select' command to use unweighted means, and to
+     include flagged visibilities in averages [the resulting average
+     is now flagged if one or more of the constituents is flagged].
+     Fortunately, I don't think that any of the spectral-line
+     data-sets that people have been processing with difmap, so far,
+     have weights that are a function of spectral-line channel, so I
+     doubt that this will make any difference to currently processed
+     spectral-line data-sets. In particular, none of the OVRO
+     data-sets that I have, show any discernable change.
+
+
+Date: Sat, 18 Jun 94 23:28:52 PDT
+Subject: Difmap changes
+
+  This weeks difmap changes include:
+
+  maprms:
+
+    I added a maprms user function which returns the RMS flux in the
+    latest residual or clean map. gbt,cosmic and cdf have incorporated
+    this in the automap scripts to better determine the flux cutoff
+    and contouring levels.
+
+  scangap: (vplot, tplot, cpplot, corplot)
+
+    At the meeting this week Rene suggested that I add a command to
+    give the user control over how integrations are split into scans
+    in the plot commands. To this end I have added a new command
+    called 'scangap', with which you can change the gap considered to
+    separate different scans. This may be directed at individual
+    sub-arrays, or to all sub-arrays.
+
+  mapunits: (Too many commands are affected to list them individually).
+
+    Also, at the meeting it was suggested that I provide a way to
+    change the units used to specify and label map-plane and UV-plane
+    coordinates. I have created a command called 'mapunits' for this
+    purpose.
+
+    Initially, when difmap is started, UV coordinates are refered to,
+    as before, in millions of wavelengths, and map coordinates in
+    milli-arcsec. By calling the mapunits command with the name of a
+    recognised map-plane unit (mas, arcsec or arcmin), difmap supplies
+    an appropriate UV plane unit and thereafter accepts command
+    arguments, labels plots and writes other output in these units.
+
+    This should make things more pleasant for VLA and OVRO users.
+
+    The map coordinate units used in model and window files are not
+    affected by this change, and will continue to be milli-arcsec.
+
+
+Date: Sat, 11 Jun 94 02:05:58 PDT
+Subject: More difmap changes
+
+  I have made a number of changes to Difmap this week, including:
+
+  vplot:
+
+    I have added a zoom option to vplot, bound to key 'Z'. With this you
+    can interactively select a smaller plotted amplitude or phase range.
+    To unzoom, press 'Z' twice in succession.
+
+    After noticing how Tim wraps model phase lines in his vplot, I
+    changed vplot (and cpplot) to do the same. There should now be
+    fewer cases where a model phase that appears (to the eye) to go
+    off the top of the plot and re-appear at the bottom (or vice
+    versa) is actually connected by a vertical line within in the
+    plot.
+
+  cpplot:
+
+    Thanks to Rene and Greg for noticing a bug in clplot in which,
+    depending on the order in which stations were specified, the signs
+    of the baseline phase contributions were sometime calculated
+    incorrectly. This is now fixed.
+
+  edmodel:
+
+    Users using emacs as there 'edmodel' editor were leaving lots of
+    emacs backups of temporary files around, because the name of the
+    temporary file was different every time. I have changed edmod to
+    open versioned files called edmod.scr in the current directory,
+    such that only one backup will be left around.
+
+  addhist:
+
+    Addhist is a new command by which the user can append a new line
+    of processing history.
+
+  clrhist:
+
+    Clrhist is a new command to delete the processing history of an
+    observation. This will be useful to those producing map archives,
+    where the processing history is unwanted.
+
+  uvplot:
+
+    Uvplot now displays the UV coverage of all IFs in the same plot.
+    Previously it only displayed the sampling of the currently
+    selected IF. Where one has multiple IFs with different center
+    frequencies and different distributions of flagged visibilities,
+    the result can be significantly different from displaying a single
+    IF at a time.
+
+    I have also added a zoom option to uvplot, which is used in the
+    same manner as the zoom option of mapplot. Likewise, it is bound
+    to the 'Z' key.
+
+    When uvplot starts, no telescope is highlighted until 'n' is
+    pressed, or 't' is used to select a telescope. After this point it
+    used to be impossible to return to having no telescope highlighted
+    without restarting uvplot. Now, if you press 'p' to highlight the
+    previous telescope when at the start of the first sub-array,
+    uvplot reverts to having no highlighted telescope.
+
+  radplot:
+
+    Radplot also now displays and allows editing of all IFs in the
+    same plot.
+
+    As with uvplot, I have also allowed one to revert to having no
+    telescope highlighted.
+
+    Tomorrow I plan to add a zoom option to radplot, if only to make
+    it consistent with the other plotting commands.
+
+  peakwin:
+
+    When I wrote peakwin, I decided that it should place windows
+    around the pixel having the maximum "absolute" flux. Chris and
+    Greg said that this was not the behavior that they expected, so I
+    have changed peakwin to default to placing windows around the
+    pixel having the maximum signed flux. To make this command still
+    useful for people mapping absorption features in spectral-line
+    data, I have added an optional second argument to peakwin through
+    which the older behavior can still be requested.
+
+
+Date: Fri, 3 Jun 94 18:38:33 PDT
+Subject: Difmap update
+
+  Due to the unpopularity of the name clsplot for the new
+  closure-phase plotting command, I have changed it cpplot
+  (Closure-Phase-Plot). If I ever write a closure amplitude plot
+  command, it will then be called caplot.
+
+  I have also changed radplt to radplot so that all plotting commands
+  now consistently end in 'plot', ie.
+
+   vplot, radplot, uvplot, corplot, mapplot, cpplot, tplot
+
+  Since nobody objected I have also rebound the 'Z' key of vplot to
+  'K' so that I can go ahead and add the zoom feature to vplot over
+  the weekend.
+
+  I have also fixed a bug that Greg noticed in the difmap 'uvaver'
+  command. When the scatter option was used, the estimated errors came
+  out too large. It turned out that I was calculating the variance of
+  the data sample instead of the variance of the sample mean.
+
+Date: Fri, 3 Jun 94 01:01:43 PDT
+Subject: Closure phase plotting in difmap
+
+  I have added a new command to difmap to allow you to interactively
+  plot closure phases. The new command is called clsplot. Currently it
+  takes two command line arguments: A specification of the closure
+  triangles to plot, and the number of plots per page.
+
+  Examples are:
+
+    0> clsplot OVRO,5
+
+  This plots closure phases for all unique triangles of OVRO, at 5
+  plots per page.
+
+    0> clsplot OVRO-NRAO,3
+
+  This plots closure phases for all unique triangles that contain
+  baseline OVRO-NRAO, at 3 plots per page.
+
+    0> clsplot OVRO-NRAO-HSTK
+
+  This plots closure phases for the single triangle OVRO-NRAO-HSTK at
+  one plot per page.
+
+    0> clsplot 2:OVRO-NRAO-HSTK
+
+  This plots the same triangle as the previous example but for the
+  second sub-array instead of the default first sub-array.
+
+  Once clsplot has been invoked, the cursor options are similar to
+  those of vplot, with the notable exception of editing options. The
+  'T' option may be employed to enter a new triangle description, such
+  as those in the examples above.
+
+  By default clsplot displays closure phases over the range -180 to 180
+  degrees. This may be changed by zooming in on a narrower range,
+  similar to how one selects a narrower UT range. For the moment I
+  have chosen to use the 'Z' key for this. Maplot currently also uses
+  Z for a similar purpose, but unfortunaetely vplot uses Z to mean zap
+  a given scan/baseline. If nobody has any extreme objections I would
+  like to re-bind the zap command of vplot to another key (K for kill
+  pane?), so that I can add a Zoom option to vplot.
+
+Date: Wed, 25 May 94 01:27:09 PDT
+Subject: Difmap changes
+
+  By popular demand I have modified radplot to allow flagging user
+  selected rectangular areas. This has the same usage as the similar
+  option in difmap's vplot command. As in vplot, it is initiated by
+  pressing 'c', and then opposite corners of the selected area are
+  sequentially set by pressing the left mouse button over two
+  positions in the plot.
+
+  Note that this feature should be used sparingly. Station based
+  inspection and editing in vplot is preferable.
+
+  The new feature probably has the most utility in removing swarms of
+  drop-outs.
+
+
+Date: Tue, 24 May 94 01:21:30 PDT
+Subject: Difmap changes
+
+  I have made some significant additions to the difmap mapplot
+  command.
+
+  1. It is now no longer necessary to explicitly tell mapplot on the
+     command line to overlay a symbolic display of the model
+     components on the map. Within mapplot you can now toggle whether
+     the model components are plotted with the 'm' key. The upper-case
+     version of this key toggles plotting of just the variable
+     components of the current models.
+
+     Also, previously telling mapplot to plot the model components
+     caused it to establish the latest-clean-model, meaning that the
+     next time the map was required it would be re-inverted. This no
+     longer occurs.
+
+  2. I have added an option to allow the user to interactively add new
+     delta, and gaussian components with the cursor for use in
+     subsequent model fitting.
+
+  3. I have also made it possible to interactively delete selected
+     components via the cursor. Selecting components to be deleted
+     requires knowledge of where the center of the components lie.
+     To this end I have modified the representation of gaussian
+     components to include the major and minor axis lines.
+
+  4. I have arranged that components with variable components appear
+     distinct from fixed components by displaying them in yellow
+     instead of green.
+
+  5. I have removed the 'L' "logarithmic transfer function" option
+     since it was ill conceived and didn't do what I originally meant
+     it to.
+
+  The above changes required a long overdue change to the way that the
+  latest-clean-model (now renamed the tentative model, since its
+  context has now been broadened to include modelfit variable models)
+  is handled. As a result a number of informational messages have
+  changed.
+
+  I have updated the mapplot help file to reflect the new options. I
+  have also finally gotten around to writing the help file for the
+  modelfit command.
+
+Date: Wed, 18 May 94 00:42:51 PDT
+Subject: General difmap updates.
+
+  It is probably about time that I started keeping the whole group up
+  to date about changes to the "new" FITS version of difmap. For those
+  who aren't aware of its existence, note that (except on kronos) to
+  avoid conflicts with the merge file version in
+  /usr/local/vlb/difmap, the new FITS version is currently in:
+
+   ~mcs/new/difmap
+
+  At some point the merge file version should be renamed and the FITS
+  version installed as the default.
+
+  Todays changes
+  --------------
+  I have added a new command called 'edmodel' to ~mcs/new/difmap. This
+  invokes an external editor on the variable part of the accumulated
+  model, allowing one to edit the values and constraints of individual
+  model component parameters. The editor invoked is by default 'vi',
+  but may be changed by assigning the path of one's favorite editor to
+  the EDITOR environment variable. I personally have this set to emacs
+  via the following statement in my .login file:
+
+   setenv EDITOR emacs
+
+  I have also tidied up the model files written by wmodel in difmap,
+  including the addition of column headings. This also effects the
+  displayed model parameters shown by the new difmap 'modelfit' and
+  'edmodel' commands since they all invoke the same function.
+
+  Coming soon
+  -----------
+  In addition to the edmodel command I intend to modify maplot to
+  allow one to set new components and delete old ones interactively
+  with the cursor.
+
+
+Date: Thu, 12 May 94 03:12:20 PDT
+Subject: modelfit
+
+  I have changed what the difmap modelfit command displays as it
+  iterates.
+
+  At each iteration, it now displays reduced chi-squared, as we
+  agreed. In the preamble to the 0th iteration it also shows the
+  details of how this was obtained from the true chi-squared, so you
+  can calculate the latter if required.
+
+  I have also changed modelfit to only display the values of the
+  best-fit parameters on sucessful iterations (those that decrease
+  chi-squared). Previously it always showed the best-fit parameters
+  and chi-squared from the last successful iteration, and you had to
+  look closely to see if anything had changed to determine if further
+  minimization had occured.
+
+  Now, when an iteration fails to reduce chi-squared, modelfit 
+  displays just the reduced chi-squared of the failed fit. This
+  diagnostic is useful because its behavior can be used to predict
+  whether there is any point in further iterations.
+
+  I have also now made the output of modelfit appear in the log file.
+  I trust that this was wanted?
+
+  I have also changed the model file reader to be more pedantic and
+  explicit in its error detection and messages, and fixed the bug that
+  you turned up. The reader will now complain and abort if there are
+  more than 7 (uncommented) fields on a line. It will also complain
+  and abort if anything else un-expected appears without a preceding
+  comment character '!'. Previously it just ignored anything following
+  unexpected input without even generating a warning message. Now if
+  you give it a FITS file by mistake it will abort on the first line.
+
+Date: Fri, 11 Mar 94 03:57:30 PST
+Subject: More FITS difmap changes
+
+  I have changed the behaviour of the new FITS version of difmap so
+  that when clean windows, clean models and UV data are written to
+  disk, any accumulated position offsets introduced by the 'shift'
+  command are quietly removed on-the-fly. Similarly, when clean window
+  files and clean model files are read into difmap any accumulated
+  shifts that have been added to the data are also applied to the
+  newly read windows and model components.
+
+  If any shifts have been accumulated when the save command is
+  invoked, then the save command puts the appropriate 'shift' command
+  in the .par file so that the shift is reinstated when the .par
+  script is next run.
+
+  In the old merge-file version of difmap all data, clean windows and
+  clean models retained any accumulated shifts when written to disk.
+  This had the danger of one's loosing the relative position in the
+  primary beam, and of compromising the accuracy of the RA and DEC
+  recorded in the header. Also, reading windows and models instated
+  these quantities relative to the current map center, regardless of
+  accumulated position offsets.
+
+  I also have put together an automatic mapping script which may be
+  adequate for Steve's needs. I have only tried it on the one data
+  file that I have from Steve, but it produced an acceptable map
+  without any intervention from me (apart from setting configuration
+  parameters).
+
+Date: Thu, 10 Mar 94 01:15:06 PST
+Subject: Updated FITS difmap
+
+  I have added two new commands and one function to the FITS version
+  of difmap.
+
+  1. unshift
+
+     This removes any accumulated position shifts from the data, CLEAN
+     windows and model(s).
+
+  2. peakwin
+
+     Peakwin looks at the position of the pixel with the highest
+     absolute flux in the residual map, and if it is not already
+     enclosed in a CLEAN window, adds a new CLEAN window centered on
+     that pixel. The added CLEAN window has the dimensions of the
+     rectangle that just encloses the displayed aspect of the CLEAN
+     beam. The beam dimensions used are those estimated when the beam
+     was last inverted.
+
+  3. peak()
+
+     This is a function that returns the flux or X-axis position or
+     Y-axis position of the pixel, in the latest residual or clean
+     map, that has the min or max or max absolute flux.
+
+     It takes one mandatory and one optional argument. Both are
+     literal strings giving the names of the items required. For
+     example:
+
+     To return the flux of the pixel with the max absolute flux in the
+     map:
+
+       0>print peak(flux)
+
+     To print the X-axis position of the pixel with the lowest
+     (most -ve) flux in the map:
+
+       0>print peak(x,min)
+
+  I hope that these commands will be sufficient for trying out
+  automatic mapping schemes. Hopefully Steve and I can throw something
+  together tomorrow.
+
+

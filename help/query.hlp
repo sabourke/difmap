@@ -1,0 +1,2 @@
+prompt_string
+Asks the user "<prompt> ? (y/n):" and returns TRUE if user types y

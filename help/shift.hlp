@@ -1,0 +1,61 @@
+xshift, yshift
+Shift the observation phase-center, CLEAN window and model positions.
+EXAMPLES
+--------
+
+1. 0>shift 10,-1
+   shift: Shifting UV data, clean models and windows by: 10 (mas) East
+   shift: Shifting UV data, clean models and windows by: -1 (mas) North
+   Total accumulated eastward shift  = 10 (mas).
+   Total accumulated northward shift = -1 (mas).
+   0>
+
+   All but the first line are responses from the 'shift' command.
+
+2. Shifts are applied incrementally. To see what the accumulated
+   shifts are, omit all arguments: 
+
+   0>shift 
+   Total accumulated eastward shift  = 10 (mas).
+   Total accumulated northward shift = -1 (mas).
+   0>
+
+3. To remove the accumulated shift use the 'unshift' command.
+
+   0>unshift
+   unshift: Removing accumulated position shifts.
+   0>
+
+PARAMETERS
+----------
+xshift - The distance to shift the source Eastwards.
+yshift - The distance to shift the source Northwards.
+
+CONTEXT
+-------
+This command may be called at any time. It is useful for checking
+whether there is flux beyond the bounds of the map. It is also useful
+if one has a single sided source with a bright core at the center of
+the map. In the latter case, half of the map area is wasted. In this
+case the shift command may be used to better utilize the space
+available and thus allow a smaller map grid. A more complex use is to
+map a large area containing several widely separated sources. In this
+case the shift command is used to center the map on one source at a
+time while it is cleaned. This has the advantage that a smaller map
+grid may then be utilised to realize faster mapping and less memory
+usage.
+
+The 'shift' command modifies the observed and model visibilities
+simply by moving the phase center of the map. It also modifies the
+latest and established model component lists and any clean windows
+to have positions wrt the new phase center.
+
+SIDE EFFECTS
+------------
+The modifications to the UV data invalidate the current residual map.
+This will be re-calculated on the next 'invert'. Thus shifting the
+data incurs the overhead of an extra 'invert'.
+
+ASSOCIATED COMMANDS
+-------------------
+unshift - Undo accumulated position shifts from the data, windows and models.

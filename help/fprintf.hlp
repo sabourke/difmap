@@ -1,0 +1,2 @@
+file_number, format_string, <scalar_args to be written>
+Performs formatted output to the terminal or to a text file

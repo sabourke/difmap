@@ -1,0 +1,2462 @@
+\documentstyle[11pt,twoside]{article}
+ 
+% PAGE SIZE - 
+%
+\topmargin -0.5in \headsep 0.251in
+%\oddsidemargin 0.0in \evensidemargin 0.0in
+\hoffset -0.8in
+\marginparwidth 0in \marginparsep 0in
+\textheight 9.5in \textwidth 6.5in
+\parindent 0pt
+\parskip 8pt plus 1pt minus 1pt
+\pagestyle{headings}
+
+% Define a command for writing titles (without sectioning semantics).
+
+\newcommand{\boldtitle}[1]{\subsubsection*{#1}}
+
+% Define an environment for listing function arguments.
+
+\def\arglist{\boldtitle{Arguments}\list{}{\labelwidth 0.75in \leftmargin \labelwidth \addtolength{\leftmargin}{\labelsep}}}
+\let\endarglist\endlist
+
+\def\fitem#1{\item[\verb`#1`]} % A function argument-list item.
+
+\begin{document}
+
+\title{An ANSI--C FITS library}
+
+\author{Martin Shepherd (mcs@phobos.caltech.edu)\\
+	Copyright \copyright 1993 California Institute of Technology}
+
+\date{}
+\maketitle
+
+\clearpage
+
+\tableofcontents
+
+\clearpage
+
+\section{List of functions.}
+
+\newcommand{\fnrf}[3]{\item[{\tt #2}\hfill] #3 \dotfill \pageref{#1}}
+
+\begin{list}{\ }{\labelwidth 1in \leftmargin 1.1in \itemsep 0.0ex}
+
+\item[{\bf Function}\hfill] {{\bf Function description} \hfill {\bf Page}}
+\vspace{1ex}
+
+\fnrf{add_Hdu}{add\_Hdu}{Append a newly described HDU to a FITS file}
+\fnrf{axis_name}{axis\_name}{Get the name of an axis of a PRIMARY or IMAGE-extension array}
+\fnrf{col_dim}{col\_dim}{Get the array-dimension of a table column}
+\fnrf{col_name}{col\_name}{Get the name of a table column}
+\fnrf{col_type}{col\_type}{Get the data-type in a table column}
+\fnrf{copy_Hdu}{copy\_Hdu}{Copy an HDU descriptor}
+\fnrf{del_Fits}{del\_Fits}{Close a FITS file and delete its descriptor}
+\fnrf{del_Hdu}{del\_Hdu}{Delete the descriptor of an un-installed HDU}
+\fnrf{dup_Hdu}{dup\_Hdu}{Append a duplicate copy of an existing HDU to a FITS file}
+\fnrf{end_data}{end\_data}{Close the data-section of a new HDU}
+\fnrf{end_header}{end\_header}{Close the header of a new HDU}
+\fnrf{end_hline}{end\_hline}{Get the line number of the END of an HDU header}
+\fnrf{find_axis}{find\_axis}{Locate the axis of an image by its CTYPE name}
+\fnrf{find_column}{find\_column}{Locate a column of a table by its TTYPE name}
+\fnrf{find_hdu}{find\_hdu}{Get the HDU descriptor of a selected extension}
+\fnrf{find_gpar}{find\_gpar}{Locate a particular random-groups
+                 parameter by its PTYPE name.}
+\fnrf{find_image}{find\_image}{Get the HDU descriptor of a selected IMAGE extension}
+\fnrf{find_table}{find\_table}{Get the HDU descriptor of a selected table extension}
+\fnrf{fitsstr}{fitsstr}{Returns a dynamically allocated copy of a string}
+\fnrf{get_axis}{get\_axis}{Get the descriptor of a given axis of a PRIMARY or
+                           IMAGE-extension array}
+\fnrf{get_gpar}{get\_gpar}{Get the descriptor of a specified random-group parameter}
+\fnrf{get_key}{get\_key}{Get a specified keyword-value pair from an HDU header}
+\fnrf{gpar_name}{gpar\_name}{Get the name of a given random-group parameter}
+\fnrf{iscolvar}{iscolvar}{Determine whether a table column holds
+variable length arrays}
+\fnrf{new_asctab}{new\_asctab}{Create the descriptor of a new ASCII table HDU}
+\fnrf{new_bintab}{new\_bintab}{Create the descriptor of a new BINARY table HDU}
+\fnrf{new_Fits}{new\_Fits}{Open an existing or new FITS file}
+\fnrf{new_hline}{new\_hline}{Move an HDU's header line read-pointer to a
+                             different line}
+\fnrf{new_image}{new\_image}{Create the descriptor of a new IMAGE extension HDU}
+\fnrf{new_primary}{new\_primary}{Create the descriptor of a new PRIMARY HDU}
+\fnrf{next_key}{next\_key}{Get the next of a list of keyword-value pairs from an HDU header}
+\fnrf{numcol}{numcol}{Determine the number of columns in a given table extension}
+\fnrf{numrow}{numrow}{Determine the number of rows in a given table extension}
+\fnrf{putkey}{putkey}{Append a new header line to an HDU header.}
+\fnrf{rcolumn}{rcolumn}{Read data from a single column and row of a table}
+\fnrf{rgroup}{rgroup}{Read random-group parameters from a single group}
+\fnrf{rimage}{rimage}{Read a section of a PRIMARY or IMAGE-extension data array}
+\fnrf{setafield}{setafield}{Define the form of an ASCII table column}
+\fnrf{setaxis}{setaxis}{Define the form of an IMAGE or PRIMARY HDU data array}
+\fnrf{setbfield}{setbfield}{Define the form of a BINARY table column}
+\fnrf{setdim}{setdim}{Set the dimension of a variable length array field}
+\fnrf{setgroup}{setgroup}{Define the form of a single random-groups parameter}
+\fnrf{setimage}{setimage}{Describe the global characteristics of a
+                          PRIMARY or IMAGE HDU data array}
+\fnrf{setprim}{setprim}{Provide bibliographic information}
+\fnrf{typename}{typename}{Return the name of a given FITS \verb`Fittype`
+                          data-type enumerator}
+\fnrf{wcmpkey}{wcmpkey}{Write a complex valued keyword-value pair in the header of an HDU}
+\fnrf{wcolumn}{wcolumn}{Write data to a single column and row of a table}
+\fnrf{wcomkey}{wcomkey}{Write a comment line in the header of an HDU}
+\fnrf{wfltkey}{wfltkey}{Write a double valued keyword-value pair in
+the header of an HDU}
+\fnrf{wgroup}{wgroup}{Write random-group parameters to a single group}
+\fnrf{what_hline}{what\_hline}{Determine the number of the next header
+line to be read from a given HDU}
+\fnrf{wimage}{wimage}{Write a section of a PRIMARY or IMAGE-extension data array}
+\fnrf{wintkey}{wintkey}{Write an integer valued keyword-value pair in
+                        the header of an HDU}
+\fnrf{wlogkey}{wlogkey}{Write a boolean valued keyword-value pair in
+                        the header of an HDU}
+\fnrf{wstrkey}{wstrkey}{Write a string valued keyword-value pair in
+                        the header of an HDU}
+\fnrf{wvoidkey}{wvoidkey}{Write a keyword without a value in
+                          the header of an HDU}
+\end{list}
+
+\clearpage
+
+\section{General Information.}
+
+Fitslib is a general library of {\bf C} functions for reading and/or writing
+existing or new FITS files. It is not within the scope of this document to
+explain the rules of the FITS format. Such information is spelled out
+in the NOST FITS standard, which is available via anonymous FTP from
+\verb`nssdca.gsfc.nasa.gov`. However, the information given below should be
+sufficient for most purposes.
+
+Send suggestions, bug reports etc. to me (Martin Shepherd) at:\\
+\vspace{1ex}
+\begin{tabular}{ll}
+\verb`mcs@phobos.caltech.edu` &  (IP)\\
+\verb`6021::mcs`              &  (SPAN)\\
+\end{tabular}
+
+\section{Language considerations.}
+
+Heavy use is made of {\bf ANSI-C} function prototypes, aggregate
+types and enumerations. This makes it essential to \verb`#include` the
+library header file at the top of each {\bf C} file that makes use of
+library functions or types. You should place the line:
+
+\begin{verbatim}
+#include <libfits.h>
+\end{verbatim}
+
+at the top of every {\bf C} file that uses the library.
+
+If \verb`libfits.h` has not been placed in a system include directory
+such as \verb`/usr/include`, but you have a copy of this file
+in your own directory, you should change the above line to:
+
+\begin{verbatim}
+#include "libfits.h"
+\end{verbatim}
+
+\section{Glossary.}
+
+To use the library you should familiarize yourself with the following
+terms, enumerations and other types.
+
+\begin{list}{\ }{\labelwidth 0.75in \leftmargin \labelwidth \addtolength{\leftmargin}{\labelsep}}
+\def\gitem#1{\item[\verb`#1` \hfill]}
+\gitem{Fits *} This is a pointer to the descriptor that contains state
+        information about a given FITS file. Such descriptors
+        are created by \verb`new_Fits()` and discarded with \verb`del_Fits()`.
+        Many functions require this pointer as an argument.
+
+\gitem{HDU} An HDU or Header-Data-Unit is a FITS entity that starts
+	with an ASCII header of keyword-value pairs, followed by
+        a data section containing the data described in the header.
+        There may be many HDUs in a FITS file. The first is referred
+        to as the Primary HDU. The rest are referred to as extension
+        HDUs.
+
+\gitem{Hdu *}  This is a pointer to a generic description of a Header
+        Data Unit (HDU) see above. There will be one of these for
+        every HDU in a FITS file.
+
+\gitem{Thdu *}  This points to a derived version of an Hdu descriptor.
+        The derived version contains all the information contained in a
+        generic Hdu descriptor but also contains generic information
+        about table extensions. 
+        If you have an \verb`Hdu *hdu` pointer that you know actually points
+        at an ASCII or binary table HDU you may get the \verb`Thdu *thdu`
+        version of the pointer by casting it: \verb` thdu = (Thdu *) hdu;`
+	To cast back to a generic \verb`Hdu *hdu` pointer use: 
+	\verb` hdu = (Hdu *) thdu;`
+
+\gitem{Phdu *} This points to a derived version of an Hdu descriptor. The
+        derived version contains  all the information contained in a
+        generic Hdu descriptor but also contains information pertinent
+        to the primary HDU and to IMAGE extensions.
+        If you have an \verb`Hdu *hdu` pointer that you know actually points
+        to an image or primary HDU you may get the \verb`Phdu *phdu` version
+        of the pointer by casting it: \verb` phdu = (Phdu *) hdu;`
+	To cast back to a generic \verb`Hdu *hdu` pointer use: 
+	\verb` hdu = (Hdu *) phdu;`
+
+\gitem{Hdutype}\label{Hdutype} This is an enumeration of all
+        recognized HDU types. Its values are:\nopagebreak
+
+        \begin{tabular}{lcl}
+          F\_ANY     & - & Any type (used only as selection wild-card). \\
+          F\_UNKNOWN & - & Un-recognized HDU extension type. \\
+          F\_PRIMARY & - & Primary header. \\
+          F\_IMAGE   & - & IUE IMAGE extension. \\
+          F\_TABLE   & - & ASCII table extension. \\
+          F\_BINTAB  & - & Binary table extension. \\
+        \end{tabular}
+
+        All HDU descriptors contain an \verb`Hdutype type` field containing
+        a value of this form. For example, to find out what type of
+        HDU is recorded in a given generic \verb`Hdu` descriptor pointed at
+        by \verb`Hdu *hdu`, you would compare  \verb`hdu->type`  with one
+        or more of the above values. 
+
+\gitem{Bitpix}\label{Bitpix} This is an enumeration of the FITS types
+that may appear in a primary data array. The only valid values
+are:\nopagebreak
+
+	\begin{tabular}{lcl}
+	  B\_CHAR  & - & 8-bit two's complement int. \\
+	  B\_16INT & - & 16 bit IEEE int. \\
+	  B\_32INT & - & 32 bit IEEE int. \\
+	  B\_FLOAT & - & 32 bit IEEE floating point. \\
+	  B\_DBLE  & - & 64 bit IEEE double precision. \\
+        \end{tabular}
+
+        You will be required to specify one of these when creating a new
+        PRIMARY or IMAGE-extension HDU.
+
+
+\gitem{Fittype}\label{Fittype} This is an enumeration of all
+        data types recognised by the library. It is used to describe
+        both the types that you supply and equivalent types as they
+        appear in FITS files. The recognized types are:\nopagebreak
+
+	\begin{tabular}{lcl}
+	  DAT\_NON  & - &  No value. \\
+	  DAT\_SHT  & - &  (short). \\
+	  DAT\_INT  & - &  (int). \\
+	  DAT\_LNG  & - &  (long). (No FITS equivalent) \\
+	  DAT\_FLT  & - &  (float). \\
+	  DAT\_DBL  & - &  (double). \\
+	  DAT\_CHR  & - &  (char). \\
+	  DAT\_BYT  & - &  (unsigned char) representation of byte. \\
+	  DAT\_BIT  & - &  (unsigned char) bit array. \\
+	  DAT\_LOG  & - &  (char) representation of FITS logical 'T' or 'F'. \\
+	  DAT\_SCMP & - &  (float)[2] representation of complex number. \\
+	  DAT\_DCMP & - &  (double)[2] representation of complex number. \\
+	  DAT\_COM  & - &  (char *) Comment value (e.g. HISTORY or COMMENT). \\
+	  DAT\_STR  & - &  (char *) Terminated string keyword value. \\
+	\end{tabular}
+
+        Not all of these values are accepted by all functions and
+        you should consult the relevant section for the subset of
+        legal types.
+\end{list}
+
+
+\section{Implicit data conversions.}
+
+\label{data_conv}\subsection{Data-type conversions.}
+
+Within reason, the types of variables and arrays that you pass to and
+from the library need not match the type in the FITS file.
+If you send a float to be written in an integer field in the FITS file
+the float will be automatically converted to an int before writing it.
+For example all the types:
+
+\hspace{3mm} DAT\_BYT, DAT\_SHT, DAT\_INT, DAT\_LNG, DAT\_FLT, DAT\_DBL
+
+Are compatible with each other, as are
+
+\hspace{3mm} DAT\_SCMP and DAT\_DCMP
+
+and
+
+\hspace{3mm} DAT\_STR and DAT\_COM
+
+C and FITS boolean conventions have also been supported, in that
+an external array of type DAT\_INT is interchangeable with one of
+type DAT\_LOG under the following rules.
+
+\begin{tabular}{ccc}
+ DAT\_INT & & DAT\_LOG \\
+ \cline{1-1} \cline{3-3}
+ $0$   & $\Leftrightarrow$ & 'F' \\
+ $!=0$ & $\Leftrightarrow$ & 'T' \\
+\end{tabular}
+
+\subsection{Implicit scaling and offsetting.}
+
+FITS provides the means to store numeric data in a scaled and offset
+form in the data sections of FITS files. This was originally used as a
+means of packing floating point data into integer fields (see for
+example the \verb`bscale` and \verb`bzero` arguments to function
+\verb`setimage()` on page~\pageref{setimage}). The scaling factors and
+offsets used are stored in the header of an HDU. By default the
+library removes or applies these factors behind the scenes, such that
+the user of the library only sees the original un-scaled data, both
+when reading and writing. This behavior may be selectively turned off.
+
+\label{blanking}\subsection{Blank value conversions.}
+
+FITS provides a number of {\it ad hoc} methods for denoting blank values
+within a data array. In general, these values are represented in the
+FITS file using special values that are not expected to appear in the
+un-blanked data. As far as possible the library attempts to shield the
+user from the multiple ways that this is implemented. However it is
+necessary for the library user to be able to detect or specify which
+values are blank when reading or writing data, and to be able to turn
+off blank checking altogether. These issues are addressed below.
+
+All data reading and writing functions take an optional \verb`Fitflag *flag`
+argument which may either point to \verb`NULL` or to the first element
+of an array of the same dimension of the data array. If blanked values
+are detected while reading data, the corresponding elements of the
+\verb`flag[]` array are set to \verb`1`. The rest of the elements are set to
+\verb`0`. These checks were expensive to incorporate portably, and if blank
+checking is not required, you are strongly advised to send \verb`NULL`
+in place of a flag array. This will make your code more efficient. To
+a lesser extent the same advise goes for writing blanked data. When a
+flag array is sent to a data-writing function, each element of the
+array that is not equal to \verb`0`, means that the corresponding data
+element should be blanked. This will only happen if a way to denote
+blanked data was provided when the corresponding HDU descriptor was
+initialized, or when the data to be blanked are of type \verb`DAT_FLT`
+or \verb`DAT_DBL`, where \verb`IEEE NaN`s are used to denote blanked data.
+
+
+\section{Opening and closing FITS files.}
+
+\subsection{Opening a FITS file.}
+
+To open an existing FITS file or to create a new FITS file use the
+function:
+\label{new_Fits}\begin{verbatim}
+  Fits *new_Fits(const char *name, int isold, int readonly, int pedantic,
+                 int aips);
+\end{verbatim}
+\begin{arglist}
+
+ \fitem{name} The name of the existing FITS file or the name to
+              give a new FITS file.
+
+ \fitem{isold} Send 1 if you want to open an existing FITS file.
+               Send 0 if you want to create a new FITS file.
+
+ \fitem{readonly} To open an exisitng FITS file with read-only access
+             send 1. If you want to both read and write to a FITS file
+             then send 0. Note that if you know that you will not be
+             writing to a given FITS file, then you are advised to send 1
+             here. By doing this you will be able to open files to
+             which you don't have write access.
+
+ \fitem{pedantic} Normally this should be 0. Alternatively, if
+             you send 1, the library functions will emit extra
+             warnings about minor departures from the FITS standard.
+             The latter option is useful for testing a new program,
+             but otherwise irritating.
+
+ \fitem{aips} FITS was initially designed for use in the {\em
+             Astronomical Image Processing System}, AIPS. There are
+             two incompatibilities between NOST FITS and the FITS
+             produced and recognised by pre-15JAN94 versions of
+             AIPS. The incompatibilities are the use of the
+             \verb`EPOCH` keyword for the NOST deprecated
+             \verb`EQUINOX` keyword, and the use of the name A3DTABLE
+             as the extension name used to denote binary tables. The
+             reading functions of this library accept both versions,
+             but the writer must be told which to use. To select the
+             non-standard AIPS versions of these keywords send 1 here.
+             Otherwise for standard FITS send 0. This argument will be
+             removed when it is felt that nobody is using pre-15JAN94
+             versions of AIPS.
+
+\end{arglist}
+
+The \verb`new_Fits()` function returns a pointer to a dynamically
+allocated descriptor that encapsulates information describing the
+changing state of the FITS file. It returns \verb`NULL` on error. Most
+of the other library functions require you to identify the particular
+FITS file by sending this pointer. In principle this means that any
+number of FITS files can be processed at once. In practice most
+operating systems limit the number of files that can be simultaneously
+open.
+
+When you have finished with a FITS file be sure to call the matching
+\verb`del_Fits()` function, so that all buffers get flushed, memory
+gets released and the file gets closed.
+
+\boldtitle{Example}
+\begin{verbatim}
+  Fits *fits;     /* Declare a FITS file descriptor pointer */
+  .
+  .
+  .
+  fits = new_Fits("myfile.fits", 1, 1, 0, 0);
+\end{verbatim}
+  This opens an existing FITS file called \verb`myfile.fits` for reading.
+
+\subsection{Closing FITS files.}
+
+To flush internal FITS buffers and close a FITS file, and to have its
+descriptor deleted call the function:
+\label{del_Fits}\begin{verbatim}
+ Fits *del_Fits(Fits *fits);
+\end{verbatim}
+\begin{arglist}
+ \fitem{fits} The pointer to a FITS descriptor previously returned by
+           \verb`new_Fits()`.
+\end{arglist}
+  This function always returns \verb`NULL`.
+
+\boldtitle{Example}
+\begin{verbatim}
+  fits = del_Fits(fits);
+\end{verbatim}
+
+
+\section{Moving about within a FITS file.}
+
+When you open a FITS file you are handed a pointer to a FITS file
+descriptor by \verb`new_Fits()`, (see section~\ref{new_Fits}). Among
+the items stored in the descriptor is a list of Header-Data-Unit (HDU)
+descriptors.  Most fitslib functions require you to specify the
+particular HDU to be processed by sending a pointer from this list.
+There are no restrictions on the order in which HDUs can be processed,
+except that when a new HDU is added to a FITS file it is always
+appended to the end of the file.
+
+At the start of the list of HDU descriptors is that of the primary
+header. This is stored in a FITS descriptor (say \verb`Fits *fits`)
+as:
+
+\begin{verbatim}
+  fits->hdu;
+\end{verbatim}
+One way to process HDUs would be to walk through the list of
+descriptors like so:
+
+\begin{verbatim}
+   for(hdu=fits->hdu; hdu!=NULL; hdu=hdu->next) {
+    ...
+   };
+\end{verbatim}
+
+A better way to retrieve HDU descriptors is through the following selection
+functions, of which the most general is:
+\label{find_hdu}\begin{verbatim}
+ Hdu *find_hdu(Fits *fits, Hdutype type, char *extname, int extver, Hdu *prev);
+\end{verbatim}
+This function may be used to selectively retrieve an HDU by its
+extension type, extension name and or extension version number. It may
+also be used to iterate through the HDU list using these selection
+criteria.
+
+\begin{arglist}
+ \fitem{fits}   A descriptor of a FITS file, as returned by \verb`new_Fits()`.
+ \fitem{type}   The type of HDU to be sought. (see
+             page~\pageref{Hdutype} for a list). Use \verb`F_ANY` if any HDU
+             type will do.  
+             To seek more than one type of HDU, bitwise OR the
+             types you need. e.g. \verb`F_TABLE | F_BINTAB`.
+ \fitem{extname} If you care about the name of the extension send that
+             name here. Otherwise send \verb`NULL`.
+ \fitem{extver} If you care about the extension version number send a
+             positive number $> 0$ here. Otherwise send 0 to select the
+             highest version number, or -1 to ignore the version number.
+ \fitem{prev}   To search from the start of the FITS file send \verb`NULL`.
+             To start or continue a search following a given HDU
+             send the pointer to its descriptor here.
+\end{arglist}
+The function returns \verb`NULL` if the HDU could not be found, or a pointer
+to the required HDU descriptor.
+
+\boldtitle{Example}
+
+To search from the beginning of the FITS file for the HDU of an
+"AIPS CC" table, (which could be either a binary or an ASCII table),
+with no regard to the extension version number, one would type.
+\begin{verbatim}
+ hdu = find_hdu(fits, F_BINTAB|F_TABLE, "AIPS CC", 0, NULL);
+ if(hdu==NULL) {
+   fprintf(stderr, "Unable to find AIPS CC table\n");
+   ....
+ };
+\end{verbatim}
+To extend this to search for successive AIPS CC table extensions one
+would modify the above to:
+\begin{verbatim}
+ hdu = NULL;
+ while(hdu = find_hdu(fits, F_BINTAB|F_TABLE, "AIPS CC", 0, hdu)) {
+  ... do something with the latest HDU descriptor ...
+  ...
+ };
+\end{verbatim}
+There are two specialized versions of \verb`find_hdu()`:
+\label{find_table}\begin{verbatim}
+ Thdu *find_table(Fits *fits, char *extname, int extver, Hdu *prev);
+\end{verbatim}
+\label{find_image}\begin{verbatim}
+ Phdu *find_image(Fits *fits, char *extname, int extver, Hdu *prev);
+\end{verbatim}
+Both functions themselves call \verb`find_hdu()` but they supply the appropriate
+\verb`type` argument and cast the returned HDU descriptor to the specific
+type. \verb`find_table()` searches out ASCII and binary tables, and
+\verb`find_image()` searches out IMAGE extensions.
+
+
+\section{Appending a new HDU to a FITS file.}
+
+Using the functions described in following sections, one can create and
+initialize a new HDU descriptor. This has no immediate affect on any
+FITS file currently opened. In fact no FITS file need have been opened
+before creating an HDU descriptor. To actually install an HDU in a
+FITS file, the following logical steps must be followed:
+
+\label{addhdu_usage}\begin{verbatim}
+
+  add_Hdu();     -  Append the HDU to the Fits descriptor.
+                    Also write the standard mandatory and descriptive
+                    keywords to the header of the new HDU, appended at
+                    the end of the FITS file.
+
+  ....           -  Write extra keywords, history etc.. to the HDU
+                    header.
+
+  end_header();  -  Close the header of the HDU - no more header lines
+                    may be appended after this point, but existing
+                    user-written header lines may be read or modified.
+
+  ....           -  Read/write data from/to the HDU data section.
+                    At this time the number of rows in table extensions
+                    or groups in random-groups HDUs is not fixed. These
+                    numbers are silently expanded if data is written to
+                    to rows or groups beyond the number originally
+                    specified.
+
+  end_data();    -  Close the data-section of the HDU. Further reads
+                    and writes are still allowed after this point,
+                    but the size of the HDU is frozen, and attempts to
+                    write to rows or groups beyond the number in
+                    existence at this time, will be treated as an
+                    error.
+
+  ....              Only now that the size of the previous HDU has
+                    been frozen, may a further HDU may be appended.
+\end{verbatim}
+
+To start the process of writing a new HDU to a FITS file, use function:
+\label{add_Hdu}\begin{verbatim}
+ int add_Hdu(Fits *fits, Hdu *hdu);
+\end{verbatim}
+\begin{arglist}
+
+\fitem{fits} The FITS descriptor of a file that has been opened with
+             write access enabled. The FITS descriptor must have been
+             created by a call to \verb`new_Fits()`
+             (see page~\pageref{new_Fits}), with argument
+             \verb`readonly==0`. 
+
+\fitem{hdu} A new HDU descriptor returned by \verb`new_primary()`,
+             \verb`new_image()`, \verb`new_asctab()` or \verb`new_bintab()` and
+             appropriately initialized. Alternatively this may be an HDU
+             descriptor returned by \verb`copy_Hdu()` (see
+             section~\ref{copy_Hdu}). 
+\end{arglist}
+
+\verb`add_Hdu()` installs the HDU descriptor in the FITS descriptor, at
+the end of the list of existing HDUs \verb`fits->hdu`. It then writes
+the mandatory and standard descriptive keywords of the HDU header.
+If the function succeeds it returns 0. If a problem arises an error
+message is displayed, the HDU is not installed in the FITS descriptor
+linked list, and the first line of the aborted header (if already
+written) is erased from the FITS file, and 1 is returned.
+
+Assuming that the HDU is been appended successfully you may read (and
+write if the \verb`readonly` argument to \verb`new_Fits()` was 0)
+further header lines. When all header lines have been written call the
+\verb`end_header()` function to write the header END line and close
+the header.
+
+\label{end_header}\begin{verbatim}
+ int end_header(Fits *fits, Hdu *hdu);
+\end{verbatim}
+\begin{arglist}
+
+\fitem{fits} The FITS descriptor of a file that has been opened with
+             write access enabled. The FITS descriptor must have been
+             created by a call to \verb`new_Fits()`
+             (see page~\pageref{new_Fits}), with argument
+             \verb`readonly==0`. 
+
+\fitem{hdu} The descriptor of the last HDU appended to the file with
+            \verb`add_Hdu()`.
+\end{arglist}
+
+\verb`end_header()` returns 0 if all went well, or 1 otherwise. Only
+after this point may data be read/written in the data section of the
+HDU.
+
+In general, at this point the data-section is of an unknown size. The
+number of random-groups, or table rows specified on creating and
+initializating an HDU is treated as a lower limit. Writes beyond these
+dimensions result in their expansion to incorporate the new data. Thus
+it is not necessary to know the number of random-groups, or table rows
+before writing the data section. Note that the other dimensions of an
+HDU data-section are fixed and attempts to exceede them will be
+treated as an error. Before another HDU can be written, or the FITS
+file can be closed, the data-section must be closed by calling
+\verb`end_data()`. 
+
+\label{end_data}\begin{verbatim}
+ int end_data(Fits *fits, Hdu *hdu);
+\end{verbatim}
+\begin{arglist}
+
+\fitem{fits} The FITS descriptor of a file that has been opened with
+             write access enabled. The FITS descriptor must have been
+             created by a call to \verb`new_Fits()`
+             (see page~\pageref{new_Fits}), with argument
+             \verb`readonly==0`. 
+
+\fitem{hdu} The descriptor of the last HDU appended to the file with
+            \verb`add_Hdu()`. \verb`end_header()` must have been
+            called for this HDU before calling \verb`end_data()`.
+\end{arglist}
+
+\verb`end_data()` returns 0 if all went well, or 1 otherwise. Calling
+this function freezes the number of table rows or groups of the
+specified HDU. Attempts thereafter to write beyond the dimensions
+fixed at this time will be treated as errors. \verb`end_data()` pads the
+HDU up to the maximum of the originally specified and expanded number
+of rows or groups. The next HDU appended to the FITS file will
+immediately follow this padding.
+
+If you wish to create a number of HDU's from a single HDU descriptor,
+you must copy the HDU descriptor for each additional use using the
+\verb`copy_Hdu()` function described in section~\ref{copy_Hdu}.
+
+For example to create \verb`nhdu` HDU's to a given specification:
+\label{copy_example}\begin{verbatim}
+  Fits *fits;
+  Hdu *hdu;
+  int nhdu=4;
+  ... Open a fits file and assign its descriptor to variable 'fits' ...
+  ... Create an HDU descriptor assigned to variable 'hdu' ....
+  ...
+  for(i=0; i<nhdu; i++) {
+    if(add_Hdu(fits, copy_Hdu(hdu))) {
+      ... Error handling code ...
+      if(end_header(fits, hdu) || end_data(fits, hdu))
+        ... Error handling code ...;
+    };
+  };
+\end{verbatim}
+
+\section{Copying existing HDU's.}
+
+There are two ways of copying an HDU. You can copy its descriptor to a
+new HDU descriptor that may be added using \verb`add_Hdu()` (see
+section~\ref{copy_example}), or you can duplicate an existing HDU
+(including its data) as a new HDU in the same or a different FITS
+file.
+
+To copy just the HDU descriptor use function:
+\label{copy_Hdu}\begin{verbatim}
+ Hdu *copy_Hdu(Hdu *hdu);
+\end{verbatim}
+\begin{arglist}
+
+\fitem{hdu} An initialized descriptor, either newly created or that of an
+           existing HDU in a FITS file.
+\end{arglist}
+
+\verb`copy_Hdu()` returns a deep copy of the input HDU, or \verb`NULL` on error.
+This HDU may be added to the FITS file using \verb`add_Hdu()` (see the
+example on page~\pageref{copy_example}).
+
+Alternatively, to copy an HDU and its descriptor from an existing FITS
+file and append it to the same or a second FITS file use function:
+\label{dup_Hdu}\begin{verbatim}
+ Hdu *dup_Hdu(Fits *afits, Hdu *hdu, Fits *bfits);
+\end{verbatim}
+\begin{arglist}
+
+ \fitem{afits} The descriptor of the FITS file in which the
+          existing HDU to be copied (described in \verb`hdu`) resides.
+
+ \fitem{hdu} The descriptor of the HDU to be copied. This must be one of
+          those from the list in \verb`afits`.
+
+ \fitem{bfits} The descriptor of the FITS file to which to
+          append a copy of the HDU and its descriptor. This may be the
+          same as \verb`afits` or point to a different file. The
+          output file must have write access enabled.
+\end{arglist}
+
+The function returns the copied HDU descriptor on success, or \verb`NULL` on
+failure. The new HDU will be a replica of the original HDU, containing
+the same header and the same data. However, if the original HDU was an
+extension then the version number of the duplicate HDU will be changed
+to 1 higher than the highest version number of other HDUs of the same
+name and type in the output FITS file, or to 1 if no other similar
+extensions exist yet.
+
+\section{Generic Hdu descriptors.}
+
+There are many different types of Header-Data-Unit (HDU) that may
+appear in a FITS file. Each HDU has its own special
+parameters that are required to specify its structure. Fortunately the
+FITS standard specifies a minimum set of parameters that all HDUs are
+required to have. These parameters define the size of the HDU to the extent
+that a FITS reader that doesn't understand a given HDU type can step
+over it. The generic HDU descriptor type \verb`Hdu` defined in
+\verb`libfits.h` records all of these parameters.
+
+The following members of an \verb`Hdu` descriptor may be used (but
+not modified) directly by the user. Functions are provided to set
+these parameters. Library users should never set or change them
+directly.
+
+\begin{verbatim}
+typedef struct Hdu {
+  Hdutype type;  /* The type of this HDU */
+  int naxis;     /* Number of array dimensions */
+  int *dims;     /* 'naxis' element array of the no. of elements per axis. */
+  int groups;    /* If true - random groups are present */
+  int pcount;    /* Parameter count */
+  int gcount;    /* Group count */
+  char *extname; /* Extension name (may be NULL) */
+  int extver;    /* Extension version number */
+  int extlevel;  /* Extension level in hierarchical structure */
+  ... Other private members ...
+} Hdu;
+\end{verbatim}
+
+This descriptor is sufficient for generic library operations on HDUs.
+Other type specific operations on HDUs require more information. More
+specialized descriptors have been evolved to record this extra
+information. The declarations of these descriptors all begin with the
+same members as an \verb`Hdu` descriptor. This implies that a pointer
+to one of these descriptors may be cast to an \verb`Hdu *` and treated
+as a generic descriptor. The list of pointers to HDU descriptors in
+the \verb`Fits` descriptor is manipulated in this fashion.
+
+\label{primhdu}\section{PRIMARY and IMAGE HDUs.}
+
+The first HDU in a FITS file is called a primary HDU. There are two
+basic types of PRIMARY HDU. By far the most common is used to store a
+single multi-dimensional data array. This is often used to store
+images. The second type is a random-groups HDU. Unlike the normal
+primary HDU, a random-groups HDU refers not to a single data array but
+to many equally sized data arrays, each preceded by a 1--dimensional
+array of associated parameters. This latter type is now officially
+deprecated because binary tables now provide a much more flexible and
+consistent means of associating parameters with one or more arrays.
+However it is used in Radio Astronomy to store UV data and is thus
+fully supported by this library.
+
+An IMAGE HDU is the extension version of a PRIMARY HDU. The only
+significant differences are that an IMAGE HDU can not contain random
+groups, and that the reserved optional bibliographic keywords of
+PRIMARY HDUs are niether recommended nor reserved for IMAGE HDUs.
+
+The type specific HDU descriptor used to record PRIMARY and
+IMAGE-extension HDUs is the \verb`Phdu` type defined in
+\verb`libfits.h`.
+
+\subsection{Accessing descriptive members of PRIMARY and IMAGE HDU descriptors.}
+
+The following sub-sections list members of a \verb`Phdu` that - in
+addition to those of the Generic \verb`Hdu` descriptor - may be
+accessed directly by the library user. These parameters should not be
+directly set or changed by the user.
+
+\subsubsection{Global data-array parameters.}
+The following members of a \verb`Phdu` descriptor record the optional
+reserved parameters describing the global characteristics of the
+PRIMARY or IMAGE-extension data array.
+
+\begin{verbatim}
+typedef struct Thdu {
+  ....
+  int naxis;      /* The number of axes in the data array.*/
+  int *dims;      /* An 'naxis' element array recording the number */
+                  /* of elements per axis. */
+  double bscale;  /* When data is written to the primary data array, it is */
+                  /* first modified by the equation:  bzero + bscale * data.*/
+  double bzero;   /* See above under 'bscale'. */
+  char *bunit;    /* The name of the units of measurement of the data. */
+                  /* This is NULL if undefined. */
+  int blank;      /* The value used to denote blank integer values in the */
+                  /* FITS file. If undefined, this has value NONULL. */
+  double datamin; /* The minimum value in the data array. If 'datamin' and */
+                  /* 'datamax' are undefined then datamin==datamax==0.0. */
+  double datamax; /* The maximum value in the data array. See 'datamin'. */
+  ....
+} Thdu;
+\end{verbatim}
+
+\boldtitle{Example}
+\begin{verbatim}
+  Phdu *phdu;
+  ...
+  if(phdu->datamin!=phdu->datamax)
+    printf("DATAMIN=%g DATAMAX=%g\n", phdu->datamin, phdu->datamax);
+\end{verbatim}
+
+\subsubsection{Bibliographic parameters of a PRIMARY HDU.}
+
+The following members of \verb`Phdu` descriptors record the optional
+bibliographic parameters of a primary HDU. Undefined string values are
+recorded as \verb`NULL` pointers.
+
+\begin{verbatim}
+typedef struct Thdu {
+  ....
+  char *origin;   /* The origin of the FITS file. */
+  char *date_obs; /* The date of observation encoded in a string as
+                  /* DD/MM/YY. */
+  char *telescop; /* The name of the telescope that observed the */
+                  /* data in the FITS file. */
+  char *instrume; /* The instrument used on the above telescope. */
+  char *observer; /* The name of the person who acquired the data. */
+  char *object;   /* The name of the object that the data represent. */
+  char *author;   /* The person who compiled the current version of */
+                  /* the data. */
+  char *referenc; /* A reference to any published representation of the */
+                  /* data in this file. */
+  double equinox; /* The equinox in years for the celestial coordinate */
+                  /* system used in representing the data here-in. If */
+                  /* undefined, 0.0 is stored here. */
+  ....
+} Thdu;
+\end{verbatim}
+
+\boldtitle{Example}
+
+\begin{verbatim}
+  Phdu *phdu;
+  ....
+  printf("Author: %s\n", phdu->author ? phdu->author : "(none)");
+\end{verbatim}
+
+\subsubsection{Axis description parameters.}
+
+To access the structure that contains the axis description parameters
+for a given axis you first need to know the number of that axis. To
+look up an axis of a primary or IMAGE data array by its CTYPE
+header name, use function:
+
+\label{find_axis}\begin{verbatim}
+ int find_axis(Phdu *phdu, const char *ctype, int fixlen, int start);
+\end{verbatim}
+
+\begin{arglist}
+
+\fitem{phdu}  The primary/image-extension type HDU descriptor
+                    containing the axis definitions.
+
+\fitem{ctype} The axis name to be sought. Trailing spaces are
+                    ignored.
+
+\fitem{fixlen} If this argument is $>$ 0, then it defines the maximum
+               number of characters to use from \verb`ctype` when
+               comparing with the actual axis names.
+
+\fitem{start} The axis number to start searching from. This is a
+              number from 1 to naxis.
+ 
+\end{arglist}
+
+The function returns the NAXISn index (\verb`1->naxis`) of the axis named
+\verb`ctype`, or 0 if not found.
+
+The description parameters of each axis are stored in an \verb`Imaxis`
+descriptor of the form:
+
+\begin{verbatim}
+typedef struct {
+  char *ctype;    /* The name given to the axis (NULL if not given) */
+  double crpix;   /* The reference pixel on this axis */
+  double crval;   /* The coordinate value at 'crpix' */
+  double cdelt;   /* The coordinate increment per pixel */
+  double crota;   /* Rotation angle of this axis (normally zero) */
+} Imaxis;
+\end{verbatim}
+
+To get a pointer to the axis descriptor for a particular axis use
+function:
+
+\label{get_axis}\begin{verbatim}
+ Imaxis *get_axis(Phdu *phdu, int axis);
+\end{verbatim}
+
+\begin{arglist}
+
+\fitem{phdu}  The primary/image-extension type HDU descriptor
+                    containing the axis definitions.
+
+\fitem{axis}  The 1-relative index (\verb`1->naxis`) of the
+                    axis.
+\end{arglist}
+
+The function returns a pointer to the axis descriptor, or \verb`NULL` on
+error.
+
+\boldtitle{Example}
+
+\begin{verbatim}
+  Phdu *phdu;  /* The descriptor of the PRIMARY HDU */
+  Fits *fits;  /* The FITS file descriptor */
+  Imaxis *ax;  /* An image axis descriptor */
+/*
+ * Open an existing FITS file.
+ */
+  fits = new_Fits("myfile.fits", 1, 1, 0, 0);
+  if(fits==NULL) {
+    ... Error cleanup code ...
+  };
+/*
+ * Get the descriptor of the primary HDU.
+ */
+  phdu = (Phdu *) fits->hdu;
+/*
+ * Get the axis description of an axis, using the axis name for
+ * selection. Print the description for the user.
+ */
+  ax = get_axis(phdu, find_axis(phdu, "DEC", 3));
+  if(ax) {
+    printf("%s: CRPIX=%g CRVAL=%g CDELT=%g\n", ax->ctype, ax->crpix,
+                                               ax->crval, ax->cdelt);
+  };
+  Etc..
+\end{verbatim}
+
+To determine the name of an axis without having to extract its
+\verb`Imaxis` descriptor use function:
+
+\label{axis_name}\begin{verbatim}
+ char *axis_name(Phdu *phdu, int axis);
+\end{verbatim}
+
+\begin{arglist}
+
+\fitem{phdu}  The primary/image-extension type HDU descriptor
+                    containing the axis definitions.
+
+\fitem{axis}  The 1-relative index (\verb`1->naxis`) of the
+                    axis.
+\end{arglist}
+
+The function returns a pointer to the CTYPE name or \verb`NULL` on error.
+
+\subsubsection{Finding random-group parameters by name.}
+
+To determine the index of a random-group parameter by the PTYPE name
+given to it in the FITS file, use function:
+
+\label{find_gpar}\begin{verbatim}
+ int find_gpar(Phdu *phdu, const char *ptype, int fixlen);
+\end{verbatim}
+
+\begin{arglist}
+
+\fitem{phdu}  The primary HDU descriptor containing the
+                    random-group parameter definitions.
+
+\fitem{ptype} The name of the parameter to be sought. Trailing
+                    spaces are ignored.
+
+\fitem{fixlen} If this argument is $>$ 0, then it defines the maximum
+               number of characters to use from \verb`ptype` when
+               comparing with the actual parameter names.
+\end{arglist}
+
+The function returns the index of the parameter (\verb`1->pcount`) named
+\verb`ptype`, or 0 if not found.
+
+Alternatively, to get the name of a given parameter, use function:
+
+\label{gpar_name}\begin{verbatim}
+ char *gpar_name(Phdu *phdu, int ipar);
+\end{verbatim}
+
+\begin{arglist}
+
+\fitem{phdu}  A random-groups HDU descriptor.
+
+\fitem{ipar}  The 1-relative index (\verb`1->pcount`) of the
+                    parameter.
+\end{arglist}
+
+The function returns a pointer to the PTYPE name or \verb`NULL` on error.
+
+The description parameters of each group-parameter are stored in a
+\verb`Gpar` descriptor of the form:
+
+\begin{verbatim}
+typedef struct {
+  char *ptype;   /* The name of the random-group parameter */
+  double pscal;  /* The scale factor multiplying the parameter in the file */
+  double pzero;  /* The arithmetic offset of the parameter in the file *.
+} Gpar;
+\end{verbatim}
+
+To get a pointer to the descriptor of a particular group-parameter use
+function:
+
+\label{get_gpar}\begin{verbatim}
+ Gpar *get_gpar(Phdu *phdu, int ipar);
+\end{verbatim}
+
+\begin{arglist}
+
+\fitem{phdu}  The primary/image-extension type HDU descriptor
+                    containing the group-parameter definitions.
+
+\fitem{ipar}  The 1-relative index (\verb`1->pcount`) of the
+                    group-parameter.
+\end{arglist}
+
+The function returns a pointer to the grou-parameter descriptor, or
+\verb`NULL` on error.
+
+
+\subsection{Creating a new PRIMARY HDU.}
+
+The function provided for creating a primary HDU descriptor is:
+\label{new_primary}\begin{verbatim}
+ Hdu *new_primary(Bitpix bitpix, int naxis, int *dims, int groups, int pcount,
+                 int gcount);
+\end{verbatim}
+\begin{arglist}
+\fitem{bitpix} Select the type of data to be stored in the primary data
+            array from the list of the \verb`Bitpix` enumerator values
+            described on page~\pageref{Bitpix}.
+
+\fitem{naxis} The number of dimensions to the primary data array.
+            This will be 0 for a dummy primary HDU (i.e. where a primary
+            data array is not required but extension tables are).
+
+\fitem{dims} An array of \verb`naxis` elements giving the number
+            of elements along each dimension of the primary data array.
+            Note that if \verb`groups` is true, then the \verb`dims[0]`
+            must be zero and \verb`naxis` should be 1 more than the
+            dimension of the data array.
+
+\fitem{groups} If this is true (\verb`groups!=0`) then a random-groups
+            HDU will be created.
+
+\fitem{pcount} If \verb`groups` is true, then this specifies the number
+            of parameters preceding each data array. Otherwise
+            send 0.
+
+\fitem{gcount} If \verb`groups` is true, then this specifies a lower
+            limit on the number of groups required.
+\end{arglist}
+
+The function returns the new HDU descriptor. Note that this descriptor
+will have to be appended to the FITS file with \verb`add_Hdu()` (see
+page~\pageref{add_Hdu}) before it can be written to.
+
+\boldtitle{Example}
+\begin{verbatim}
+ Hdu *hdu;
+ int dims[2]={10,20};
+ ...
+ hdu = new_primary(B_FLOAT, 2, dims, 0, 0, 1);
+ if(hdu==NULL) {
+   ...
+ };
+\end{verbatim}
+After creating the HDU and before adding it to a FITS file, there are
+a number of optional initializing functions that can be called. These are
+described below. Note that these functions may not be called after the
+HDU has been added to the FITS file. The parameters that you describe
+with these functions will later be written into the header of the new
+HDU by \verb`add_Hdu()`.
+
+General properties of the data array may be described via the
+function:
+\label{setimage}\begin{verbatim}
+ int setimage(Hdu *hdu, double bscale, double bzero, char *bunit, int blank,
+             double datamin, double datamax);
+\end{verbatim}
+\begin{arglist}
+
+\fitem{hdu} An HDU returned by \verb`new_primary()` or
+                  \verb`new_image()`.
+
+\fitem{bscale} When data is written to the primary data array, it is
+             first modified by the equation: \verb`bzero + bscale * data`.
+             Send \verb`bscale=1` if no scaling is required.
+
+\fitem{bzero}  See above under \verb`bscale`. If no offset is
+                     required send 0. 
+
+\fitem{bunit}  The name of the units of measurement of the data. Send
+             \verb`NULL` if not required.
+
+\fitem{blank}  For integer values a special value may be given here that
+             will denote null values in the output array. Send \verb`NONULL`
+             if blanking is not required.
+
+\fitem{datamin} The minimum value in the data array. This will
+             be reported verbatim as the value of the DATAMIN keyword in the
+             HDU header. It is not enforced or checked.
+             Send \verb`datamin=datamax=0.0` if not required.
+
+\fitem{datamax} The maximum value in the data array. See \verb`datamin`.
+\end{arglist}
+
+The function returns 0 normally, or 1 if there was a problem.
+
+To describe individual axes use the following function for each axis.
+\label{setaxis}\begin{verbatim}
+ int setaxis(Hdu *hdu, int axis, char *ctype, double crpix, double crval,
+             double cdelt, double crota);
+\end{verbatim}
+\begin{arglist}
+
+\fitem{hdu} An HDU returned by \verb`new_primary()` or \verb`new_image()`.
+
+\fitem{axis} The number (\verb`1->naxis`) of the axis to be described.
+
+\fitem{ctype}  A name for the axis (or \verb`NULL` if not required).
+
+\fitem{crpix}  The reference pixel on this axis.
+
+\fitem{crval}  The coordinate value at \verb`crpix`.
+
+\fitem{cdelt}  The increment in coordinate value between pixels.
+
+\fitem{crota}  The axis rotation angle - normally 0.
+\end{arglist}
+
+The function returns 0 normally, or 1 if there was a problem.
+
+
+To describe individual random-group parameters call the following
+function once for each parameter.
+\label{setgroup}\begin{verbatim}
+ int setgroup(Hdu *hdu, int ipar, char *ptype, double pscal, double pzero);
+\end{verbatim}
+\begin{arglist}
+\fitem{hdu}   An HDU descriptor returned by \verb`new_primary()`.
+
+\fitem{ipar}  The number (\verb`1->pcount`) of the parameter to
+                    be described.
+
+\fitem{ptype} A name for the parameter (or \verb`NULL` if not required).
+
+\fitem{pscal} As \verb`bscale` in \verb`setimage()`.
+
+\fitem{pzero} As \verb`bzero` in \verb`setimage()`.
+\end{arglist}
+The function returns 0 normally, or 1 if a problem arose.
+
+
+Finally, bibliographic information may be supplied through function:
+\label{setprim}\begin{verbatim}
+ int setprim(Hdu *hdu, char *origin, char *date_obs, char *telescop,
+            char *instrume, char *observer, char *object, char *author,
+            char *referenc, double equinox);
+\end{verbatim}
+\begin{arglist}
+
+\fitem{hdu}  An HDU descriptor returned by \verb`new_primary()`.
+
+\fitem{origin}  The origin of the FITS file (or \verb`NULL` if not required).
+
+\fitem{date\_obs} The date of observation encoded in a string as
+             DD/MM/YY. Send \verb`NULL` if not required.
+
+\fitem{telescop} The name of the telescope that observed the data in the
+             FITS file. Send \verb`NULL` if not relevant.
+
+\fitem{instrume} The instrument used on the above telescope, or \verb`NULL` if
+             not relevant.
+
+\fitem{observer} The name of the person who acquired the data, or \verb`NULL`
+             if not required.
+
+\fitem{object}  The name of the object that the data represent, or \verb`NULL`
+             if not required.
+
+\fitem{author}  The person who compiled the current version of the data.
+             Send \verb`NULL` if not relevant.
+
+\fitem{referenc} A reference to any published representation of the
+             data in this file. \verb`NULL` if not required.
+
+\fitem{equinox} The equinox in years for the celestial coordinate
+             system used in representing the data here-in. Send 0.0
+             if not required.
+\end{arglist}
+
+\subsection{Creating a new IMAGE-extension HDU.}
+
+As explained earlier, an IMAGE extension HDU is similar to a primary
+HDU.  Like the primary HDU its data section contains a
+multi-dimensional array and all the same keywords bar the
+bibliographic keywords are used to describe the array in the header.
+Such extensions are typically used to record multiple images, one
+image per extension, such as images of the sky at different
+wavelengths.
+
+To create a new image extension that can be later added to a FITS file
+with \verb`add_Hdu()` use function:
+\label{new_image}\begin{verbatim}
+ Hdu *new_image(Bitpix bitpix, int naxis, int *dims, char *extname,
+	        int extver, int extlevel);
+\end{verbatim}
+\begin{arglist}
+\fitem{bitpix}  Select the type of data to be stored in the data array
+            from the list of the \verb`Bitpix` enumerator values
+            described earlier.  
+
+\fitem{naxis}  The number of dimensions to the data array.
+
+\fitem{dims}  An array of \verb`naxis` elements giving the
+            number of elements along each dimension of the data array.
+
+\fitem{extname} The name of the extension.
+
+\fitem{extver} The version number of the extension. It is easiest to set
+            this to 0 and let \verb`add_Hdu()` work out what the version
+            should be wrt other HDUs of the same name and type.
+
+\fitem{extlevel} The hierarchical level of the extension. Unless you have
+            some grand scheme of hierarchies set this to 1.
+\end{arglist}
+
+The function returns the new HDU descriptor. Note that this descriptor
+will have to be appended to the FITS file with \verb`add_Hdu()` (see
+page~\pageref{add_Hdu}) before it can be written to.
+
+\boldtitle{Example}
+\begin{verbatim}
+ Hdu *hdu;
+ int dims[2]={128,128};
+ ...
+ hdu = new_image(B_FLOAT, 2, dims, "RED IMAGE", 0, 1);
+ if(hdu==NULL) {
+   ...
+ };
+\end{verbatim}
+After creating the HDU and before adding it to a FITS file, there are
+a number of optional initializing functions that can be called. Note
+that these functions may not be called after the HDU has been added to
+the FITS file. The parameters that you describe with these functions
+will later be written into the header of the new HDU by
+\verb`add_Hdu()` (see page~\pageref{add_Hdu}).
+
+These functions have already been described in
+section~\ref{new_primary}. The two relevant functions are:
+\begin{verbatim}
+ int setaxis(Hdu *hdu, int axis, char *ctype, double crpix, double crval,
+            double cdelt, double crota);
+\end{verbatim}
+To describe the axes and:
+\begin{verbatim}
+ int setimage(Hdu *hdu, double bscale, double bzero, char *bunit, int blank,
+             double datamin, double datamax);
+\end{verbatim}
+To describe the data.
+
+\subsection{Reading and writing PRIMARY and IMAGE data arrays.}
+
+Given a FITS file containing a PRIMARY or IMAGE-extension HDU, you
+may read and/or write (depending on how the file was opened) data in
+that HDU using the functions described below. These functions are used
+both for normal primary and IMAGE-extension arrays and for the data
+array parts of a random-groups primary HDU. (The
+random-group-parameters are read/written by other functions described
+shortly).
+
+To read or write data in an IMAGE-extension or primary HDU data array, use
+the functions:
+\label{rimage}\begin{verbatim}
+ long rimage(Fits *fits, Phdu *phdu, long igroup, long start, long nobj,
+             Fittype type, int doscale, Fitsflag *flags, void *data);
+\end{verbatim}
+To read data, and:
+\label{wimage}\begin{verbatim}
+ long wimage(Fits *fits, Phdu *phdu, long igroup, long start, long nobj,
+             Fittype type, int doscale, Fitsflag *flags, void *data);
+\end{verbatim}
+To write data.
+
+\begin{arglist}
+
+\fitem{fits} The descriptor of the FITS file containing the HDU being
+             accessed.
+ 
+\fitem{phdu} The primary/image-extension type HDU descriptor of the
+             HDU being written.
+
+\fitem{igroup} Normally this is 0. However, if the HDU is a
+             random-groups HDU then this is the 0-relative
+	     (\verb`0->gcount`-1) index of the group containing the data
+             array. 
+ 
+\fitem{start} The 0-relative index of the first element in the
+             data array (in the FITS file) to be read or written.
+
+\fitem{nobj} The maximum number of data elements to be written/read.
+             The data array that you send must contain at least this
+             many elements. If \verb`start+nobj` exceeds the declared
+             dimension of the array in the FITS file, only as many
+             elements as will fit will be read or written.
+
+\fitem{type} The type of array pointed to by \verb`void *data`
+             (See page~\pageref{Fittype} for the list of
+             recognized types). This need not
+             be the same as the type actually in the data array of the
+             HDU. See section~\ref{data_conv} for more details.
+
+\fitem{doscale} If true, offsets and scale factors will be removed from
+             data as they are read, or applied to data as they are written.
+
+\fitem{flags} An integral array of \verb`nobj` flags, or \verb`NULL`. See
+             section~\ref{blanking} for further details.
+
+\fitem{data} A \verb`void *` pointer to the data array to be
+             read or written. This array must have at least
+             \verb`nobj` elements and have type \verb`type`.
+\end{arglist}
+
+The functions return the actual number of elements read or written.
+
+\subsubsection{Example of reading data from an existing PRIMARY HDU.}
+\begin{verbatim}
+  Fits *fits;
+  double data[10];
+  int i;
+/*
+ * Open an existing FITS file.
+ */
+  fits = new_Fits("myfile.fits", 1, 0, 0, 0);
+  if(fits==NULL)
+    exit(1);
+/*
+ * Read part of the FITS data array.
+ */
+  if(rimage(fits, (Phdu *)fits->hdu, 0, 10, 10, DAT_DBL, 1, NULL, data) < 10) {
+    ... Error cleanup code ...
+  };
+/*
+ * Echo what was read to the user.
+ */
+  for(i=0; i<10; i++)
+    printf("%f ", data[i]);
+  ... Etc ...
+\end{verbatim}
+
+\subsubsection{Example of writing data into a new PRIMARY HDU.}
+\begin{verbatim}
+  Fits *fits;
+  int dims[2]={10,2};
+  double data[10]={0.1, 2.1, 4.5, -9.8, 1.9, 10.2, 3.3, 5.5, 8.7, 6.7};
+/*
+ * Create a new FITS file.
+ */
+  fits = new_Fits("myfile.fits", 0, 0, 0, 0);
+  if(fits==NULL)
+    exit(1);
+/*
+ * Create a primary HDU.
+ */
+  hdu = new_primary(B_FLOAT, 2, dims, 0, 0, 1);
+  if(hdu==NULL) {
+    ... Error cleanup code ...
+  };
+/*
+ * Describe it.
+ */
+  if(setimage(hdu, 2.0, 0.0, "MY UNITS", NONULL, 0.0 0.0) ||
+     setaxis(hdu, 1, "X-AXIS", 0.0, 10.0, 0.1, 0.0) ||
+     setaxis(hdu, 2, "Y-AXIS", 0.0, 1.0, 1.0, 0.0)) {
+    ... Error cleanup code ...
+  };
+/*
+ * Append it to the FITS file.
+ */
+  if(add_Hdu(hdu) || end_header(fits, hdu)) {
+    ... Error cleanup code ...
+  };
+/*
+ * Write part of the data array.
+ */
+  if(wimage(fits, (Phdu *)fits->hdu, 0, 10, 10, DAT_DBL, 1, NULL, data) < 10) {
+    ... Error cleanup code ...
+  };
+  ... Etc ...
+\end{verbatim}
+
+\subsection{Reading and writing RANDOM-GROUPS parameters.}
+
+Random groups were briefly explained in section~\ref{primhdu}. A
+random-groups HDU consists of 0 or more groups. A single group
+consists of two parts, a list of 0 or more random-group-parameters
+immediately followed by an N dimensional data-array. A single
+group is essentially equivalent to a single row of a binary table,
+with the restrictions that each column contains elements of the same
+type, and that all but the last column contains a single element. It is
+actually more effcient to read and write random groups than the
+equivalent binary table because the guarantee that each element has
+the same type means that all random-group-parameters can be
+read/written at once, into/from a single array. However, NOST says
+that random-groups format is now deprecated, and binary tables should
+be used in its place. This library will continue to support
+random-groups for the foreseeable future.
+
+To read and write random groups, the library provides the
+\verb`rimage()` and \verb`wimage()` functions described on
+page~\pageref{rimage} to access the array portion of a single group,
+and the following functions to read/write the associated parameter
+list.
+
+To read random-group-parameters use:
+\label{rgroup}\begin{verbatim}
+long rgroup(Fits *fits, Phdu *phdu, long igroup, long start, long nobj,
+            Fittype type, int doscale, Fitsflag *flags, void *data);
+\end{verbatim}
+To write random-group-parameters use:
+\label{wgroup}\begin{verbatim}
+long wgroup(Fits *fits, Phdu *phdu, long igroup, long start, long nobj,
+            Fittype type, int doscale, Fitsflag *flags, void *data);
+\end{verbatim}
+\begin{arglist}
+\fitem{fits} The descriptor of the FITS file containing the HDU being
+             accessed.
+ 
+\fitem{phdu} The descriptor of the primary HDU being written
+             [e.g. as returned by \verb`find_image()` (see
+             page~\pageref{find_image})]. 
+
+\fitem{igroup} The 0-relative (\verb`0->gcount`-1) index of the group
+             containing the data array. 
+ 
+\fitem{start} The 0-relative index (\verb`0->pcount`-1) of the
+             first parameter (in the FITS file) to be read or written.
+
+\fitem{nobj} The maximum number of parameters to be read or written.
+             The data array that you send must contain at least this
+             many elements. If \verb`start+nobj` exceeds
+             \verb`pcount-1`, only as many elements as will fit will
+             be read or written.
+
+\fitem{type} The type of array pointed to by \verb`void *data`
+             (See page~\pageref{Fittype} for the list of
+             recognized types). This need not
+             be the same as the type actually in the data array of the
+             HDU. See section~\ref{data_conv} for more details.
+
+\fitem{doscale} If true, offsets and scale factors will be removed from
+             data as they are read, or applied to data as they are written.
+
+\fitem{flags} An integral array of \verb`nobj` flags, or \verb`NULL`. See
+             section~\ref{blanking} for further details.
+
+\fitem{data} A \verb`void *` pointer to the data array to be
+             read or written. This array must have at least \verb`nobj`
+             elements and have type \verb`type`.
+\end{arglist}
+
+The functions return the actual number of parameters read or written.
+
+\section{FITS table extensions.}
+
+FITS now provides two ways of storing tables in extension HDUs - the
+older ASCII table format, and a newer BINARY table format.
+
+ASCII tables are restricted to storing scalar columns of a few types
+in ASCII. This is not particularly versatile and is inefficient in
+file space. The only redeeming feature is that ASCII tables are human
+readable.
+
+BINARY table extensions are much more versatile and efficient in
+packing a lot of information into a smaller file space. Many more data
+types are supported in BINARY tables, and columns are not restricted
+to only containing one item per row. Each field of a column can
+contain a scalar value, a fixed length, or a variable length array of
+values.
+
+The type specific HDU descriptor used to record table-extension
+HDUs is the \verb`Thdu` type defined in header file
+\verb`libfits.h`.
+
+\subsection{Accessing descriptive parameters of table descriptors.}
+
+All tables share a number of parameters in common. This section
+explains how to access both these and the few table specific
+parameters describing a given table.
+
+\subsubsection{Column names.}
+To determine the name of a column in a given table use the function:
+\label{col_name}\begin{verbatim}
+ char *col_name(Thdu *thdu, int icol);
+\end{verbatim}
+\begin{arglist}
+\fitem{thdu} The generic table HDU descriptor of a binary or ASCII
+          table HDU.
+\fitem{icol} The number of the column who's name is desired
+          (\verb`1->tfields`).
+\end{arglist}
+
+The function returns the column name or, if the column has no name
+or an error occurred, \verb`NULL`.
+
+\subsubsection{Finding columns by name.}
+
+To look up a column by name use function:
+\label{find_column}\begin{verbatim}
+ int find_column(Thdu *thdu, char *ttype, int fixlen);
+\end{verbatim}
+\begin{arglist}
+\fitem{thdu} The generic table HDU descriptor of a binary or ASCII
+          table HDU.
+\fitem{ttype} The name of the column to be sought. Trailing spaces
+          are ignored in the comparisons.
+\fitem{fixlen} If this argument is $>$ 0, then it defines the maximum
+               number of characters to use from \verb`ttype` when
+               comparing with the actual column names.
+\end{arglist}
+
+The function returns the 1-relative column number (\verb`1->tfields`), or
+0 if no column of name \verb`ttype` was found in the table.
+
+\subsubsection{Finding the data-type of a column.}
+To determine the type of data stored in a given column, use the
+function:
+\label{col_type}\begin{verbatim}
+ Fittype col_type(Thdu *thdu, int icol);
+\end{verbatim}
+\begin{arglist}
+
+\fitem{thdu} The ASCII-table or BINARY-table type HDU descriptor of
+             the table.
+
+\fitem{icol} The column number to investigate (\verb`1->tfields`).
+
+\end{arglist}
+
+The function returns a \verb`Fittype` enumeration of the data type in the
+field, or \verb`DAT_NON` on error (see page~\pageref{Fittype} for the list
+of possible types).
+
+\subsubsection{Finding the dimensions of a column.}
+To determine the number of elements across a given column, use the
+function:
+\label{col_dim}\begin{verbatim}
+ int col_dim(Fits *fits, Thdu *thdu, int icol, int irow);
+\end{verbatim}
+\begin{arglist}
+
+\fitem{fits} The descriptor of the FITS file containing the table.
+ 
+\fitem{thdu} The ASCII-table or BINARY-table type HDU descriptor of
+             the table.
+
+\fitem{icol} The column number to investigate (\verb`1->tfields`).
+
+\fitem{irow} Normally 0 - if the field holds a variable length
+             array then this is the row number to look at. (\verb`1->nrow`).
+
+\end{arglist}
+
+The function returns the number of elements in the field, (which may
+be 0). Also 0 is returned on error.
+
+\subsubsection{Ascertaining the dimensions of a table.}
+
+To determine the number of columns (fields) in a table use function:
+\label{numcol}\begin{verbatim}
+ int numcol(Thdu *thdu);
+\end{verbatim}
+To determine the number of rows in a table use function:
+\label{numrow}\begin{verbatim}
+ int numrow(Thdu *thdu);
+\end{verbatim}
+Both functions take a pointer to a generic table HDU descriptor and
+return the requested number, or 0 on failure. Since these are both
+functions it is advisable to assign their return values to local
+variables before using them in loops.\\
+For example:
+\begin{verbatim}
+ int ncol;
+ ...
+ ncol = numcol(thdu);
+ for(icol=1; icol<=ncol; icol++) {
+   printf("Field %d has name: %s\n", irow, col_name(thdu, icol));
+ };
+\end{verbatim}
+
+\subsubsection{Determining which columns contain variable length arrays.}
+To determine whether a particular table column contains a variable
+length array use function:
+
+\label{iscolvar}\begin{verbatim}
+ int iscolvar(Thdu *thdu, int icol);
+\end{verbatim}
+
+\begin{arglist}
+\fitem{thdu} The ASCII-table or BINARY-table type HDU descriptor of
+                   the table.
+
+\fitem{icol} The column number to investigate (\verb`1->tfields`).
+\end{arglist}
+
+The function returns 0 if the column does not contain a variable
+length array, or 1 if it does.
+
+\subsubsection{Setting the dimension of a variable length array field.}
+When a binary table is added to a FITS file, the dimensions of all
+fields declared to contain variable length arrays, are initialized to
+zero. To assign space to a variable length array before its first use,
+you must call function: 
+\label{setdim}\begin{verbatim}
+ int setdim(Fits *fits, Thdu *thdu, int icol, int irow, int ndata);
+\end{verbatim}
+
+\begin{arglist}
+
+\fitem{fits} The descriptor of the FITS file containing the table.
+ 
+\fitem{thdu} The table HDU descriptor of the binary table.
+
+\fitem{icol} The 1-relative index (\verb`1->tfields`) of the
+             variable length array field to be dimensioned.
+
+\fitem{irow} The 1-relative index (\verb`1->nrow`) of the row containing
+             the variable length array field to be dimensioned.
+
+\fitem{ndata} The number of elements to be assigned to this field.
+\end{arglist}
+
+The function normally returns 0, but returns 1 if there is no heap
+space left or a file I/O error occurs. If you run out of heap space
+then it means that the \verb`theap` argument to \verb`new_bintab()`
+(see page~\pageref{new_bintab}) was too small. Note - this function
+should not be called twice for the same 
+\verb`irow`,\verb`icol` - i.e. once set, the length of the array
+becomes fixed. 
+
+\subsection{Creating an ASCII-TABLE extension HDU.}
+
+The data section of an ASCII table consists of 1 or more columns of
+single data items in 1 or more rows. The data items are written in
+ASCII. This is not particularly efficient in file space and the newer
+more versatile binary table format described in the next section is
+recommended for new applications.
+
+The function used to create an ASCII table extension HDU descriptor is:
+\label{new_asctab}\begin{verbatim}
+ Hdu *new_asctab(int width, int nrow, char *extname, int extver,
+                 int extlevel, int tfields);
+\end{verbatim}
+\begin{arglist}
+
+\fitem{width} The width of a row in the table measured in characters.
+
+\fitem{nrow} The number of rows in the table.
+
+\fitem{extname} The name of the extension.
+
+\fitem{extver} The version number of the extension. It is easiest to set
+            this to 0 and let \verb`add_Hdu()` work out what the version
+            should be wrt other HDUs of the same name and type.
+
+\fitem{extlevel} The hierarchical level of the extension. Unless you have
+            some grand scheme of hierarchies set this to 1.
+
+\fitem{tfields} The number of fields (columns) per row.
+\end{arglist}
+
+The function returns the new HDU, or \verb`NULL` if problems were encountered.
+
+Before the new HDU can be appended to a FITS file each column of the
+table MUST be described by calling the following functions, once for
+each field \verb`icol=1->tfields`.
+\label{setafield}\begin{verbatim}
+ int setafield(Hdu *hdu, int icol, int tbcol, double tscal, double tzero,
+               char *tform, char *tnull, char *ttype, char *tunit);
+\end{verbatim}
+\begin{arglist}
+
+\fitem{hdu} An HDU returned by \verb`new_asctab()`.
+
+\fitem{icol} The column (\verb`1->tfields`) being described.
+
+\fitem{tbcol} The start character (\verb`1->width`) in a row for
+            the field. 
+
+\fitem{tscal} The data in this field will be modified to
+            \verb`tzero + tscal * data` before being written. Send
+            1.0 if no scaling is required.
+
+\fitem{tzero} See \verb`tscal` above. Send 0.0 if no offset is
+            required. 
+
+\fitem{tform} The mandatory FORTRAN-77 format for the field.\\
+            The only valid formats are:\nopagebreak
+
+    	    \begin{tabular}{lcp{4.75in}}
+              Aw   & - & Character array of size w. \\
+              Iw   & - & Integer in a field width of w characters. \\
+              Fw.d & - & Float in a field width of w chars with
+                         d decimal places displayed. \\
+              Ew.d & - & As Fw.d but using E exponential notation. \\
+              Dw.d & - & As Fw.d but for double-precision and displayed
+                         using FORTRAN D exponential notation. \\
+            \end{tabular}
+
+\fitem{tnull} An optional string used to denote null values in this
+             field. Send \verb`NULL` if not required. This will be blank
+             filled to the width of the field given in the tform
+             argument.
+
+\fitem{ttype} An optional name for this field. (Send \verb`NULL` if not required). 
+
+\fitem{tunit} An optional string containing the units of measurement
+             of the data in this field. Send \verb`NULL` if not required.
+\end{arglist}
+
+The function normally returns 0, but returns 1 if a problem arose.
+
+\boldtitle{Example}
+\begin{verbatim}
+ Hdu *hdu;
+ ...
+ hdu = new_asctab(25, 45, "DUM TABLE", 0, 1, 2);
+ if(hdu==NULL) {
+   ... Error handling code ...
+ };
+
+ if(setafield(hdu, 1, 1, 1.0, 0.0, "F5.2", "*****", "FIELD 1", NULL) ||
+    setafield(hdu, 2, 7, 1.0, 0.0, "A20",  "*****", "FIELD 2", NULL)) {
+   ... Error handling code ...
+ };
+
+ if(add_Hdu(fits, hdu)) {
+   ... Error handling code ...
+ };
+\end{verbatim}
+
+\subsection{Creating a binary-table extension HDU.}
+
+Binary tables are more efficient in file space than ASCII tables.
+Data is stored directly in IEEE binary format, with no padding
+between columns or rows.
+
+Unlike ASCII tables, each column entry can be an array of values, and
+many more data types are recognized. Column entries may also contain
+variable length arrays allocated from a heap at the end of the HDU.
+
+The function used to create a new binary table extension HDU
+descriptor is:
+
+\label{new_bintab}\begin{verbatim}
+ Hdu *new_bintab(int nrow, char *extname, int extver, int extlevel,
+                 int tfields, long heapsize);
+\end{verbatim}
+\begin{arglist}
+
+\fitem{nrow} The number of rows in the table.
+
+\fitem{extname} The name of the extension.
+
+\fitem{extver} The version number of the extension. It is easiest to set
+            this to 0 and let \verb`add_Hdu()` work out what the version
+            should be wrt other HDUs of the same name and type.
+
+\fitem{extlevel} The hierarchical level of the extension. Unless you have
+            some grand scheme of hierarchies set this to 1.
+
+\fitem{tfields} The number of fields (columns) per row.
+
+\fitem{theap} Normally this should be 0. However, if you intend to use
+            variable length arrays then \verb`theap` is the size of the heap
+            area in bytes from which the arrays will be allocated. You
+            should allow at least as many bytes as required to store
+            all the variable length arrays in the table. The size of
+            each FITS type in bytes is given below in the
+            documentation on the \verb`tform` argument of
+            \verb`setbfield()` on page~\pageref{setbfield}.
+\end{arglist} 
+
+The function returns the new HDU, or \verb`NULL` if problems were
+encountered.
+
+Before the new HDU can be appended to a FITS file each column of the
+table MUST be described by calling the following functions, once for
+each field \verb`icol=1->tfields`.
+\label{setbfield}\begin{verbatim}
+ int setbfield(Hdu *hdu, int icol, double tscal, double tzero, char *tform,
+               long tnull, char *ttype, char *tunit, char *tdisp, char *tdim);
+\end{verbatim}
+
+\begin{arglist}
+
+\fitem{hdu} An HDU returned by \verb`new_bintab()`.
+
+\fitem{icol} The column (\verb`1->tfields`) being described.
+
+\fitem{tscal} The data in this field will be modified to
+            \verb`tzero + tscal * data`  before being written. Send 1.0 if
+            no scaling is required.
+
+\fitem{tzero} See \verb`tscal` above. Send 0.0 if no offset is required.
+
+\fitem{tform} The mandatory FORTRAN-90 style format for the field.
+            The only valid formats are:\nopagebreak
+
+    	    \begin{tabular}{lll}
+             {\bf r}L & (logical)        & (1-byte) \\ 
+	     {\bf r}X & (bit)            & (1-byte) \\ 
+	     {\bf r}I & (short)          & (2-bytes) \\ 
+	     {\bf r}J & (int)            & (4-bytes) \\ 
+             {\bf r}A & (char)           & (1-byte) \\ 
+             {\bf r}E & (float)          & (4-bytes) \\ 
+             {\bf r}D & (double)         & (8-bytes) \\ 
+             {\bf r}B & (unsigned byte)  & (1-byte) \\ 
+             {\bf r}C & (float complex)  & (8-bytes) \\ 
+             {\bf r}M & (double complex) & (16-bytes) \\ 
+             {\bf r}P{\bf t} & \multicolumn{2}{p{4.75in}} {Variable length array.}\\
+            \end{tabular}
+
+             Where {\bf r} is the number of elements in the field and
+             {\bf t} is one of the above upper-case type letters
+             except 'P'. 
+
+\fitem{tnull} An optional integer to use to denote nulls (blanks) when
+             writing any of the integer types given above. For other
+             types the NOST standard describes ways of denoting null
+             values without requiring input from the user. If integer
+             null handling is not required, send \verb`NONULL` (defined
+             in \verb`libfits.h`).
+
+\fitem{ttype} An optional name for this field. (Send \verb`NULL` if not required). 
+
+\fitem{tunit} An optional string containing the units of measurement
+             of the data in this field. Send \verb`NULL` if not required.
+
+\fitem{tdisp} An optional string recording a recommended FORTRAN-90
+             format for display of a value in this field. Send \verb`NULL`
+             if not required.
+
+\fitem{tdim} If this field holds a fixed array, this optional string
+             may be used to describe how that 1-dimensional array
+             can be represented as an N-dimensional array, in FORTRAN
+             column order. For example \verb`tdim="(10,20,3)"` says that
+             the array is actually a 3 dimensional array with 10
+             elements along the first dimension, 20 along the second
+             and three along the third. If not required send \verb`NULL`.
+\end{arglist}
+
+The function normally returns 0, but returns 1 if a problem arose.
+
+\boldtitle{Example - equivalent to the ASCII table example shown previously.}
+\begin{verbatim}
+ Hdu *hdu;
+ ...
+ hdu = new_bintab(45, "DUM TABLE", 0, 1, 2, 0L);
+ if(hdu==NULL) {
+   ... Error handling code ...
+ };
+
+ if(setbfield(hdu, 1, 1.0, 0.0, "1E", NONULL, "FIELD 1", NULL, NULL, NULL) ||
+    setbfield(hdu, 2, 1.0, 0.0, "20A", NONULL, "FIELD 2", NULL, NULL,NULL)) {
+   ... Error handling code ...
+ };
+
+ if(add_Hdu(fits, hdu)) {
+   ... Error handling code ...
+ };
+\end{verbatim}
+
+\subsection{Reading and writing TABLE fields.}
+
+Given a FITS file containing an ASCII or binary table HDU, you
+may read and/or write (depending on how the file was opened) table
+fields in any order using the functions described below.
+
+To read or write data in a single table field of an ASCII or binary
+table HDU, use the functions:
+\label{rcolumn}\begin{verbatim}
+ long rcolumn(Fits *fits, Thdu *thdu, int icol, int irow, Fittype type,
+              int doscale, Fitsflag *flags, int first, int ndata, void *data)
+\end{verbatim}
+to read a field, and:
+\label{wcolumn}\begin{verbatim}
+ long wcolumn(Fits *fits, Thdu *thdu, int icol, int irow, Fittype type,
+              int doscale, Fitsflag *flags, int first, int ndata, void *data)
+\end{verbatim}
+to write a field.
+\begin{arglist}
+\fitem{fits} The descriptor of the FITS file containing the HDU being
+             accessed.
+ 
+\fitem{thdu} The ASCII-table or BINARY-table type HDU descriptor of
+             the HDU being written [e.g. as returned by
+             \verb`find_table()` (see page~\pageref{find_table})]. 
+
+\fitem{icol} The column number (\verb`1->tfields`) of the field to be
+             read/written from/to.
+
+\fitem{irow} The row number (\verb`1->nrow`) of the field to be
+             read/written from/to.
+
+\fitem{type} The type of array pointed to by \verb`void *data`
+             (See page~\pageref{Fittype} for the list of
+             recognized types). This need not
+             be the same as the type actually in the table field of
+             the HDU (See section~\ref{data_conv} for more details).
+
+\fitem{doscale} If true, offsets and scale factors will be removed from
+             data as they are read, or applied to data as they are written.
+
+\fitem{flags} An integral array of \verb`ndata` flags, or \verb`NULL`. See
+             section~\ref{blanking} for further details.
+
+\fitem{ndata} The maximum number of elements to be written-to/read-from
+             the field. The data array that you send must contain at
+             least this many elements. If \verb`start+ndata` exceeds the
+             declared number of elements in the field then only as
+             many elements as will fit will be read or written.
+             Note that in ASCII tables only character fields ever
+             require \verb`ndata`$>1$.
+
+\fitem{data} A \verb`void *` pointer to the data array to be
+             read or written. This must have at least \verb`ndata`
+             elements and have type \verb`type`.
+\end{arglist}
+
+The functions return the actual number of parameters read/written.
+
+\boldtitle{Example}
+\begin{verbatim}
+  Fits *fits;
+  Thdu *thdu;
+  char c[2][20]={"Up to 20 chars", "A second string"};
+  float f[2]={0.1,0.2};
+/*
+ * Open an existing FITS file for read and write.
+ */
+  fits = new_Fits("myfile.fits", 1, 0, 0, 0);
+  if(fits==NULL)
+    exit(1);
+/*
+ * Find the table that is to be modified.
+ */
+  thdu = find_table(fits, "MY TABLE", 0, NULL);
+  if(thdu==NULL) {
+    ... Error handling code ...
+  };
+/*
+ * Modify columns 2 and 5 of the first two rows (I am assuming that we
+ * know their formats and the number of rows. See later on how to ask
+ * about such details.
+ */
+  for(irow=0; irow<2; irow++) {
+    int slen = strlen(c[irow]);
+    if(wcolumn(fits, thdu, 2, irow+1, DAT_CHR, 1, NULL, 0, slen, c[irow]) ||
+       wcolumn(fits, thdu, 5, irow+1, DAT_FLT, 1, NULL, 0, 1, &f[irow])) {
+      ... Error handling code ...
+    };
+  };
+\end{verbatim}
+
+\section{Reading and writing header lines.}
+
+The FITS mandatory and reserved header lines are read automatically by
+\verb`new_Fits()` (see page~\pageref{new_Fits}) and written
+automatically by \verb`add_Hdu()` (see page~\pageref{add_Hdu}).
+Other header lines may be read and written using the functions
+described below.
+
+\subsection{Reading header lines.}
+There are two functions available for reading header lines. The most
+general is:
+\label{next_key}\begin{verbatim}
+ Keystat next_key(Fits *fits, Hdu *hdu, Fitkey *keys, int nkey,
+                  Seektype doseek, Fitkey *key);
+\end{verbatim}
+\begin{arglist}
+\fitem{fits} The descriptor of the FITS file to read from.
+\fitem{hdu} The HDU whose header is to be read from. This HDU must be
+           one of those in \verb`fits`.
+\fitem{keys} This is an array of \verb`nkey` key descriptors (see
+           below) of the keywords that are being sought from the FITS
+           header. Send \verb`NULL` if any key will do.
+\fitem{nkey} The number of elements in the \verb`keys` array.
+\fitem{doseek}\label{doseek} This is an enumeration used to
+           specify how to seek out the required keyword.
+           Valid values are:\nopagebreak
+
+           \begin{tabular}{lcl}
+            NO\_SEEK & - &  Perform no search - return the next key in
+                              the header. \\
+            EOH\_SEEK & - & Search up to the end of header (EOH) if
+                              necessary. \\
+            LOOP\_SEEK & - & If not found before EOH re-search from
+                              start of header. \\
+           \end{tabular}
+
+\fitem{key} You send a pointer to an empty key descriptor. If
+           \verb`keys!=NULL` and one of the keys in the \verb`keys[]`
+           array is found then \verb`*key` will be a copy of the
+           matching entry in \verb`keys[]` but with the keyword value
+           and comment also recorded. 
+           If \verb`keys==NULL` then a description of the next keyword
+           in the header will be returned, including its value and comment.
+\end{arglist}
+
+The function returns its status as another enumeration, having
+values:
+
+\label{Keystat}\begin{tabular}{lcl}
+ KEY\_FOUND & - & One of the requested keywords was found.\\
+ KEY\_EOH & - & Reached the end of the header before finding anything.\\
+ KEY\_UNKNOWN & - & The search for a keyword from \verb`keys[]` failed.\\
+ KEY\_BAD & - & Error reading file.\\
+\end{tabular}
+
+If KEY\_FOUND is returned then the header line pointer is left pointing
+at the line following the place where the keyword was found.
+Otherwise the header-line pointer will be left pointing where it was
+before the call to the function.
+
+A keyword descriptor is a structure defined as follows.
+\label{Fitkey}\begin{verbatim}
+typedef struct Fitkey {
+  char *name;       /* Keyword name (Use NULL for wild-card when reading) */
+  int extn;         /* Post-fixed keyword extension number (0 = no extension) */
+  int keyid;        /* Optional - Use to enumerate keyword ID. */
+  Fittype type;     /* Type of value required/received - see get_key() */
+  void *value;      /* Pointer to keyword value */
+  char *comment;    /* Header comment */
+} Fitkey;
+\end{verbatim}
+
+The keyid member can be used by the caller as a quick way to identify
+which keyword in your \verb`keys[]` list was returned in \verb`*key`.
+
+An example should make things clearer. The following is part of the
+code used by the library to read optional reserved FITS keywords from
+a primary HDU header.
+
+\boldtitle{Example}
+{\small\begin{verbatim}
+/*
+ * Create an array of descriptors of the keywords to look for.
+ */
+  enum {BSCALE, BZERO, BUNIT, BLANK, OBJECT, EQUINOX, EPOCH, DATAMAX, DATAMIN};
+  Fitkey keys[]={
+    {"BSCALE",   0, BSCALE,   DAT_FLT, NULL, NULL},
+    {"BZERO",    0, BZERO,    DAT_FLT, NULL, NULL},
+    {"BUNIT",    0, BUNIT,    DAT_STR, NULL, NULL},
+    {"BLANK",    0, BLANK,    DAT_INT, NULL, NULL},
+    {"OBJECT",   0, OBJECT,   DAT_STR, NULL, NULL},
+    {"EQUINOX",  0, EQUINOX,  DAT_FLT, NULL, NULL},
+    {"EPOCH",    0, EPOCH,    DAT_FLT, NULL, NULL},
+    {"DATAMAX",  0, DATAMAX,  DAT_FLT, NULL, NULL},
+    {"DATAMIN",  0, DATAMIN,  DAT_FLT, NULL, NULL},
+  };
+/*
+ * Search from the current header position to the end of the FITS
+ * header for instances of the above keywords. For each keyword
+ * found assign the keyword value to the appropriate member of
+ * a Phdu (primary HDU) descriptor.
+ */
+  while(next_key(fits, hdu, keys, sizeof(keys)/sizeof(Fitkey), EOH_SEEK, &key)
+        == KEY_FOUND) {
+    switch(key.keyid) {  /* Identify the latest keyword found */
+    case BSCALE:
+      phdu->bscale = KEYFLT(key);
+      break;
+    case BZERO:
+      phdu->bzero = KEYFLT(key);
+      break;
+    case BUNIT:
+      phdu->bunit = fitsstr(KEYSTR(key));
+      break;
+    case BLANK:
+      phdu->blank = KEYINT(key);
+      break;
+    case OBJECT:
+      phdu->object = fitsstr(KEYSTR(key));
+      break;
+    case EQUINOX: case EPOCH:
+      phdu->equinox = KEYFLT(key);
+      break;
+    case DATAMAX:
+      phdu->datamax = KEYFLT(key);
+      break;
+    case DATAMIN:
+      phdu->datamin = KEYFLT(key);
+      break;
+    default:
+      break;
+    };
+  };
+\end{verbatim}}
+
+The example also displays the use of the following macros to access
+the values returned in the \verb`*key` descriptor (see
+page~\pageref{Fitkey}).
+
+\begin{tabular}{lcp{4.5in}}
+ \verb`KEYINT(Fitkey key)` & - &  If \verb`key.type==DAT_INT`, then
+          this accesses the integer value recorded in the
+          \verb`Fitkey` descriptor. \\ 
+
+ \verb`KEYBOOL(Fitkey key)` & - &  If \verb`key.type==DAT_LOG`, then
+          this accesses the boolean (char) value in the \verb`Fitkey`
+          descriptor. \\ 
+
+ \verb`KEYSTR(Fitkey key)` & - &  If \verb`key.type==DAT_STR`, then
+          this accesses the \verb`'\0'` terminated string value in the
+          \verb`Fitkey` descriptor. \\ 
+
+ \verb`KEYFLT(Fitkey key)` & - &  If \verb`key.type==DAT_FLT`, then
+          this accesses the float value in the \verb`Fitkey`
+          descriptor. \\ 
+
+ \verb`KEYDBL(Fitkey key)` & - &  If \verb`key.type==DAT_DBL`, then
+          this accesses the double value in the \verb`Fitkey`
+          descriptor. \\ 
+
+ \verb`KEYCMP(Fitkey key)` & - &  If \verb`key.type==DAT_SCMP`, then
+          this accesses the float[2] complex value in the
+          \verb`Fitkey` descriptor. \\ 
+\end{tabular}
+
+Also shown is the \verb`fitsstr()` function (described on
+page~\pageref{fitsstr}) that creates a dynamically allocated
+copy of its string argument.
+
+The other function provided for reading header keywords, itself calls
+\verb`next_key()` but only searches for one keyword at a time.
+Unlike \verb`next_key()` it does not require one to create a \verb`Fitkey`
+descriptor of the key to be sought.
+
+\label{get_key}\begin{verbatim}
+ Keystat get_key(Fits *fits, Hdu *hdu, char *match, Fittype type,
+                 Seektype doseek, Fitkey *key);
+\end{verbatim}
+\begin{arglist}
+
+\fitem{fits} The descriptor of the FITS file to read from.
+
+\fitem{hdu} The HDU whose header is to be read from. This HDU must be
+            one of those in \verb`fits`.
+
+\fitem{match} The name of the keyword to seek out. Send \verb`NULL` if any name
+            will do.
+
+\fitem{type} The type of keyword expected. Valid values are:\nopagebreak
+
+                   \begin{tabular}{lcp{5in}}
+                     DAT\_INT  & - &  Integer keyword. \\
+                     DAT\_LOG  & - &  Boolean 'T' or 'F' keyword. \\
+                     DAT\_STR  & - &  String valued keyword. \\
+                     DAT\_FLT  & - &  Floating point valued keyword. \\
+                     DAT\_DBL  & - &  Double precision valued keyword. \\
+                     DAT\_SCMP & - &  Single precision complex
+                          keyword returned as an array of two floats. \\
+                     DAT\_COM  & - &  Comment keyword such as
+                          HISTORY or COMMENT, or blank keyword. \\
+                   \end{tabular}
+
+\fitem{doseek} See the description of doseek given for function
+              \verb`next_key()` on page~\pageref{doseek}.
+
+\fitem{key} Send a pointer to an empty \verb`Fittkey` descriptor
+                  (see page~\pageref{Fitkey}). This will be assigned
+                  details about the key read.
+\end{arglist}
+
+The function return value is of the same form as returned by
+\verb`next_key()`, see page~\pageref{Keystat} for the list of return values.
+
+\boldtitle{Example}
+\begin{verbatim}
+/*
+ * Search for the optional THEAP keyword.
+ */
+  if(get_key(fits, hdu, "THEAP", DAT_INT, LOOP_SEEK, &key))
+    bhdu->theap = bhdu->dims[0] * bhdu->dims[1];
+  else
+    bhdu->theap = KEYINT(key);
+\end{verbatim}
+
+\subsection{Writing header lines.}
+For each keyword-value type, there is a corresponding function to
+write a header line of this type into a FITS header. Each function
+takes roughly the same form, bar the value argument. Thus, only the
+arguments of one will be described and the rest of the functions
+simply listed thereafter.
+
+To write an integer valued keyword use:
+\label{wintkey}\begin{verbatim}
+ int wintkey(Fits *fits, Hdu *hdu, char *name, int extn, int value,
+             char *comment);
+\end{verbatim}
+\begin{arglist}
+
+\fitem{fits} The descriptor of the FITS file to written to.
+
+\fitem{hdu} The HDU whose header is to be written to. This HDU must be
+            one of those in \verb`fits`.
+
+\fitem{name} The name of the keyword. This must be \verb`<=` 8
+            characters and all the characters must be upper-case alphabetical
+            characters A-Z, numeric-digits 0-9 or '-' or '\_'. Numbers
+            at the end of the keyword are not recommended since readers
+            will confuse them with extension numbers (see \verb`extn` below).
+
+\fitem{extn} A positive extension number to append to the keyword. The
+            total number of characters in the resulting keyword must be
+            \verb`<= 8` characters. The special number 0 requests that no
+            extension number be appended.
+
+\fitem{value} In this case) the integer value to be written as the
+            keyword value.
+
+\fitem{comment} To follow the value with a comment in the header line
+            provide a \verb`'\0'` terminated string. To have no comment
+            appended send \verb`NULL`.
+\end{arglist}
+
+The function returns 0 if all went well, or 1 if an error occurred.
+
+The other functions are:
+\label{wfltkey}\begin{verbatim}
+ int wfltkey(Fits *fits, Hdu *hdu, char *name, int extn, double value,
+             char *comment);  /* Double precision valued keywords. */
+\end{verbatim}
+
+\label{wlogkey}\begin{verbatim}
+ int wlogkey(Fits *fits, Hdu *hdu, char *name, int extn, char value,
+	     char *comment);  /* Boolean 'T' or 'F' valued keywords. */
+\end{verbatim}
+
+\label{wcmpkey}\begin{verbatim}
+ int wcmpkey(Fits *fits, Hdu *hdu, char *name, int extn, float *value,
+             char *comment);  /* float[2] complex valued keywords. */
+\end{verbatim}
+
+\label{wstrkey}\begin{verbatim}
+ int wstrkey(Fits *fits, Hdu *hdu, char *name, int extn, char *value,
+             char *comment);  /* String valued keywords. */
+\end{verbatim}
+
+\label{wcomkey}\begin{verbatim}
+ int wcomkey(Fits *fits, Hdu *hdu, char *name, int extn, char *value,
+             char *comment);  /* Comment keywords such as HISTORY. */
+\end{verbatim}
+
+\label{wvoidkey}\begin{verbatim}
+ int wvoidkey(Fits *fits, Hdu *hdu, char *name, int extn,
+             char *comment);  /* Keywords with no values. */
+\end{verbatim}
+\boldtitle{Example}
+
+To write the PCOUNT and GCOUNT keywords of an HDU, the library uses:
+\begin{verbatim}
+  if(wintkey(fits, hdu, "PCOUNT", 0, hdu->pcount, "Parameter count") ||
+     wintkey(fits, hdu, "GCOUNT", 0, hdu->gcount, "Group count")) {
+    ... Error handling code ...
+  };
+\end{verbatim}
+
+Alternatively, to copy an existing keyword, read the key with \verb`get_key()`,
+then use function:
+\label{putkey}\begin{verbatim}
+ int putkey(Fits *fits, Hdu *hdu, Fitkey *key);
+\end{verbatim}
+\begin{arglist}
+
+\fitem{fits} The descriptor of the FITS file to written to.
+
+\fitem{hdu} The HDU whose header is to be written to. This HDU must be
+            one of those in \verb`fits`.
+
+\fitem{key} A fully initialized \verb`Fitkey` descriptor (see
+            page~\pageref{Fitkey}) describing the key
+            to be written and containing the value (and optionally the
+            comment) to be written.
+\end{arglist}
+
+The function returns 0 on success, 1 on failure.
+
+\subsection{Header line positioning.}
+
+When reading header lines there are a number of functions that you may
+use to inquire about and change the number of the next line to be read
+from a given HDU header. The number of the first line in a given
+header is 0.
+
+\subsubsection{Locating the END line.}
+
+FITS headers are terminated by a valueless END keyword. The
+line number of this line is recorded in all HDU descriptors (only
+after \verb`end_header()` has been called). To find out the number of
+the end line use the function:
+
+\label{end_hline}\begin{verbatim}
+ int end_hline(Hdu *hdu);
+\end{verbatim}
+
+
+\begin{arglist}
+\fitem{hdu} The HDU whose header is to be inquired about.
+\end{arglist}
+
+The function returns the 0-relative line number of the END line in the
+header of the HDU described by \verb`hdu`.
+
+\subsubsection{Identifying the number of the next line to be read.}
+
+The line number of the next header line to be read may be ascertained
+through the use of function:
+
+\label{what_hline}\begin{verbatim}
+ int what_hline(Hdu *hdu);
+\end{verbatim}
+
+
+\begin{arglist}
+\fitem{hdu} The HDU whose header is to be inquired about.
+\end{arglist}
+
+The function returns the 0-relative line number of the next line that
+will be read by \verb`get_key()` or \verb`next_key()` from the header
+of the HDU described by \verb`hdu`.
+
+\subsubsection{Changing the number of the next line to be read.}
+
+To change the line number that will be read next by \verb`get_key()`
+or \verb`next_key()` use function:
+
+\label{new_hline}\begin{verbatim}
+ int new_hline(Hdu *hdu, int iline);
+\end{verbatim}
+
+
+\begin{arglist}
+\fitem{hdu} The HDU whose header is being read.
+
+\fitem{iline} The new line number for the next read.
+\end{arglist}
+
+The function returns the 0-relative line number of the original line
+number after recording the new number.
+
+\boldtitle{Example}
+To search from the beginning of the header for a keyword without
+loosing the current line position for reading subsequent keywords:
+
+\begin{verbatim}
+  Hdu *hdu;
+  int saveline;  /* Temporary line-number storage */
+  ...
+  saveline = new_hline(hdu, 0);
+  ... Search for a key from the start of the header ...
+  new_line(hdu, saveline);  /* Restore the previous line position */
+  ...
+\end{verbatim}
+
+\section{Cleaning up after errors.}
+
+In a program that needs to continue running after an an error has
+occured, it is important to be able to clean up no-longer needed
+resources. Both \verb`Fits` and \verb`Hdu` descriptors are entirely
+constructed from dynamically allocated memory, and if they are no
+longer required then they should be deleted. To clean up after errors
+occur, you should call \verb`del_Fits()` separately for each
+problematic \verb`Fits` descriptor to delete its contents and close
+the asscoiated FITS file. In addition, if \verb`Hdu` descriptors have
+been created but have not been successfuly added to any \verb`Fits`
+descriptor with \verb`add_Hdu()`, then \verb`del_Hdu()` should be
+called to delete the contents of the descriptor.
+
+\label{del_Hdu}\begin{verbatim}
+ Hdu *del_Hdu(Hdu *hdu);
+\end{verbatim}
+\begin{arglist}
+ \fitem{hdu} The pointer to the descriptor of an HDU that is not in
+             the list of HDUs of any \verb`Fits` descriptor.
+\end{arglist}
+  This function always returns \verb`NULL`.
+
+\boldtitle{Example}
+\begin{verbatim}
+  hdu = del_Hdu(hdu);
+\end{verbatim}
+
+Note that this function must NOT be called for an \verb`Hdu`
+descriptor that is in the list of HDUs of any \verb`Fits` descriptor.
+Such descriptors will be deleted by \verb`del_Fits()`. Also note that
+\verb`del_Hdu()` and \verb`del_Fits()` must not be called more than
+once for the same descriptor, and that a descriptor that has been
+deleted is no longer useable. Failure to follow these rules will
+probably result in your program eventually crashing and/or behaving
+unpredictably.
+
+\section{Miscellaneous functions.}
+
+\subsection{Naming FITS data types.}
+
+Textual names for each of the \verb`Fittype` data-type enumerators are
+available through function:
+
+\label{typename}\begin{verbatim}
+ char *typename(Fittype type);
+\end{verbatim}
+
+\begin{arglist}
+\fitem{type} The type whose name is required.
+\end{arglist}
+
+The function returns a pointer to a constant string containing a name
+for the requested type.
+
+\boldtitle{Example}
+\begin{verbatim}
+ int ncol;
+ ...
+ ncol = numcol(thdu);
+ for(icol=1; icol<=ncol; icol++) {
+   printf("Field %s has type: %s\n",
+                 col_name(thdu, icol),
+                 typename(col_type(thdu, icol)) );
+ };
+\end{verbatim}
+
+\subsection{Duplicating strings.}
+
+\label{fitsstr}\begin{verbatim}
+ char *fitsstr(const char *str);
+\end{verbatim}
+
+\begin{arglist}
+\fitem{str} The string to be duplicated. This can be \verb`NULL`.
+\end{arglist}
+
+The function returns a pointer to a dynamically allocated copy of
+the string pointed to by \verb`str`, or \verb`NULL` if insufficient
+memory was available. It also returns \verb`NULL` if \verb`str==NULL`,
+without emitting an error message. Trailing spaces are not copied.
+
+\end{document}

@@ -1,0 +1,38 @@
+subarray
+Return the number of baselines in a given sub-array.
+EXAMPLE
+-------
+
+Example 1  -  Write a message saying how many baselines are in
+              sub-array 1.
+
+0> print "There are", nbase, "baselines in sub-array 1"
+There are 10 baselines in sub-array 1.
+
+Example 2  -  List the names of all 'nbase' baselines in sub-array 2.
+
+0> do i=1,nbase(2)
+1>   print basename(i,2)
+1> end do
+WSRT-BOLOGNA 
+WSRT-HSTK 
+BOLOGNA-HSTK 
+WSRT-VLBA_KP 
+BOLOGNA-VLBA_KP 
+HSTK-VLBA_KP 
+WSRT-VLBA_LA 
+BOLOGNA-VLBA_LA 
+HSTK-VLBA_LA 
+VLBA_KP-VLBA_LA 
+0>
+
+PARAMETERS
+----------
+subarray  -  Optional: Defaults to 1.
+             This is the number of the antenna sub-array to return the
+             baseline count from. The 'header' command may be used to
+             examine what sub-arrays are available.
+
+RELATED FUNCTIONS
+-----------------
+basename  -  Return the name of the n'th baseline of a given sub-array.

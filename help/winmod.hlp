@@ -1,0 +1,38 @@
+discard_selected
+Delete all components outside (or inside) the current clean windows.
+EXAMPLE
+-------
+
+0>winmod
+The latest clean model now contains 31 of the original 92 components.
+The established clean model now contains 65 of the original 72 components.
+0>
+
+PARAMETERS
+----------
+discard_selected  -  (Default=false)
+                     If false then discard all model points outside the
+                     current clean windows.
+                     If true then discard all model points inside the
+                     current clean windows.
+
+CONTEXT
+-------
+This command is intended for the situation where one finds that the
+choice of clean windows in a previous clean allowed model components
+to be placed in suspect positions. Running this command allows one to
+constrain the model components to lie within the latest estimate
+of the clean windows. You should beware of the fact that the components
+so deleted may have had effects on the flux within the windows,
+so run mapplot again after calling this command to see how the deleted
+parts of the model effected the residual map and be prepared to
+continue cleaning a bit further.
+
+SIDE EFFECTS
+------------
+Use of this function will cause the next command that requires the
+residual map, to re-invert it.
+
+RELATED COMMANDS
+----------------
+mapplot - Use this to look at the model components as well as the map.

@@ -1,0 +1,2 @@
+veloc, integral_spec, epochs, light_curve, model_cube, peaka, peakb, lag
+Model OH-IR star spectra by linear interpolation of the light curve.

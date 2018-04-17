@@ -1,0 +1,51 @@
+unit
+Change the units used to specify and label map and UV plane distances.
+EXAMPLES
+--------
+
+0>
+0>mapunit mas
+Distances in the map plane now have units: milli-arcsec.
+Distances in the UV plane now have units: mega-wavelengths.
+0>
+
+0>mapunit arcsec
+Distances in the map plane now have units: arcsec.
+Distances in the UV plane now have units: kilo-wavelengths.
+0>
+
+0>mapunit
+Distances in the map plane now have units: arcsec.
+Distances in the UV plane now have units: kilo-wavelengths.
+0>
+
+ARGUMENTS
+---------
+unit     -   Optional.
+             One of the following distance units:
+               mas    -  Milli-arcseconds and mega-wavelengths.
+               arcsec -  Arcseconds and kilo-wavelengths.
+               arcmin -  Arcminutes and kilo-wavelengths.
+             If no name is provided, then the current settings are
+             reported without modification, as in the third example
+             above.
+
+CONTEXT
+-------
+VLBI antennas are generally separated by a few million wavelengths and
+are sensitive to source structure at the milli-arcsecond scale. The
+natural units to express these characteristics are thus
+milli-arcseconds in the map plane, and mega-lambda in the UV plane.
+
+Other more compact arrays such as the VLA, generally have baseline
+lengths that are more naturally expressed in kilo-wavelengths, and are
+sensitive to source structure at the arcsecond scale.
+
+Since there is no one set of units that satisfies all observations,
+difmap gives you the choice of a few units. The chosen units refer
+both to the units of the arguments to difmap commands, and to how
+distances are displayed and labelled by difmap.
+
+Unless the 'mapunits' command is invoked to change the units, difmap
+sets the map-plane distance units to milli-arcseconds and the baseline
+length units to mega-wavelengths. This reflects difmap's VLBI heritage.

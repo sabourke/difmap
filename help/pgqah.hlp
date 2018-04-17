@@ -1,0 +1,2 @@
+fill_style, angle, barb
+Return the current pgplot arrow-head drawing attributes.

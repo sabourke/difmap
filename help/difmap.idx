@@ -1,0 +1,231 @@
+Update this file with the 'makeindex' command. Do not edit directly.
+
+General help topics:
+-------------------
+ antenna_names
+   A description of the format of telescope specifications.
+ editing
+   General discussion of editing in difmap.
+ models
+   An overview of how models are used in difmap.
+ multi_if
+   An overview of multi-IF mapping.
+ polarization
+   Overview of Difmap polarization mapping.
+ spectral_line
+   An overview of the current spectral-line facilities.
+ subarrays
+   A discussion of sub-array handling in Difmap.
+ whatsnew
+   The details of recent difmap changes.
+
+Functions and commands:
+----------------------
+ addcmp
+   Add a model component by hand to the tentative model.
+ addhist
+   Append a new line to the recorded history of an observation.
+ addwin
+   Append a new entry to the list of clean windows.
+ antenna_beam
+   (No help file)
+ basename
+   Returns the name of baseline 'ibase' of sub-array 'isub'.
+ beamloc
+   Change when and where mapplot plots the clean beam ellipse.
+ clean
+   Clean a residual dirty map with the dirty beam.
+ clear_markers
+   Delete the current list of map markers.
+ clear_models
+   Discard the current set of channel-range/polarization specific models.
+ clrhist
+   Clear the history information recorded with the observation.
+ clrmod
+   Clear one or more of the established, tentative and continuum models.
+ clroff
+   Undo all resoff calibration-offsets applied during this difmap session.
+ corplot
+   Display accumulated telescope based self-cal corrections versus UT.
+ cpplot
+   Interactive display and editing of observed and model closure phases.
+ delmarker
+   Delete the closest map marker to a given Right Ascension and Declination.
+ delwin
+   Delete all clean windows.
+ edmodel
+   Modify the established and tentative models with an external editor.
+ flag
+   Flag a set of baselines over a selectable time range.
+ get
+   Restore UV data, models and windows from files.
+ gscale
+   Self calibrate to determine overall telescope amplitude corrections.
+ header
+   List useful parts of the observation header on one's terminal.
+ imstat
+   Return image plane map statistics.
+ invert
+   Grid selected UV data and Fourier invert it to a (residual) dirty map
+ keep
+   Establish the latest CLEAN model and compute its UV representation.
+ loglevs
+   Set logarithmic contour levels for mapplot.
+ mapcolor
+   Select the colormap type, brightness and contrast to use in mapplot.
+ mapfunc
+   Change the transfer function and data range displayed in mapplot.
+ maplot
+   Alternative name for the mapplot command - see help mapplot.
+ mapplot
+   Display the dirty beam, residual or restored map and modify CLEAN windows.
+ mapsize
+   Request a new map grid of given width and cell size
+ mapunits
+   Change the units used to specify and label map and UV plane distances.
+ mapvalue
+   Return the value of the map pixel nearest to a given coordinate.
+ mark_radec
+   Add an optionally annotated map marker to be drawn at a given RA, Dec.
+ mark_xy
+   Add an optionally annotated map marker to be drawn at a given X,Y offset.
+ mjd
+   Return the Modified Julian Date corresponding to a given calendar date.
+ modelfit
+   Fit image-plane model components to visibilities in the UV plane.
+ multi_model
+   Specify whether to keep one model per channel-range/polarization selection.
+ nbase
+   Return the number of baselines in a given sub-array.
+ nchan
+   Return the count of the number of spectral-line channels per IF.
+ nif
+   Return the number of IFs in the current observation.
+ nsub
+   Return the number of sub-arrays in the current observation.
+ ntel
+   Return the number of telescopes in a given sub-array.
+ observe
+   Read UV data from a random-groups UV FITS file.
+ peak
+   Return details of the min,max or absolute max flux in a map.
+ peakwin
+   Place a CLEAN window around the brightest pixel in the residual map.
+ planet_geometry
+   Return the geometry of a given planet.
+ planet_temp
+   Find the brightness temperature implied by the measured flux of a planet.
+ pointing_center
+   (No help file)
+ polvec
+   Configure how polarization vectors are displayed.
+ primary_beam
+   Specify a primary beam to use on all baselines.
+ projplot
+   Plot visibility amplitudes and/or phases versus projected UV distance.
+ radplot
+   Plot visibility amplitudes and/or phases versus UV radius.
+ read_models
+   Read a table of models, indexed by channel-range/polarization, from a file.
+ resoff
+   Determine and apply a baseline based amplitude and phase correction.
+ restore
+   Add the CLEAN model to the residual map to form a clean map.
+ rmodel
+   Read a new CLEAN model from a VLBI model file.
+ rwins
+   Read windows previously saved CLEAN windows from a text file.
+ save
+   Save UV data, models, windows, the restored map and a command file.
+ scangap
+   Change the time gap used to delimit neighboring scans.
+ select
+   Select a polarization and ranges of spectral-line channels to be processed.
+ selfant
+   Set antenna based constraints for subsequent self-calibration.
+ selfcal
+   Self calibrate for telescope phase (and amplitude) corrections.
+ selfflag
+   Control the identification and fate of un-correctable visibilities.
+ selflims
+   Set limits on acceptable amplitude and phase corrections in selfcal.
+ selftaper
+   Sets a (1 - gaussian) taper to weight down SHORT baselines.
+ setcont
+   Add the current model to the continuum model.
+ shift
+   Shift the observation phase-center, CLEAN window and model positions.
+ shiftto
+   Move the phase-center, CLEAN window and model positions to a given RA,Dec.
+ showhist
+   Display the history that was recorded with the current observation.
+ showpar
+   Display a list of difmap configuration parameters.
+ specbase
+   Select baselines to be displayed by specplot.
+ specopt
+   Preset specplot display options.
+ specorder
+   Set the order in which specplot plots spectra.
+ specplot
+   Plot time-averaged visibility spectra.
+ specpol
+   Select the list of polarizations to be displayed by specplot.
+ specsmooth
+   Preset the spectral resolution displayed by specplot.
+ spectime
+   Select the range(s) of times to be averaged by the specplot command.
+ specuvr
+   Select the UV radius ranges to be displayed by specplot.
+ startmod
+   Read a starting model from disk and phase self-calibrate against it.
+ telname
+   Returns the name of telescope 'itel' of sub-array 'isub'.
+ tplot
+   Plot time sampling for each telescope of an observation.
+ uncalib
+   Undo recorded telescope calibrations (eg. self-cal corrections).
+ unflag
+   Unflag a set of baselines over a selectable time range.
+ unshift
+   Undo accumulated position shifts from the data, windows and models.
+ uvaver
+   Time average a UV data set.
+ uvplot
+   Plot observed UV points on the UV plane.
+ uvrange
+   Set the min and max UV radii of usable visibilities.
+ uvstat
+   Return UV plane visibility statistics.
+ uvtaper
+   Set a gaussian taper to weight down long baselines and reduce sidelobes
+ uvweight
+   Set the type and degree of weighting for subsequent UV gridding.
+ uvzero
+   Set the estimated flux expected from a baseline of zero length.
+ vis_stats
+   Compute the statistics of a given observable.
+ vplot
+   General visibility plotting and editing command.
+ wbeam
+   Save the dirty beam to a FITS file.
+ wdmap
+   Save the residual dirty map to a FITS file.
+ winmod
+   Delete all components outside (or inside) the current clean windows.
+ wmap
+   Save the clean (restored) map to a FITS file.
+ wmarkers
+   List the commands that would create the current list of map markers.
+ wmodel
+   Write CLEAN models to a VLBI model file.
+ wobs
+   Save UV data to a random-groups UV FITS file.
+ write_models
+   Write a table of models, indexed by channel-range/polarization, to a file.
+ wtscale
+   Change the scale factor that mutiplies the raw visibility weights.
+ wwins
+   Save CLEAN windows to a text file.
+ xyrange
+   Set the bounds of the sub-image to be displayed in mapplot.

@@ -1,0 +1,68 @@
+uvmin, uvmax, uvstep
+Select the UV radius ranges to be displayed by specplot.
+EXAMPLES
+--------
+
+1. To see what UV ranges are currently selected, omit all arguments.
+
+   0>specuvr
+   Specplot UV range: uvmin=0  uvmax=151.407  uvstep=10 (kilo-wavelengths)
+   0>
+
+2. To restrict the UV range to 10 -> 30 kilo-wavelengths.
+
+   0>specuvr 10,30
+   Specplot UV range: uvmin=10  uvmax=30  uvstep=20 (kilo-wavelengths)
+   0>
+
+3. To see how the spectrum averaged over all baselines, changes with
+   UV radius range.
+
+   0>specuvr 0, 0, 10
+   Specplot UV range: uvmin=0  uvmax=151.407  uvstep=10 (kilo-wavelengths)
+   0>specorder uvrange
+   Specplot selection order: uvrange
+   0>specbase group, *
+   Specplot will plot baseline groups:
+    *
+   0>specplot
+
+ARGUMENTS
+---------
+uvmin         - Initial default=0.0
+                The minimum UV radius to take visibilities from, measured
+                in the wavelength units last established with the mapunits
+                command. By default this is mega-wavelengths.
+
+uvmax         - Default=Max UV radius in data.
+                The maximum UV radius to take visibilities from, or 0.0
+                to select the maximum UV radius available in the data.
+
+uvstep        - Default = (uvmax - uvmin)
+                The UV radius increment between spectra, measured in
+                the same units as uvmin and uvmax.
+
+To see what the current values of these arguments are, invoke the
+specuvr command without any arguments.
+
+CONTEXT
+-------
+The specplot command plots scalar and vector averaged visibility
+spectra. Visibilities are selected by polarization, time range, UV
+radius range, and baseline selections. The specuvr command is
+responsible for supplying UV radius ranges.
+
+Where more than one UV radius range is given (ie uvstep <
+uvmax-uvmin), spectra can be plotted for each range separately. The
+'specorder' command can be used to direct when to change from one
+UV radius range to the next while plotting spectra.
+
+RELATED COMMANDS
+----------------
+specplot   -  Plot time-averaged visibility spectra.
+specopt    -  Preset specplot display options.
+specsmooth -  Preset the spectral resolution displayed by specplot.
+specorder  -  Set the order in which spectra are to be displayed.
+specbase   -  Select baselines to be displayed by specplot.
+specpol    -  Select the list of polarizations to be displayed by specplot.
+spectime   -  Select time ranges to be displayed by specplot.

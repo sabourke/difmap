@@ -1,0 +1,2 @@
+file_name, append, binary_file
+Open an output file for writing - returns file_unit_no

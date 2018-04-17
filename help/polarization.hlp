@@ -1,0 +1,146 @@
+
+Overview of Difmap polarization mapping.
+
+Linear polarization mapping in Difmap
+-------------------------------------
+The mapplot command is capable of plotting the intensity and
+polarization angle of linearly polarizated data as vectors overlaid on
+a total intensity map. To do this you will first need to switch to
+multi-model mode (see help multi_model). This tells difmap to maintain
+different models for different polarizations. This means that after
+making a map of Q, one can select U without losing the Q map. This is
+important, because both U and Q are simultaneously needed to compute
+the polarization intensity and polarization angle. The basic procedure
+is as follows:
+
+1. Switch to multi-model mode:
+
+    multi_model true
+
+2. Set up the map dimensions and gridding weights:
+
+    mapunits arcsec
+    mapsize 256,1
+    uvweight 0, -2
+
+3. Make a map of Q.
+
+    select Q
+    ...clean or modelfit the Q map...
+
+4. Make a map of U.
+
+    select U
+    ...clean or modelfit the U map...
+
+5. Make a total intensity map (eg. I, LL or RR).
+
+    select I
+    ...clean or modelfit the I map.
+
+6. Configure polarization vector plotting. In the example below, mapplot
+   is being told to display 1Jy of polarized flux as a vector of length
+   5 arcsec, to only display vectors in pixels where the total-intensity
+   map has at least 0.3Jy, to only display vectors in pixels where the
+   polarized-intensity is over 0.0Jy, and only to only consider drawing
+   vectors in every second pixel along both RA, and Dec.
+
+    polvec 5.0, 0.3, 0.0, 2, 2
+
+6. Display the I map, overlaid with vectors representing the
+   polarization intensity/polarization angle.
+
+    mapplot pcln
+
+The order in which the maps are made is unimportant, since all that
+matters is that one has made maps of 'Q', 'U', and in this case, 'I',
+before running the 'mapplot pcln' command. However note that the
+mapplot command displays the currently selected polarization as the
+underlying grey-scale/contour plot, so regardless of when you made the
+total intensity map, you should use the 'select' command to select the
+total-intensity polarization before running 'mapplot pcln'.
+
+On running the 'mapplot pcln' command you will see mapplot remake the
+Q and U maps, using the models that you last made when you mapped
+them, then make a map of the currently selected polarization. It will
+then display a map of the currently selected polarization, overlaid
+with polarization vectors computed from the Q and U maps.
+
+You can also make a residual map overlaid with residual polarization
+vectors, by typing:
+
+  mapplot pmap
+
+If you haven't made maps of U or Q, the result will be a dirty polarization
+map. 
+
+Beware that with 'mapplot pcln' or 'mapplot pmap', if you set a clean
+box in 'mapplot' and then run the 'clean' command, the clean command
+still only acts on the map of the currently selected polarization. It
+doesn't clean the Q and U maps as well. To do further cleaning of
+these maps you should simply select and clean them individually using
+the 'select' and 'clean' commands.  The next invokation of 'mapplot
+pcln' or 'mapplot pmap' will then reflect the changes made to these
+maps.
+
+Note that multi-model mode keeps separate models not only for
+different polarizations, but also for different spectral-line channel
+ranges, so that for example, if one makes maps of Q, U and I
+separately for two different channel-range selections, the mapplot
+command will correctly show polarization vectors for whichever of
+these two channel-ranges is currently selected.
+
+Self calibration
+----------------
+
+In Difmap, self-calibration corrections and editing performed while
+making a map of one polarization are always applied to all other
+polarizations. This ensures that polarization calibrations and
+consistent UV coverage over all polarizations are
+preserved. Consequently it makes sense to simultaneously
+self-calibrate all polarizations by self-calibrating on a map of the
+strongest polarization (usually I). The same is true of the scope of
+self-calibration corrections with respect to spectral-line data.
+
+General details
+---------------
+The polarizations recorded in the originating UV FITS file can
+be displayed with the 'header' command.
+
+If an observation is recorded with multiple polarizations, the
+'select' command must be used to select the polarization to be
+processed. This selection affects what is displayed in all plotting
+commands, and forms the data upon which all processing is based until
+the 'select' command is again called upon to change the selection.
+
+The selected polarization may either be one of these polarizations, or
+be the name of a polarization that can be derived from them.
+
+The names of recognised polarizations are:
+
+  I  Q  U  V  RR  LL  RL  LR  XX  YY  XY  YX  PI
+
+The following is a list of polarizations that may be contructed from
+other polarizations:
+
+Name       Derived from:           Derived as:
+   
+ I         RR and LL               (RR + LL)/2
+ Q         RL and LR               (RL + LR)/2
+ U         RL and LR              i(LR - RL)/2
+ V         RR and LL               (RR - LL)/2
+PI         RR and/or LL            (Either RR, LL or the weighted mean
+                                    of RR and LL, as explained below)
+
+The PI polarization stands for pseudo-I polarization. It is intended
+for observations of non-circularly polarized sources, where one can
+then consider LL and RR as being independent measures of I
+polarization.  This is particularly useful for observations made with
+interferometers with baselines that only sample one of LL or RR.  In
+such cases, selecting 'I' would result in flagged visibilities on
+these baselines, whereas selecting PI results in the unmatched LL or
+RR visibility being used. Similarly, since PI considers both LL and RR
+to be independent measures of I, on baselines that do have both RR and
+LL, selecting PI results in the weighted mean of these visibilities
+being used, rather than (RR+LL)/2.
+

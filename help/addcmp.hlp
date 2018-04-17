@@ -1,0 +1,78 @@
+flux, vf, x, y, vxy, major, vm, ratio, vr, phi, vp, type, freq0, spcind, vs
+Add a model component by hand to the tentative model.
+EXAMPLE
+-------
+
+ 0>mapunits arcsec
+ 0>addcmp 0.1, false, 0, 0, true, 0.3, true, 0.5, true
+
+The above adds a gaussian component of flux fixed at 0.1 Jy, positioned
+at the center of the current map but allowed to move during model fitting,
+having a major axis of 0.3 arcseconds FWHM and an axial ratio of 0.5
+both of which are allowed to vary during model fitting, and an implicit
+major axis position angle of 0 degrees. The spectral index defaults to
+zero and is not allowed to vary.
+
+PARAMETERS
+----------
+flux   -  The integrated flux of the component, measured in Jy.
+vf     -  If TRUE allow the flux to vary during model fitting.
+
+x      -  The relative X-axis position of the component centroid in the
+          current map units. (See help mapunits).
+y      -  The relative Y-axis position of the component centroid in the
+          current map units. (See help mapunits).
+vxy    -  If TRUE allow x and y to vary during model fitting.
+
+major  -  The FWHM major axis of the elliptical aspect of the component
+          measured in map units (See help mapunits).
+vm     -  If TRUE allow major to vary during model fitting.
+
+ratio  -  The ratio of the minor axis to the major axis (0 -> 1).
+vr     -  If TRUE allow the axial ratio to vary during model fitting.
+
+phi    -  The Position angle of the major axis (degrees North -> East).
+vp     -  If TRUE allow phi to vary during model fitting.
+
+type   -  The component type. The default if not given is to assume
+          that the component is a delta function unless a non-zero
+          major axis has been provided.
+          Valid types include:
+
+                0 - Delta function.
+                1 - Gaussian.
+                2 - Uniformly bright disk.
+                3 - Optically thin sphere.
+                4 - Ring.
+
+freq0  -  The frequency for which the flux value is defined, specified in Hz.
+          This is only relevant when used with a non-zero spectral index.
+
+spcind -  The spectral index of the component, or zero if not relevant.
+          The flux of the component in a given IF is given by:
+
+            flux[IF] = (f[IF] / freq0)^specind
+
+          Where f(IF) is the mean frequency of the channels that are
+          currently selected within the specified IF.
+
+vs     -  True if the spectral index should be varied during model fitting.
+
+CONTEXT
+-------
+This command is provided mainly for use in automatic mapping scripts
+where the normal interactive methods of adding model components (see
+help mapplot and help edmodel) are inappropriate. In such contexts
+this command can be used by a script to enter guesses at model
+component characteristics and then use the modelfit command to
+fit it to the data in order to parameterize maps after hands-off
+mapping. Note that there are some restrictions on which parameters can
+actually be fixed during modelfitting. These restrictions are silently
+enforced by the modelfit command and you should acquaint yourself with
+the modelfit help information before using this command seriously.
+
+RELATED COMMANDS
+----------------
+mapplot  - (In the sense that it can be used to interactively add components).
+edmodel  - Edit the current models in your favorite editor.
+modelfit - Fit a variable image plane model to UV data.

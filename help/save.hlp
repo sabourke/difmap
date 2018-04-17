@@ -1,0 +1,117 @@
+prefix_name
+Save UV data, models, windows, the restored map and a command file.
+EXAMPLE
+-------
+
+0>save "3c345"
+Writing UV FITS file: 3c345.uvf
+Writing 94 model components to file: 3c345.mod
+wwins: Wrote 3 windows to 3c345.win
+Writing map to FITS file: 3c345.fits
+Writing difmap environment to: 3c345.par
+0>
+
+PARAMETERS
+----------
+
+prefix_name  -  The prefix to give all the output file names - see the
+                example above.
+
+STANDARD SUFFIXES
+-----------------
+
+To the prefix name that you enter the following extensions are
+appended to indicate the file type:
+
+ .uvf  -  The suffix for the UV FITS data file.
+ .mod  -  The suffix for any model file.
+ .win  -  The suffix for any windows file.
+ .fits -  The suffix for any restored map fits file.
+ .par  -  The command-file containing commands to restore the
+          running parameters and data-files into difmap on a later
+          occasion.
+
+CONTEXT
+-------
+Before leaving difmap it is important to save all processed data,
+unless the data is to be discarded. The 'save' command provides a
+convenient method for saving all relevant data with a single command.
+It also now saves the running parameters in a command file.
+
+'save' calls the wobs, wmodel, wwins and wmap commands for you where
+appropriate, to save the UV data, any models, any windows and any
+restored map that has or can be created. Note that if necessary, when
+there is a model to restore with, the map will be restored for you.
+
+The 'save' command also writes a command file that may be used to
+restore the files and difmap state at a later date.
+
+There are now two methods for reading the data back into difmap at a
+later date. Originally the 'get' command was provided for this
+purpose, but the get command could only restore the data files - it
+did not restore the running parameters. Now the save command has been
+modified to create an extra file - the .par file. This is a command
+file that contains commands to restore the data files into difmap AND
+to restore the running parameters.
+
+Thus the preferred method for retrieving the state of difmap at a
+later date, is to execute this command file.
+
+In the example given above a file 3c345.par was created. To restore
+the files and running parameters at a later date one would type:
+
+
+0>@3c345.par
+
+The response in this case would be somthing like:
+
+Reading UV FITS file: 3c345.uvf
+The integration time appears to be 1.31321 seconds.
+There appear to be 485 integrations.
+AN table 1: 485 integrations on 55 of 55 possible baselines.
+Found source: 3C345
+ 
+Number of spectral-line channels: 1
+ 
+IF    Freq (Hz)  Chan BW (Hz)  Full BW (Hz)  Sideband
+01  1.66299e+09         2e+06         2e+06       USB
+ 
+Polarization(s): RR
+ 
+Read 192 lines of history.
+ 
+Reading an estimated 26675 visibilities.
+Selecting channels: 1 -> 1, polarization: RR.
+A total of 94 model components were read from file 3c345.mod
+rwins: Read 3 windows from 3c345.win
+New map grid = 256x256 pixels with 0.5x0.5 milli-arcsec cellsize
+Gaussian UV-taper cancelled
+UV range cancelled
+New uniform weighting binwidth=2 pixels
+Amplitude error weighting cancelled
+Radial weighting cancelled
+Zero-baseline flux cancelled
+Self-cal gaussian UV-taper cancelled
+Amplitude corrections will not be limited
+Phase corrections will not be limited
+The mapplot display area will be limited to:
+ Relative  RA: (The whole available range)
+ Relative DEC: (The whole available range)
+- In phase-only self-cal, good data on baselines that are not in closed
+  arrays of at least 3 telescopes will be flagged.
+- In amplitude self-cal, good data on baselines that are not in closed
+  arrays of at least 4 telescopes will be flagged.
+0>
+
+These are the output lines of the various commands that were run from the
+command file.
+
+RELATED COMMANDS
+----------------
+get    - Restore UV data, models and windows from files.
+wobs   - Write the UV data to a UV FITS file.
+wmodel - Write the CLEAN model to a (text) VLBI model file.
+wmap   - Save the restored map as a FITS file.
+wbeam  - Save the dirty-beam as a FITS file.
+wwins  - Write CLEAN windows to a text file.
+exit   - Exit calls save if so requested.

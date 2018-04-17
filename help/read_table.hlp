@@ -1,0 +1,94 @@
+filename, output_matrix, nskip
+Read a table of numbers from a text file.
+
+A COMPLETE EXAMPLE
+------------------
+ In the following example, first, before entering difmap, a simple text
+ file is created which contains two header lines, followed by 4 lines
+ of 5 numbers each.
+
+  shell% cat > my_file.txt
+   This is a header line
+   This is another header line
+   1 2 3 4 5
+   6 7 8 9 10
+   11 12 13 14 15
+   16 17 18 19 20
+  shell%
+
+ Having created a demonstration text file, difmap is then started.  The
+ table numbers in the above file are to be stored in a 2-dimensional
+ array, so the first thing that we have to do is create a 2D array,
+ which in this case is called 'table'. This will be resized as needed
+ by the 'read_table' command, so an arbitrarily sized 2D array of 1x1
+ elements is allocated. The 'read_table' command is then invoked to
+ read "my_file.txt". It is given the name of the file to read, the name
+ of the 2D array variable to record the numbers in (ie. table), and an
+ optional number of initial header lines to skip in the file, before
+ attempting to read any numbers.
+
+  shell% difmap
+  ....
+  0> float table(1,1)
+  0> read_table my_file.txt, table, 2
+
+ Having read the numbers into the table() array, the number of columns
+ that were read can be determined by looking at the number of elements
+ along axis 0 of the 2D table() array.
+
+  0> print dim(0,table)
+  5
+  0>
+
+ Similarly, the number of rows of numbers that were read can be determined
+ by looking at the number of elements along axis 1 of the table array.
+
+  0>print dim(1,table)
+  4 
+  0>
+
+ The following 'type' command shows the contents of the 2D array, as
+ read from the file.
+
+  0> type table
+		   1   2   3   4   5 
+		   6   7   8   9  10 
+		  11  12  13  14  15 
+		  16  17  18  19  20 
+
+ The next example 'type' command demonstrates how to extract, and in
+ this case display, a single column of the 2D array.
+
+  0> type table(2)
+		   2   7  12  17 
+
+ We could then, for example, display a graph of column 2 versus
+ column 4, by typing:
+
+  0> pplot table(2), table(4)
+
+PARAMETERS
+----------
+
+filename     -    The name of the text file to read from.
+
+array        -    The name of the existing 2D array in which
+                  to record the numbers read from the file.
+                  This will be resized, as necessary to match
+                  the number of rows and columns of numbers in
+                  the file.
+
+nskip        -    Optional: (default = 0).
+                  The number of lines at the beginning of the
+                  file to skip before reading the table of
+                  numbers.
+
+CONTEXT
+-------
+This command provides a convenient way to read a table of floating
+point numbers from a text file. Neither the number of columns, nor the
+number of rows need be known in advance. The numbers in the table can
+be separated by arbitrary numbers of spaces and tabs, and lines of the
+table can be interleaved with empty lines, if need be.  The only
+restrictions are that after the first nskip lines, all lines in the
+file must contain the same number of numbers.

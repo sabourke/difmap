@@ -1,0 +1,33 @@
+distance
+Convert an image plane distance from radians to map units.
+
+EXAMPLE
+-------
+
+The following example converts 0.003 radians to arcminutes.
+
+  0>mapunits arcmin
+  Distances in the map plane now have units: arcmin.
+  Distances in the UV plane now have units: kilo-wavelengths.
+  0>print rad_to_map(0.003)
+  10.3132
+  0>
+
+PARAMETERS
+----------
+distance    -  A distance in the map plane, expressed in radians.
+
+CONTEXT
+-------
+The 'mapunits' command allows the user to specify which units should
+be used both for specifying distances, such as the cell sizes, of maps,
+and for printing such distances.
+
+The 'rad_to_map()' function allows the user to convert a distance in
+radians, to the currently selected map units.
+
+RELATED COMMANDS
+----------------
+map_to_rad - Convert an image plane distance from map units to radians.
+uv_to_wav  - Convert a UV plane distance from UV units to wavelengths.
+wav_to_uv  - Convert a UV plane distance from wavelengths to UV units.

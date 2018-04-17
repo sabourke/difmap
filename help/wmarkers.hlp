@@ -1,0 +1,39 @@
+file_name
+List the commands that would create the current list of map markers.
+EXAMPLE
+-------
+
+ 0>wmodel markers.list
+ Writing marker commands to markers.list
+ 0>
+
+This file can be executed subsequently to restore the list of
+markers, by typing:
+
+ 0>clear_markers
+ 0>@markers.list
+
+PARAMETERS
+----------
+file_name    - (Default=standard output)
+               If a file name is given, the marker commands are written
+               to that file. Otherwise, if the file-name argument is
+               either omitted, or specified as "", the marker commands
+               are written to standard output for display on your terminal
+               and in the log file.
+
+CONTEXT
+-------
+This command serves two purposes. Without a filename argument, it
+allows the user to see the current list of map markers
+interactively. With a filename it allows the user to write a command
+file which can later be executed to reproduce the current list of
+markers.
+
+RELATED COMMANDS
+----------------
+save          - Save all data files and the difmap running parameters.
+mark_xy       - Specify a map marker relative to the map center.
+mark_radec    - Specify a map marker to be drawn at a given RA,Dec.
+clear_markers - Delete the current list of markers.
+delmarker     - Delete a given map marker.

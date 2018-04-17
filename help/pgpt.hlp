@@ -1,0 +1,13 @@
+x-array, y-array, <marker_symbol>;
+Draw points at each x,y pair in the arrays given.
+
+PARAMETERS
+----------
+
+x-array       -  The X-coordinate of each point.
+
+y-array       -  The Y-coordinate of each point.
+
+marker_symbol -  The PGPLOT marker symbol to use.
+                 If omitted, then marker 2 will be used. This is
+                 a plus (+) symbol.

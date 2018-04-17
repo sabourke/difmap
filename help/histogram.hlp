@@ -1,0 +1,4 @@
+data_array, min_value, max_value, number_of_bins, <draw_axes>;
+Non-standard alias for the pghist command.
+
+See help pghist.

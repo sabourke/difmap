@@ -1,0 +1,79 @@
+Update this file with the 'makeindex' command. Do not edit directly.
+
+General help topics:
+-------------------
+
+Functions and commands:
+----------------------
+ apropos
+   Locate functions, commands and help topics by keyword lookup.
+ break
+   Break out of a loop, to the command following the loop
+ continue
+   Start the next iteration of a do,while or repeat loop
+ date
+   Returns the date like: Thu Aug 15 22:14:05 1991
+ dim
+   Return the number of elements along a given axis
+ do
+   Start of do-loop, complete with:  end do
+ else
+   Either block or statement else in if() block
+ elseif
+   Alternative block in  if();...;end if  control block
+ end
+   Complete do, while or if block
+ error
+   (No help file)
+ exit
+   Exit the program
+ flagdel
+   Given a flag array, delete elements from given axes of array(s)
+ float
+   Declare a floating point variable
+ getenv
+   Return the value of an environment variable
+ help
+   Give help on a command, function or module
+ if
+   Start of IF conditional control block or statement
+ index
+   Search for and return the position of a sub-string within a string
+ integer
+   Declare an integer variable
+ len
+   Return the number of characters in a string expression
+ logfile
+   Close any existing log file and optionally start a new one.
+ logical
+   Declare a logical variable
+ makeindex
+   Compile a help index file for a given module or modules.
+ nearest
+   (No help file)
+ print
+   Show values of any arguments, one after the other separated by a space.
+ prompt_user
+   Prompt the user for a reply string (with optional default).
+ query
+   Asks the user "<prompt> ? (y/n):" and returns TRUE if user types y
+ quit
+   Exit the program
+ repeat
+   repeat;commands;until(false) - Looping control statement.
+ stop
+   Quit execution
+ string
+   Declare a string variable
+ strnum
+   Return the string representation of a number
+ system
+   Send a command to the operating system for execution
+ type
+   Print values of argument arrays showing the shape of the array
+ until
+   repeat;...;until(true)  loop until condition is met
+ varlist
+   Show the declaration of a variable
+ while
+   while(true);commands;end while - Looping control statement.

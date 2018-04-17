@@ -1,0 +1,66 @@
+flux, weight
+Set the estimated flux expected from a baseline of zero length.
+EXAMPLE
+-------
+
+0>uvzero 10, 100
+Zero-baseline flux set to 10 Jy. Weight=100.
+0>
+
+The second line is the response from the 'uvzero' command, confirming
+the user's selection. To see the value of the current zero-spacing
+flux omit all arguments:
+
+0>uvzero
+Zero-baseline flux set to 10 Jy. Weight=100.
+0>
+
+To cancel a previously set zero-baseline flux spefiy zero.
+
+0>uvzero 0,0
+Zero-baseline flux not set.
+0>
+
+PARAMETER
+---------
+flux   -  The estimated total flux of the observation (Jy). This will
+          be treated as though it were the flux density of a normal
+          visibility at U=0 and V=0.
+weight -  The visibility weight to be assigned to the zero-baseline
+          flux. This is the weight to be seen after application of
+          wtscale and has the same form as the weights of normal
+          visibilities. However note that the addition of a zero-baseline
+          visibility is like the addition of a single extra sample in
+          the UV plane and will have very little effect unless a large
+          weight is used.
+
+Whenever a new UV data set is read with the 'observe' command, the
+default value of flux=0.0 is set.
+
+CONTEXT
+-------
+If an observation is so defficient in short baselines that no value is
+added to the pixel at the origin of the U,V plane grid, then the total
+flux in the dirty map will equal zero (as required by Fourier
+transform theory). For very extended sources this may result in low
+brightness regions of the source appearing to be negative because the
+flux in every pixel of the map is offset by a small negative
+amount. The effect may be countered to some extent by adding a fake
+visibility at the origin of the UV plane. Unfortunately, while the
+total estimated flux of the source can be used to set the amplitude of
+the visibility and the phase at the origin is known to be zero, the
+weight to give the visibility is a matter of experimentation. A weight
+value that is much higher than the average weight of the observed
+visibilities will be needed if any effect is to be seen. The best
+value will depend on the distribution of the observed visibilities and
+their weights.
+
+In practice it is probably easier to get rid of negative bowls
+by model fitting rather than experimenting with the zero-spacing
+flux.
+
+SIDE EFFECTS
+------------
+Use of this command will cause the next 'clean', 'mapplot' etc..
+to re-invert the modified UV data-set to produce an updated dirty
+beam and residual map.

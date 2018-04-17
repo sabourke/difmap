@@ -1,0 +1,109 @@
+dovar
+Modify the established and tentative models with an external editor.
+EXAMPLE
+-------
+
+To edit all components of the established and tentative models type:
+
+ 0>edmod
+[... After exiting the editor]
+ A total of 2 model components were read from file edmod.scr
+ 0>
+
+The following demonstrates what happens if you inadvertantly introduce a
+syntax error into the model file while editing:
+
+ 0>edmod
+ rmodel: Error at field 2 on line 3 of file: edmod.scr
+ 0>
+
+To only edit model components with variable parameters:
+
+ 0>edmod true
+ Partitioning the model into established and variable parts.
+ Adding 1 model components to the UV plane model.
+ The fixed established model contains 1 components (1.38117 Jy).
+ The variable part of the model contains 1 components (2 Jy).
+ A total of 3 model components were read from file edmod.scr
+ 0>
+
+PARAMETERS
+----------
+
+dovar    -    Default = false
+              If this argument is omitted or given as FALSE, then all
+              all components of the tentative and established models
+              will be presented to be edited. Alternatively, if it is
+              given as TRUE, then only those components that have at
+              least one component marked as variable will be presented.
+
+CONTEXT
+-------
+During model fitting the edmodel command can be used to add,delete or
+change the components of the established and tentative models using an
+external editor. This is usually used to change values of component
+parameters or to change which parameters are to be held constant.
+
+Note that a 'v' post-fixed to a parameter makes it a free-variable for
+model fitting. Unfortunately, since the coordinate system used to fit
+the components to the data is not the same as that displayed in model
+files it is not possible to fix many of the parameters individually.
+The following collective sets of parameters may be constrained or
+allowed to vary:
+
+1. The absence or presence of a postfixed 'v' on the Flux parameter
+   effects only the Flux parameter.
+
+2. Placing a 'v' on either or both Radius and Theta implies that both
+   are variable. It is not possible to individually fix them.
+
+3. If the axial ratio is exactly 1.0 and there is only a 'v' postfixed
+   to the Major axis parameter, then axial-ratio and phi will remain
+   fixed during model fitting.
+
+4. In general if the axial ratio is not exactly 1.0 then postfixing
+   a 'v' to any of Major,Ratio or Phi, implies that they are all
+   variable. 
+
+DEFAULT EDITOR
+--------------
+On UNIX systems the edmodel command defaults to invoking the UNIX 'vi'
+editor. If this is not the editor that you are used to, then you should
+override the default by assigning the EDITOR environment variable with
+the path of your editor. This must be done before entering difmap,
+preferably in your .cshrc or .login files.
+
+At the shell level or in your .cshrc or .login files you would type
+one of the following lines to set emacs as your default editor:
+
+Under Bourne compatible shells (eg. sh, bash, ksh):
+
+  EDITOR="emacs";export EDITOR
+
+Under csh compatible shells (eg. csh, tcsh):
+
+  setenv EDITOR emacs
+
+DETAILS
+-------
+If 'dovar' is omitted or presented as FALSE, then the established
+model is first merged with the tentative model, then the tentative
+model is written to a temporary file, presented to your editor and on
+exit from the editor, read back into the tentative model. Since the
+established model is cleared by this operation, the next operation
+that requires a UV representation of the model will establish the
+model first.
+
+If 'dovar' is given as TRUE, then Edmod first partitions the
+established and tentative models into two parts, a model established
+in the UV plane (this can take significant time), formed only from
+fixed components, and a tentative variable model to be edited. It
+then writes the variable components of the model into a scratch file
+and invokes an external screen editor on it. When the user exits from
+the editor, the scratch file is read and deleted. If no errors were
+found in the file then the edited model supersedes the original
+tentative model.
+
+RELATED COMMANDS
+----------------
+modelfit - Fit model components to UV data.

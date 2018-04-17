@@ -1,0 +1,169 @@
+station, umax, vmax, docursor
+Plot observed UV points on the UV plane.
+EXAMPLE
+-------
+
+0> uvplot "BONN"
+0>
+
+This example plots the positions of visibilities in the UV plane,
+plotting all but the data associated with BONN in green. BONN data
+from the first sub-array is plotted in a different color to highlight
+it. If the display device has a cursor then interactive mode will be
+invoked after the initial display has been completed.
+
+PARAMETERS
+----------
+
+station   -   (Optional) The name of a station to highlight in the
+              plot. If not given or given as an empty string "", no
+              station will initially be highlighted. (Stations
+              can be specified subsequently with the cursor).
+
+umax     -    (Optional) Default=0 (0 -specifies the whole range).
+              The maximum U coordinate to display.
+              The plot will go from -umin to +umin. Unless changed
+              with the mapunits command, the units are
+              million-wavelengths.
+
+vmax     -    (Optional) Default=0 (0 -specifies the whole range).
+              The maximum V coordinate to display.
+              The plot will go from -vmin to +vmin. Unless changed
+              with the mapunits command, the units are
+              million-wavelengths.
+
+docursor  -   (Optional) Default=TRUE.
+              If the display device has a cursor but you don't want
+              to enter the interactive cursor mode, make this FALSE.
+
+CONTEXT
+-------
+This task displays the UV coverage of all un-flagged visibilities
+selected with the 'select' command. For each baseline, one point is
+plotted per IF. Where multiple spectral-line channels are selected
+from a given IF, the visibility is the average of those channels and
+is displayed at the corresponding mean U and V coordinates.
+
+INTERACTIVE MODE
+----------------
+If your display device has a cursor, then there are a number of
+interactive options that you can use. These are selected by moving the
+cursor into the plot window, and pressing the following keys:
+
+
+   X - Quit the uvplot session, and return to the difmap prompt.
+
+   L - Re-display the plot.
+
+   Z - Zoom in on a rectangular sub-plot of the displayed region.
+       After pressing 'Z' either press 'Z' again to revert to the
+       original un-zoomed display, or select the two vertexes of the
+       desired sub-plot area by sequentially pressing the 'A' key
+       (left-mouse-button) over each. To cancel an incomplete
+       selection, press 'D' (middle-mouse-button).
+
+   . - Toggle the marker symbol used to display the data between the
+       smallest available and the next largest. By default
+       the smallest possible marker symbol is used for speed, but if
+       if the data are sparse then the larger marker symbol may be more
+       convenient.
+
+   H - (Help) Briefly list all keyboard options.
+
+   n - Highlight visibilities from the next telescope in the currently
+       highlighted sub-array. Initially no telescope is highlighted.
+       If this key then pressed, the visibilities of the first
+       telescope of the first sub-array will be highlighted. Pressing
+       this key again highlights the second telescope, etc.. When the
+       last telescope of the current sub-array has been plotted, the
+       first telescope of the next sub-array will be plotted. So by
+       repeatedly pressing this key you will eventually have seen each
+       telescope of all sub-arrays individually highlighted.
+
+   p - This has the reverse the effect to the 'n' key, highlighting
+       the visibilities of the previous telescope in the current
+       sub-array, and wrapping back to the last telescope in the
+       previous sub-array, after the first telescope of the current
+       sub-array is highlighted.
+
+   N - [Upper-case n] Similar to the lower-case 'n' key this key
+       results in the first telescope of the next sub-array in the
+       observation to be highlighted. In this way you can jump between
+       sub-arrays without having to see all the telescopes of the
+       intermediate sub-arrays highlighted one at a time.
+
+   P - [Upper-case p] This has the reverse effect of the 'N' key,
+       allowing one to directly step backwards through sub-arrays.
+
+   T - To have a specific telescope of a specific sub-array
+       highlighted without having to step through all the intermediate
+       telescopes and sub-arrays, press this key. On the text window
+       you will then be prompted for the name of the telescope to be
+       highlighted. Telescopes are specified by an optional sub-array
+       number delimited by a colon, followed by an unambiguous
+       telescope name prefix.  If the sub-array number and colon are
+       omitted then the sub-array from which telescopes are currently
+       being highlighted will be assumed. For instance, both
+       3:BONN and BON refer to a telescope named BONN in sub-array 3
+       if another telescope of sub-array 3 is currently being
+       highlighted. Also, provided that sub-array 2 does not contain
+       more than one telescope starting with the prefix JBN, 2:JBN is
+       sufficient to refer to a telescope called JBNK1 in sub-array 2.
+
+  S  - This causes uvplot to display details about the visibility
+       nearest to the cursor. It shows the sub-array, baseline,
+       IF number and date of the visibility.
+
+  C  - This initiates cut area selection, through which a rectangular
+       area may be selected within which to flag data. After pressing
+       'C' you will be expected to enter the locations of two opposite
+       corners of the area, by pressing 'A' (left-mouse-button) over
+       the corresponding points of the plot. To cancel a half selected
+       area press 'D' (central-mouse-button). Once two corners have
+       been selected, all visibilities displayed in that area will be
+       flagged and will then disappear from the plot.
+
+  W  - Toggle the scope of edits with respect to spectral-line
+       channels. Each point in the plot comes from a single IF, and
+       its position in the plot is determined by the mean frequency of
+       the channels currently selected from that IF. By default, if
+       you select such a point to be flagged, then all spectral-line
+       channels of the source IF will be flagged, irrespective of the
+       channels which actually went into making the plot. The
+       alternative is to edit just the channels that went into making
+       the plot. The 'W' key toggles which of the two options is used,
+       and a mode line above the plot describes which option is
+       currently in effect.
+
+  +  - Toggle whether the cursor is shown as a small cross or a
+       cross-hair that extends the full width and height of the display.
+       Currently only the /xserv and /xwin PGPLOT devices support this
+       feature.
+
+  %  - Toggle whether to display the conjugate symmetric versions of
+       each visibility. This option is enabled by default, so if you
+       place this character in your 'uflags' variable (see below), it
+       will be disabled when uvplot starts.
+
+CONFIGURATION VARIABLES
+-----------------------
+The display-mode option keys listed above may be preset in the
+variable, 'uflags'. If uflags is an empty string, "", then the default
+option string is used. This is currently also an empty string. To
+override this default and have radplot start up by displaying with
+large dot sizes, on the command line one would type:
+
+0> uflags="."
+
+If you always want to override the default, then place such an
+assignment  line in your difmap login file (the file named in the
+optional DIFMAP_LOGIN environment variable).
+
+OTHER DISPLAY COMMANDS
+----------------------
+radplot  -   Display visibility amplitude vs. radius.
+projplot -   Display visibility amplitude/phase vs. projected UV distance.
+vplot    -   Display observed and model visibilities from the current IF.
+tplot    -   Display the time-sampling of each telescope of the current IF.
+corplot  -   Display the self-cal corrections of the current IF.
+cpplot   -   Display observed and model closure phases interactively.

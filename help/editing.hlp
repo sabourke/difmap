@@ -1,0 +1,146 @@
+
+General discussion of editing in difmap.
+
+EDITING VISIBILITY DATA
+-----------------------
+It is rare to find an interferometer data set that is not contaminated
+with interference, correlator errors or other unwanted observational
+artifacts. So it is important to be able to flag selected parts of
+the data to be ignored by future processing, and to be able to undo
+such flags if it becomes apparent that prior editing was unwarranted.
+
+In Difmap there are currently three types of flagging.
+
+Deleted data.
+------------
+Visibilities that have been given zero weight, and visibilities which
+do not appear in the input UV FITS file are regarded as "deleted".
+These visibilities are not displayed in any plots. None of the
+commands in Difmap change good or flagged data to deleted data, and
+such data can only come from input UV FITS files. Similarly, there is
+no way to undelete such data.
+
+Visibility flags.
+----------------
+Individual visibilities can be interactively flagged or unflagged in a
+number of difmap plot commands, such as vplot, tplot, radplot,
+projplot and uvplot. When flagged visibilities are displayed,
+they are plotted in red. When unflagged (good) visibilities are
+plotted, they are plotted in green.
+
+Visibilities of one or more baselines, can also be flagged over a
+given time range non-interactively using the 'flag' and 'unflag'
+commands.
+
+Correction flags.
+----------------
+Telescope based self-calibration corrections consist of three parts.
+A phase correction, an amplitude correction and a correction flag.
+Initially the phase correction is set to zero, the amplitude
+correction to unity and the flag is not set. To fill in ampitude
+and phase corrections the 'selfcal' command must be used. This
+determines new incremental telescope corrections based on the input
+visibilities and a model. Where there is insufficient information to
+determine a correction, the correction-flag member is set. 
+
+When self-calibration corrections are applied, if a correction is
+flagged, the flag is also applied to all affected visibilities. These
+correction flags are recorded in addition to other visibility flags
+and can be removed without affecting normal visibility flags by
+running the 'uncalib' command, or by interactively toggling them in
+the 'corplot' command. In plot commands, visibilities that are flagged
+due to self-calibration are displayed in blue, to differentiate them
+from good visibilities plotted in green and otherwise flagged
+visibilities that are plotted in red. Other commands don't
+differentiate between the flag types, and thus any visibilities that
+are flagged for any reason are ignored.
+
+TELESCOPE VERSUS BASELINE EDITING.
+---------------------------------
+
+Telescope based editing.
+-----------------------
+Many observational artifacts are telescope based. For instance loss of
+cooling and other receiver problems are always telescope based, whereas
+external interference will appear as telescope based problems for
+VLBI and VLBA work, but as array-wide problems for compact arrays
+such as the VLA.
+
+The 'vplot' command groups baseline plots by telescope. This gives one
+the opportunity to determine whether a problem is telescope based, and
+to home in on the bad telescope. Telescope highlighting in the
+'radplot' command can also be used to search out bad telescope based
+artifacts. When such problems are identified, one should display
+all baselines of the bad telescope in 'vplot' and select the default
+telescope-based editing mode before editing.
+
+Baseline editing.
+----------------
+Fortunately, very few observational artifacts appear as baseline based
+errors. This is fortunate because self-calibration is unable to remove
+such problems, and correcting them with resoff is a bad idea. Known
+ways in which baseline errors can be introduced, are correlator
+problems (particularly analogue correlators), telescope-shadowing
+and poorly matched receiver bandpasses. 
+
+If you intend to use self-calibration then it is always best to use
+telescope based editing where pertinent. This is because
+self-calibration can get confused by incomplete sampling of a given
+telescope. The 'selfcal' command attempts to detect such cases and
+flag them rather than make a correction, but there are some cases that
+it is not able to detect. One such case is where a telescope is
+sampled by two effectively disconnected arrays, because visibilities
+that would have connected the two arrays have been flagged. In such
+cases there are two possible telescope correction solutions.
+
+Multi-IF editing scope
+----------------------
+In plot commands that individually show data of all IFs on a single
+plot, edits are applied only to the source IFs of the selected points.
+These include the following commands:
+
+  radplot - Plot visibility amplitudes and/or phases versus UV radius.
+  uvplot  - Plot observed UV points on the UV plane.
+
+In plot commands that by their nature can only plot data from one IF
+at time, edits are by default extended over all IFs (except when
+restricted by channel-range selections as described below). To
+optionally constrain edits to only be applied to the displayed IF, all
+of these commands provide a toggleable option, bound to the 'I' key.
+The relevant commands are:
+
+ cpplot   - Interactive display and editing of observed and model
+            closure phases.
+ projplot - Plot visibility amplitudes and/or phases versus projected
+            UV distance. 
+ radplot  - Plot visibility amplitudes and/or phases versus UV radius.
+ tplot    - Plot time sampling for each telescope of an observation.
+ vplot    - Plot visibility amplitudes and phases versus time.
+
+Polarization editing.
+--------------------
+In Difmap all edits applied to one polarization are always applied to
+all other recorded polarizations. However, be warned that unflagging a
+visibility which has one or more polarizations deleted, can not unflag
+deleted visibilities, and will thus result in different UV plane
+sampling in different polarizations. For the most part this is
+irrelevant, since the select command will not attempt to derive
+polarizations from combined stokes parameters if one of the
+stokes parameter visibilities is flagged or deleted, but if you are
+making maps of the individual stokes parameters to later be turned
+into percentage polarization maps, the results might be adversely
+effected.
+
+Multi-channel editing scope
+---------------------------
+By default visibility edits are applied to all spectral line channels,
+but all plot commands that allow editing, allow one to constrain edits
+to the ranges of channels selected with the 'select' command. This
+option is toggled with the 'W' key.
+
+Self-calibration correction flag scope.
+--------------------------------------
+A single self-calibration flag is always effectively applied to all
+spectral-line channels and polarizations of a single IF, so the
+'corplot' command does not have either the 'I' or 'W' options provided
+for normal visibility editting.

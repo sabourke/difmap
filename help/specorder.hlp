@@ -1,0 +1,110 @@
+selection-type1, ...
+Set the order in which specplot plots spectra.
+EXAMPLES
+--------
+
+1. To see the currently selected plot order without changing it, omit
+   all arguments.
+
+   0>specorder
+   Specplot selection order: baseline
+   0>
+
+2. To plot one spectrum for each scan that is distinguishable from its
+   neighbor by a 1 hour time gap:
+
+   0>spectime 306/07:56:44, 398/08:16:19, -60
+   Specplot time range 306/07:56:44 - 398/08:10:52,  scan separation=60 mins
+   0>specorder time
+   Specplot selection order: time
+   0>specplot
+
+3. To change from plotting one spectrum per baseline selection, to
+   plotting 1 page per baseline, partitioned into one spectrum of
+   each of 4 stokes parameters.
+
+   0>specpol I,Q,U,V
+   Specplot polarization selections: I, Q, U, V
+   0>specopt 4
+   Specplot nplot=4  x-axis=channels  flags="3jJ".
+   0>specorder polarization, baseline
+   Specplot selection order: polarization baseline
+   0>specplot
+
+4. To see how the spectrum averaged over all baselines, changes with
+   UV radius range.
+
+   0>specuvr 0,0,10
+   Specplot UV range: uvmin=0  uvmax=151.407  uvstep=10 (kilo-wavelengths)
+   0>specbase group,*
+   Specplot will plot baseline groups:
+    *
+   0>specorder uvrange
+   Specplot selection order: uvrange
+   0>specplot
+
+
+ARGUMENTS
+---------
+
+selection-type_1   -  The type of the selection that will be
+                      incremented the fastest. The recognized
+                      selection types are:
+                       baseline     -  Baseline selections established
+                                       with the 'specbase' command.
+                       polarization -  Polarization selections
+                                       established with the 'specpol'
+                                       command.
+                       time         -  Time-range selections
+                                       established with the 'spectime'
+                                       command.
+                       uvrange      -  UV-radius range selections
+                                       established with the 'specuvr'
+                                       command.
+...
+
+selection-type_n   -  The type of the selection that will be
+                      incremented each time that selection types
+                      1 -> n-1 have been exhausted.
+
+CONTEXT
+-------
+The specplot command plots scalar and vector averaged visibility
+spectra. The visibilities that are averaged to form each spectrum are
+selected by U-V radius range, polarization, time and baseline.
+
+On a given page only one of these quantities is allowed to change
+between plotted spectra, but when all values of that quantity have
+been exhausted, one of the other quantities may be incremented before
+starting the next page. The order in which the different quantities
+are incremented is determined by the 'specorder' command.
+
+By default, only the baseline selection specified by the 'specbase'
+command is allowed to increment. This behavior is the equivalent of
+what one would see after typing:
+
+ 0>specorder baseline
+
+Alternatively, if one wanted to look at the spectrum of a specific
+group of baselines at different times, one would call the specbase and
+spectime commands to select the desired baseline group and the time
+ranges and then type:
+
+ 0>specorder time
+
+If one wanted to extend this such that when one group of baselines had
+been displayed to each of the desired time ranges, a second group of
+baselines was plotted over the same time ranges, one would call the
+specbase command to select two baseline groups and type:
+
+ 0>specorder time, baseline
+
+
+RELATED COMMANDS
+----------------
+specopt    -  Preset specplot display options.
+specsmooth -  Preset the spectral resolution displayed by specplot.
+specbase   -  Select the baselines to be displayed by specplot.
+specpol    -  Select the list of polarizations to be displayed by specplot.
+spectime   -  Select the time ranges to be displayed by specplot.
+specuvr    -  Select the UV radius ranges to be displayed by specplot.

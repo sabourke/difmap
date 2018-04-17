@@ -1,0 +1,2 @@
+raw_cube, model_cube, peaka, peakb, sigran, noiran, chi_vs_epoch, freedom
+Finds chi-squared residuals between two cubes of spectra.

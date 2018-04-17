@@ -1,0 +1,38 @@
+module_name,...
+Compile a help index file for a given module or modules.
+EXAMPLES
+--------
+
+To update the index for a single module:
+
+  0>makeindex general
+  Indexing module: general
+  0>
+
+To update all module index files, omit any arguments:
+
+  0>makeindex
+  Indexing module: difmap
+  Indexing module: file_io
+  Indexing module: general
+  Indexing module: graphics
+  Indexing module: maths
+  0>
+
+ARGUMENTS
+---------
+
+module,...  -   The name(s) of one or more modules to be indexed.
+                If omitted, all modules will be re-indexed.
+
+CONTEXT
+-------
+In order that the 'apropos' and 'help module' commands be reasonably fast,
+it is essential that they don't have to open every help file in order to
+extract the one-line description that is on the second line of every
+help file. Instead, these commands look for files named after each
+module in the program, with an '.idx' extension. These index files
+contain the list of help topics, commands and functions, together with
+their one-line descriptions. They are created by the 'makeindex'
+command, which should be called whenever a help file is added,
+removed, or modified such that its one-line description is changed.

@@ -1,0 +1,2 @@
+file_number, max_pts
+Reads and returns an array of floats from a file or terminal

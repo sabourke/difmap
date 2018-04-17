@@ -1,0 +1,55 @@
+enable
+Specify whether to keep one model per channel-range/polarization selection.
+
+EXAMPLE
+-------
+
+  0>multi_model true
+  Maintain separate models for each channel/polarization selection.
+
+  0>multi_model false
+  Use one model for all channel/polarization selections.
+
+PARAMETERS
+----------
+enable  -  Default=false.
+           If true, different models are associated with each
+           channel-range/polarization selection.
+           If false one model is used for all selections.
+
+CONTEXT
+-------
+
+When making polarization or spectral line maps, each spectral-line
+channel and polarization samples a different aspect of the source, and
+should thus be represented by a different model. By default difmap
+doesn't maintain separate models for different
+channel-range/polarization selections, so in such cases, it is
+necessary to tell it to do so via the 'multi_model' command. Having
+done so, the 'select' command maintains a table of models for each
+channel-range/polarization selection that the user has mapped, saving
+and restoring models from this table whenever a new selection is made.
+These models can be cleared with the clear_models command, written to
+a file with the write_models command, and read from a file with the
+read_models command. 
+
+Conversely, when making single-polarization continuum maps, it only
+makes sense to have one model, since only one map will be produced at
+the end of the day. However such datasets commonly include multiple
+IFs, and it isn't uncommon for people to switch between selections of
+IFs while making maps, as a sanity check. In such cases one doesn't
+want the select command to keep switching in different models whenever
+a new selection of IFs is chosen, so by default the same model is
+maintained for all selections. To maintain backwards compatibility
+with older versions of difmap, this is the default mode.
+
+Note that you can change the effective default by placing the
+appropriate 'multi_model' command in your difmap startup script
+(ie. the file specified by the DIFMAP_LOGIN environment variable).
+
+RELATED COMMANDS
+----------------
+read_models  - Restore a set of multi-model models from a file.
+write_models - Save the current set of multi-model models to a file.
+clear_models - Discard all multi-model models. 
+mapplot      - Display map and beam images.

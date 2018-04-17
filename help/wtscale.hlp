@@ -1,0 +1,89 @@
+scale
+Change the scale factor that mutiplies the raw visibility weights.
+EXAMPLE
+-------
+
+0>wtscale
+Current weight scale factor is: 1
+0>
+0>wtscale 15
+Changed weight scale factor to: 15
+0>
+0>wtscale wtscale()*2.3
+Current weight scale factor is: 15
+Changed weight scale factor to: 34.5
+0>
+
+PARAMETERS
+----------
+
+scale  -  The new scale factor to mulitply the raw visibility weights by.
+          Note that increasing the weights corresponds to decreasing
+          the apparent visibility amplitude uncertainties, and vice
+          versa. In particular, to scale the error bars by a factor C,
+          the argument of the wtscale command would have to be 1/C^2.
+
+CONTEXT
+-------
+In UV FITS files each visibility is given a weight that is proportional
+to the reciprocal of the associated visibility amplitude variance.
+Unfortunately the constant of proportionality that is optionally given
+in the same files, is rarely anywhere near the right magnitude, let
+alone correct. The two adverse results are that 'vplot' displays
+amplitude uncertainty error bars that are totally non-sensical, and
+that the self-calibration commands report scaled Chi-squared values
+that make it difficult to judge the significance of the fit.
+
+The 'wtscale' command has been provided to enable one to change the
+scale factor. In some cases it is possible to deduce the appropriate
+weight scale factor by knowing where the data originated from, but in
+other cases getting the "right" factor is unfortunately a matter of
+guess work. Trial and error based on inspection of the error bars in
+'vplot' is the only way to make this guess at the moment. Note 
+that scaling the weights by X scales the error bars by 1/sqrt(X).
+
+If the data-set is written back to a UV FITS file the weights will be
+left un-scaled, but the accumulated scale factor will be recorded via
+the AIPS mechanism of writing a HISTORY line of the form:
+
+HISTORY AIPS WTSCAL=....
+
+Both AIPS and Difmap recognise such lines, so if the file is later
+read back into difmap or AIPS the weight scale factor will be corrctly
+recovered. Note that since history lines are written incrementally,
+there may be many history lines of the above form. The last such line
+is the one actually used.
+
+VLA DATA 
+--------
+
+The VLA writes weights equal to the number of 10s intervals in an
+integration. The correct weight scale factor can be determined from
+the equation for the expected noise variance:
+
+ 1/variance = (1e-26)^2 * Bw.t.(A.na.nc)^2
+                          ----------------
+                          2.0 * (k.Tsys)^2
+
+Boltzmann's contant  :    k = 1.38066e-23 J/K
+System temperature   : Tsys = 40K (typical for the VLA).
+Observing bandwidth  :   Bw
+Integration time     :    t = const * 10s
+Antenna area         :    A = 490.8739 m^2
+Antenna efficiency   :   na = 0.63
+Correlator efficiency:   nc
+
+The correlator efficiency depends on the VLA observing mode, but is
+documented in the synthesis imaging workshop book.
+
+Thus given that the raw data weights equal the number of 10 second
+intervals in an integration, the correct value of wtscale is:
+
+ wtscale = Bw * nc^2 * 1.5678e-4
+
+Note that when used to combine two stokes parameters into a derived
+polarization (eg. RR+LL->I), AIPS SPLIT doesn't combine the
+weights correctly. If you are using data that have been processed in
+this fashion, the above wtscale factor should be scaled by a factor of
+2. If you combine RR+LL->I with 'select' in difmap there is no need
+for this.

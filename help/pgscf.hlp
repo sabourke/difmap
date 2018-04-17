@@ -1,0 +1,13 @@
+font_id
+Set the character font to be used in subsequent PGPLOT text rendering.
+
+ARGUMENTS
+---------
+
+font_id   -   The type of font to use, specified by one of the
+              following integers:
+
+                1 - The default font.
+                2 - Roman font
+                3 - Italic font
+                4 - Script font

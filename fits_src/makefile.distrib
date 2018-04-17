@@ -1,0 +1,82 @@
+#-----------------------------------------------------------------------
+# This is the (hopefully) site independant part of the libfits.a makefile.
+# The site-specific part should be appended to this makefile and named
+# Makefile by the configure script also present in this directory. You
+# should not have to modify this file - changes should only be made to
+# the configure script.
+# The configure script must define CC, CFLAGS, INCDIR, LIBDIR and
+# RANLIB.
+#-----------------------------------------------------------------------
+# Description: Makefile for the fits interface library.
+#
+# Martin Shepherd  (mcs@phobos.caltech.edu)
+#-----------------------------------------------------------------------
+
+# Compile time C compiler flags.
+
+CFLAGC = -c $(CFLAGS) -I$(INCDIR)
+
+# This tells make how to compile a C file - don't touch.
+
+.c.o:
+	$(CC) $(CFLAGC) $<
+
+# List fits object files.
+
+FITS_OBS = fits.o hdu.o thdu.o ahdu.o bhdu.o phdu.o uhdu.o fitkey.o sysfits.o
+
+# The library name.
+
+LIBFITS = $(LIBDIR)/libfits.a
+
+INCFITS = $(INCDIR)/libfits.h
+
+#-----------------------------------------------------------------------
+# Default to making libfits.a and libfits.h
+
+default: $(LIBFITS) $(INCFITS)
+
+$(LIBFITS): $(FITS_OBS)
+	ar $(ARFLAG) ru $(LIBFITS) $(FITS_OBS)
+	$(RANLIB) $(LIBFITS)
+
+$(INCFITS): fits.h thdu.h phdu.h fitkey.h
+	cat fits.h thdu.h phdu.h fitkey.h > $(INCFITS)
+	chmod ugo+r $(INCFITS)
+
+#-----------------------------------------------------------------------
+# list object file dependancies
+
+fits.o: sysfits.h fits.h $(INCDIR)/recio.h
+
+hdu.o: sysfits.h fits.h utils.h fitkey.h $(INCDIR)/recio.h
+
+thdu.o: sysfits.h fits.h utils.h thdu.h fitkey.h
+
+ahdu.o: sysfits.h fits.h utils.h ahdu.h fitkey.h
+
+bhdu.o: sysfits.h fits.h utils.h bhdu.h fitkey.h
+
+phdu.o: sysfits.h fits.h utils.h phdu.h fitkey.h
+
+uhdu.o: sysfits.h fits.h utils.h uhdu.h fitkey.h
+
+fitkey.o: sysfits.h fits.h utils.h fitkey.h
+
+sysfits.o: sysfits.h
+
+ahdu.h: thdu.h
+	touch ahdu.h
+
+bhdu.h: thdu.h
+	touch bhdu.h
+
+phdu.h: fits.h
+	touch phdu.h
+
+uhdu.h: fits.h
+	touch uhdu.h
+
+thdu.h: fits.h
+	touch thdu.h
+
