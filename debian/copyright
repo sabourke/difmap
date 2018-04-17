@@ -1,0 +1,26 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: difmap
+Source: ftp://ftp.astro.caltech.edu/pub/difmap/README
+
+Files: *
+Copyright: 1992-2010 by the California Institute of Technology.
+License: Difmap Caltech
+ Author: Martin C. Shepherd  (mcs@astro.caltech.edu)
+ .
+ The C code in the slalib_src directory is included with permission
+ from its author, Patrick Wallace. Slalib copying and usage
+ restrictions are described in the README file in the slalib_src
+ directory.
+ .
+ The contents of the libtecla_src directory is copyright by the author,
+ Martin Shepherd. See libtecla_src/LICENSE.TERMS for copyright details.
+ If you are interested in using the tecla terminal-input library in
+ your own programs please see libtecla_src/README.
+ .
+ Permission to copy the difmap distribution is granted for
+ non-commercial purposes on the understanding that neither the author,
+ nor Caltech shall be held responsible for any adverse consequences
+ resulting from its use. Difmap must not be re-distributed in a
+ modified form without the author's explicit permission. No assurance
+ of suitability for any purpose is implied by its availability for
+ copying.

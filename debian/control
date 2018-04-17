@@ -1,0 +1,29 @@
+Source: difmap
+Section: science
+Priority: optional
+Maintainer: SBourke <s.bourke5@gmail.com>
+Uploaders: SBourke <s.bourke5@gmail.com>
+Build-Depends: libx11-dev,
+               libcfitsio-dev | libcfitsio3-dev,
+               libncurses-dev,
+               pgplot5,
+               debhelper (>= 9),
+               build-essential,
+               gfortran
+Standards-Version: 4.1.2
+Homepage: ftp://ftp.astro.caltech.edu/pub/difmap/difmap.html
+
+Package: difmap
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: Difference mapping interferometry tool.
+ Difmap is a fast, flexible, editing and mapping program. While it is
+ primarily intended for continuum VLBI data, it has been used to map VLA
+ and other connectedelement interferometer data in both continuum and
+ spectral lines. It is designed to work on one source at a time and takes
+ advantage of this and the large internal memory available in the current
+ generation of workstations to minimize the time spent reloading data and
+ regenerating models. Difmap also provides the user with a wide range of
+ interactive plots available through simple commands. This frees the user
+ from time-consuming specification of input parameters, and encourages
+ a better familiarity with the data.

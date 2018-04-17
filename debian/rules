@@ -1,0 +1,14 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+export DH_VERBOSE=1
+
+%:
+	dh $@ --parallel
+
+override_dh_auto_configure:
+	bash ./configure linux-i486-gcc
+
+override_dh_auto_build:
+	./makeall
+

@@ -1,0 +1,13 @@
+Index: difmap/configure
+===================================================================
+--- difmap.orig/configure	2018-04-17 08:55:01.000000000 +0200
++++ difmap/configure	2018-04-17 09:25:50.676052953 +0200
+@@ -530,7 +530,7 @@
+ # Make the tecla library?
+ 
+ if [ "$USE_TECLA" = "1" ] ; then
+-  (cd libtecla_src; ./configure --without-man-pages)
++  (cd libtecla_src; env -i PATH=$PATH ./configure --without-man-pages)
+   touch libtecla_src/needed
+ else
+   rm -f libtecla_src/needed

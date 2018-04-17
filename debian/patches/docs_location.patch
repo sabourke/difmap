@@ -1,0 +1,13 @@
+Index: difmap/configure
+===================================================================
+--- difmap.orig/configure	2018-04-17 10:19:52.252834697 +0200
++++ difmap/configure	2018-04-17 10:21:07.229141032 +0200
+@@ -43,7 +43,7 @@
+ # take no further action, but remember not to delete the distribution
+ # in this case.
+ 
+-HELPDIR="`pwd`/help"
++HELPDIR="/usr/share/lib/difmap/help"
+ 
+ # If you don't want the difmap executable to initially be placed in the
+ # current directory, specify the required directory below. Given that
