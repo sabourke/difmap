@@ -1,2 +1,2 @@
-difmap /usr/bin
-help /usr/share/lib/difmap
+difmap usr/bin
+help usr/share/difmap

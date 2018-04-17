@@ -7,7 +7,7 @@ Index: difmap/configure
  # in this case.
  
 -HELPDIR="`pwd`/help"
-+HELPDIR="/usr/share/lib/difmap/help"
++HELPDIR="/usr/share/difmap/help"
  
  # If you don't want the difmap executable to initially be placed in the
  # current directory, specify the required directory below. Given that
