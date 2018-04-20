@@ -1,4 +1,4 @@
-difmap (2.4l-1kern1) xenial; urgency=medium
+difmap (2.4l-1kern1) xenial bionic; urgency=medium
 
   * Initial package
 
